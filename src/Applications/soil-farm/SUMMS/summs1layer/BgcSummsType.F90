@@ -501,6 +501,7 @@ contains
   use BetrStatusType            , only : betr_status_type
   use MathfuncMod               , only : safe_div
   use tracer_varcon             , only : catomw, natomw, patomw
+  use betr_constants           , only : stdout                              ! added!
   implicit none
   class(summsbgceca_type)    , intent(inout) :: this
   logical                    , intent(in)    :: is_surflit
@@ -549,7 +550,13 @@ contains
     ystates1 => this%ystates1                         , &
     debug => bgc_forc%debug                             & 
   )
-  
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside runbgc_summs in BgcSummsType.f90'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
   !if(this%summsbgc_index%debug)print*,'enter runbgc'
   if(debug)print*,'enter runbgc_summs'
   this%rt_ar = rt_ar
@@ -568,8 +575,19 @@ contains
 
 !  if(this%bgc_on)then
   !initialize decomposition scaling factors
+      ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside BgcSummsType.f90 before decompk_scalar'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
   call this%decompkf_eca%set_decompk_scalar(ystates1(lid_o2), bgc_forc)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside BgcSummsType.f90 after decompk_scalar'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
   !initialize all entries to zero
   cascade_matrix(:,:) = 0._r8
 

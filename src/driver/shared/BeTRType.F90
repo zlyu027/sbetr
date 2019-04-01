@@ -311,6 +311,8 @@ contains
     use BetrStatusType         , only : betr_status_type
     use betr_columnType        , only : betr_column_type
     use BeTR_PatchType         , only : betr_patch_type
+    use betr_constants         , only : stdout                                  !added to checkup
+    
     implicit none
     !
     ! !ARGUMENTS :
@@ -335,12 +337,23 @@ contains
     integer            :: j
     integer            :: lbj, ubj
 
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'in BeTRType before all calls'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     call betr_status%reset()
     lbj = bounds%lbj; ubj = bounds%ubj
 
     dtime = betr_time%get_step_size()
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType before if(active_soibgc)'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+        
     if(this%active_soibgc)then
       !set up kinetic parameters that are passed in from the mother lsm. Mostly they
       !are plant-nutrient related parameters.
@@ -348,20 +361,45 @@ contains
         this%plantNutkinetics, this%tracers, this%tracercoeffs)
     endif
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after if(active_soibgc)'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     call stage_tracer_transport(betr_time, bounds, col, pft, num_soilc,&
          filter_soilc, num_soilp, filter_soilp, biophysforc,      &
          biogeo_state, biogeo_flux, this%aereconds, this%tracers, this%tracercoeffs, &
          this%tracerboundaryconds, this%tracerstates, this%tracerfluxes, this%bgc_reaction, &
          Rfactor, this%advection_on, betr_status)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after stage_tracer_transport'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     if(betr_status%check_status())return
 
     call surface_tracer_hydropath_update(betr_time, bounds, col, &
        num_soilc, filter_soilc,  biophysforc, this%advection_on, &
        this%tracers, this%tracerstates,    &
        this%tracercoeffs,  this%tracerfluxes, betr_status)
+    
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after hyfropath_update'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     if(betr_status%check_status())return
 
     if(this%reaction_on)                                       &
+             ! testing only, where the run crushed        -zlyu   02/2019
+             !write(stdout, *) '***************************##########################'
+             !write(stdout, *) 'in BeTRType in reaction_on'
+             !write(stdout, *) '***************************##########################'
+             ! end of the testin
     call this%bgc_reaction%calc_bgc_reaction(bounds, col, lbj, ubj, &
          num_soilc,                                            &
          filter_soilc,                                         &
@@ -376,17 +414,43 @@ contains
          this%tracerfluxes,                                    &
          this%tracerboundaryconds,                             &
          this%plant_soilbgc, biogeo_flux,  betr_status)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after if for reaction_on'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     if(betr_status%check_status())return
 
     if(this%tracers%debug)call this%debug_info(bounds, col, num_soilc, filter_soilc, 'afbgc react\n bef gwstransp',betr_status)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after bedug_info'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     call tracer_gws_transport(betr_time, bounds, col, pft, num_soilc, filter_soilc, &
       Rfactor, biophysforc, biogeo_flux, this%tracers, this%tracerboundaryconds  , &
       this%tracercoeffs,  this%tracerstates, this%tracerfluxes, this%bgc_reaction, &
       this%advection_on, this%diffusion_on, betr_status)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType after gws_transport'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     if(betr_status%check_status())return
     if(this%tracers%debug)call this%debug_info(bounds, col, num_soilc, filter_soilc, 'aff gwstransp',betr_status)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType before call calc_ebullition'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     call calc_ebullition(bounds, 1, ubj,                                                                  &
          this%tracerboundaryconds%jtops_col,                                                              &
          col%lbots,                                                                                       &
@@ -403,6 +467,13 @@ contains
          this%tracerstates,                                                                               &
          this%tracerfluxes%tracer_flx_ebu_col(bounds%begc:bounds%endc, 1:this%tracers%nvolatile_tracers), &
          this%ebullition_on, betr_status)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'in BeTRType before after calc_ebullition'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing
+    
     if(betr_status%check_status())return
 
     !update nutrient uptake fluxes
@@ -410,6 +481,12 @@ contains
           num_soilc, filter_soilc,  dtime                              , &
           col%dz(bounds%begc:bounds%endc,1:ubj)                        , &
           this%tracers, this%tracerfluxes, biogeo_flux, betr_status)
+    
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########################'
+    !write(stdout, *) 'at the end of BeTRType'
+    !write(stdout, *) '***************************##########################'
+    ! end of the testing    
 
   end subroutine step_without_drainage
 

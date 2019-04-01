@@ -234,6 +234,7 @@ contains
     use MathfuncMod       , only : num2str
     use betr_varcon       , only : kyr_spinup
     use clm_time_manager  , only : get_curr_date,is_end_curr_day,is_beg_curr_day,get_nstep
+    use betr_constants    , only : stdout                                                         ! added for checkup
     implicit none
     ! !ARGUMENTS :
     class(betr_simulation_alm_type) , intent(inout) :: this

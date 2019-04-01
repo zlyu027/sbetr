@@ -197,6 +197,7 @@ contains
     use babortutils  , only : endrun
     use bshr_log_mod , only : errMsg => shr_log_errMsg
     use BeTR_GridMod , only : betr_grid_type
+    use betr_constants, only : stdout                       !added, testing if correctly read in, zlyu 
   implicit none
     class(ForcingData_type), intent(inout)  :: this
 
@@ -317,6 +318,106 @@ contains
        enddo
     enddo
 
+    ! =========================================================================================   -zlyu
+    write(stdout, *) '******************************************************************************************'
+    write(stdout, *) 'in ReadCNPData, now start to printout read in, check if correct as in forcing file'
+    !do j2 = 1, this%num_levels
+       do j1 = 1, 3     ! print out. -zlyu
+          write(stdout, *)'CFLX_INPUT_LITR_CEL_vr first 3:  ',this%cflx_cel_vr(j1,2),  this%cflx_cel_vr(j1,3),  this%cflx_cel_vr(j1,4),  this%cflx_cel_vr(j1,5),  this%cflx_cel_vr(j1,6),  this%cflx_cel_vr(j1,7),  this%cflx_cel_vr(j1,8),  this%cflx_cel_vr(j1,9),  this%cflx_cel_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time     ! print out. -zlyu
+          write(stdout, *)'CFLX_INPUT_LITR_CEL_vr tail 3:  ',this%cflx_cel_vr(j1,2),  this%cflx_cel_vr(j1,3),  this%cflx_cel_vr(j1,4),  this%cflx_cel_vr(j1,5),  this%cflx_cel_vr(j1,6),  this%cflx_cel_vr(j1,7),  this%cflx_cel_vr(j1,8),  this%cflx_cel_vr(j1,9),  this%cflx_cel_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'CFLX_INPUT_LITR_LIG_vr first 3:  ',this%cflx_lig_vr(j1,1),  this%cflx_lig_vr(j1,2),  this%cflx_lig_vr(j1,3),  this%cflx_lig_vr(j1,4),  this%cflx_lig_vr(j1,5),  this%cflx_lig_vr(j1,6),  this%cflx_lig_vr(j1,7),  this%cflx_lig_vr(j1,8),  this%cflx_lig_vr(j1,9),  this%cflx_lig_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'CFLX_INPUT_LITR_LIG_vr tail 3:  ',this%cflx_lig_vr(j1,1),  this%cflx_lig_vr(j1,2),  this%cflx_lig_vr(j1,3),  this%cflx_lig_vr(j1,4),  this%cflx_lig_vr(j1,5),  this%cflx_lig_vr(j1,6),  this%cflx_lig_vr(j1,7),  this%cflx_lig_vr(j1,8),  this%cflx_lig_vr(j1,9),  this%cflx_lig_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'CFLX_INPUT_LITR_CWD_vr first 3:  ',this%cflx_cwd_vr(j1,1),  this%cflx_cwd_vr(j1,2),  this%cflx_cwd_vr(j1,3),  this%cflx_cwd_vr(j1,4),  this%cflx_cwd_vr(j1,5),  this%cflx_cwd_vr(j1,6),  this%cflx_cwd_vr(j1,7),  this%cflx_cwd_vr(j1,8),  this%cflx_cwd_vr(j1,9),  this%cflx_cwd_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'CFLX_INPUT_LITR_CWD_vr tail 3:  ',this%cflx_cwd_vr(j1,1),  this%cflx_cwd_vr(j1,2),  this%cflx_cwd_vr(j1,3),  this%cflx_cwd_vr(j1,4),  this%cflx_cwd_vr(j1,5),  this%cflx_cwd_vr(j1,6),  this%cflx_cwd_vr(j1,7),  this%cflx_cwd_vr(j1,8),  this%cflx_cwd_vr(j1,9),  this%cflx_cwd_vr(j1,10)
+       enddo
+       do j1 = 1,3
+          write(stdout, *)'CFLX_INPUT_LITR_MET_vr first 3:  ',this%cflx_met_vr(j1,1),  this%cflx_met_vr(j1,2),  this%cflx_met_vr(j1,3),  this%cflx_met_vr(j1,4),  this%cflx_met_vr(j1,5),  this%cflx_met_vr(j1,6),  this%cflx_met_vr(j1,7),  this%cflx_met_vr(j1,8),  this%cflx_met_vr(j1,9),  this%cflx_met_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'CFLX_INPUT_LITR_MET_vr tail 3:  ',this%cflx_met_vr(j1,1),  this%cflx_met_vr(j1,2),  this%cflx_met_vr(j1,3),  this%cflx_met_vr(j1,4),  this%cflx_met_vr(j1,5),  this%cflx_met_vr(j1,6),  this%cflx_met_vr(j1,7),  this%cflx_met_vr(j1,8),  this%cflx_met_vr(j1,9),  this%cflx_met_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'NFLX_INPUT_LITR_CEL_vr first 3:  ',this%nflx_cel_vr(j1,1),  this%nflx_cel_vr(j1,2),  this%nflx_cel_vr(j1,3),  this%nflx_cel_vr(j1,4),  this%nflx_cel_vr(j1,5),  this%nflx_cel_vr(j1,6),  this%nflx_cel_vr(j1,7),  this%nflx_cel_vr(j1,8),  this%nflx_cel_vr(j1,9),  this%nflx_cel_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time 
+          write(stdout, *)'NFLX_INPUT_LITR_CEL_vr tail 3:  ',this%nflx_cel_vr(j1,1),  this%nflx_cel_vr(j1,2),  this%nflx_cel_vr(j1,3),  this%nflx_cel_vr(j1,4),  this%nflx_cel_vr(j1,5),  this%nflx_cel_vr(j1,6),  this%nflx_cel_vr(j1,7),  this%nflx_cel_vr(j1,8),  this%nflx_cel_vr(j1,9),  this%nflx_cel_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'NFLX_INPUT_LITR_LIG_vr first 3:  ',this%nflx_lig_vr(j1,1),  this%nflx_lig_vr(j1,2),  this%nflx_lig_vr(j1,3),  this%nflx_lig_vr(j1,4),  this%nflx_lig_vr(j1,5),  this%nflx_lig_vr(j1,6),  this%nflx_lig_vr(j1,7),  this%nflx_lig_vr(j1,8),  this%nflx_lig_vr(j1,9),  this%nflx_lig_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'NFLX_INPUT_LITR_LIG_vr tail 3:  ',this%nflx_lig_vr(j1,1),  this%nflx_lig_vr(j1,2),  this%nflx_lig_vr(j1,3),  this%nflx_lig_vr(j1,4),  this%nflx_lig_vr(j1,5),  this%nflx_lig_vr(j1,6),  this%nflx_lig_vr(j1,7),  this%nflx_lig_vr(j1,8),  this%nflx_lig_vr(j1,9),  this%nflx_lig_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'NFLX_INPUT_LITR_CWD_vr first 3:  ',this%nflx_cwd_vr(j1,1),  this%nflx_cwd_vr(j1,2),  this%nflx_cwd_vr(j1,3),  this%nflx_cwd_vr(j1,4),  this%nflx_cwd_vr(j1,5),  this%nflx_cwd_vr(j1,6),  this%nflx_cwd_vr(j1,7),  this%nflx_cwd_vr(j1,8),  this%nflx_cwd_vr(j1,9),  this%nflx_cwd_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'NFLX_INPUT_LITR_CWD_vr tail 3:  ',this%nflx_cwd_vr(j1,1),  this%nflx_cwd_vr(j1,2),  this%nflx_cwd_vr(j1,3),  this%nflx_cwd_vr(j1,4),  this%nflx_cwd_vr(j1,5),  this%nflx_cwd_vr(j1,6),  this%nflx_cwd_vr(j1,7),  this%nflx_cwd_vr(j1,8),  this%nflx_cwd_vr(j1,9),  this%nflx_cwd_vr(j1,10)
+       enddo
+       do j1 = 1,3
+          write(stdout, *)'NFLX_INPUT_LITR_MET_vr first 3:  ',this%nflx_met_vr(j1,1),  this%nflx_met_vr(j1,2),  this%nflx_met_vr(j1,3),  this%nflx_met_vr(j1,4),  this%nflx_met_vr(j1,5),  this%nflx_met_vr(j1,6),  this%nflx_met_vr(j1,7),  this%nflx_met_vr(j1,8),  this%nflx_met_vr(j1,9),  this%nflx_met_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'NFLX_INPUT_LITR_MET_vr tail 3:  ',this%nflx_met_vr(j1,1),  this%nflx_met_vr(j1,2),  this%nflx_met_vr(j1,3),  this%nflx_met_vr(j1,4),  this%nflx_met_vr(j1,5),  this%nflx_met_vr(j1,6),  this%nflx_met_vr(j1,7),  this%nflx_met_vr(j1,8),  this%nflx_met_vr(j1,9),  this%nflx_met_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'PFLX_INPUT_LITR_CEL_vr first 3:  ',this%pflx_cel_vr(j1,1),  this%pflx_cel_vr(j1,2),  this%pflx_cel_vr(j1,3),  this%pflx_cel_vr(j1,4),  this%pflx_cel_vr(j1,5),  this%pflx_cel_vr(j1,6),  this%pflx_cel_vr(j1,7),  this%pflx_cel_vr(j1,8),  this%pflx_cel_vr(j1,9),  this%pflx_cel_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'PFLX_INPUT_LITR_CEL_vr tail 3:  ',this%pflx_cel_vr(j1,1),  this%pflx_cel_vr(j1,2),  this%pflx_cel_vr(j1,3),  this%pflx_cel_vr(j1,4),  this%pflx_cel_vr(j1,5),  this%pflx_cel_vr(j1,6),  this%pflx_cel_vr(j1,7),  this%pflx_cel_vr(j1,8),  this%pflx_cel_vr(j1,9),  this%pflx_cel_vr(j1,10)
+       enddo
+       do j1 = 1,3
+          write(stdout, *)'PFLX_INPUT_LITR_LIG_vr first 3:  ',this%pflx_lig_vr(j1,1),  this%pflx_lig_vr(j1,2),  this%pflx_lig_vr(j1,3),  this%pflx_lig_vr(j1,4),  this%pflx_lig_vr(j1,5),  this%pflx_lig_vr(j1,6),  this%pflx_lig_vr(j1,7),  this%pflx_lig_vr(j1,8),  this%pflx_lig_vr(j1,9),  this%pflx_lig_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2,  this%num_time
+          write(stdout, *)'PFLX_INPUT_LITR_LIG_vr tail 3:  ',this%pflx_lig_vr(j1,1),  this%pflx_lig_vr(j1,2),  this%pflx_lig_vr(j1,3),  this%pflx_lig_vr(j1,4),  this%pflx_lig_vr(j1,5),  this%pflx_lig_vr(j1,6),  this%pflx_lig_vr(j1,7),  this%pflx_lig_vr(j1,8),  this%pflx_lig_vr(j1,9),  this%pflx_lig_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'PFLX_INPUT_LITR_CWD_vr first 3:  ',this%pflx_cwd_vr(j1,1),  this%pflx_cwd_vr(j1,2),  this%pflx_cwd_vr(j1,3),  this%pflx_cwd_vr(j1,4),  this%pflx_cwd_vr(j1,5),  this%pflx_cwd_vr(j1,6),  this%pflx_cwd_vr(j1,7),  this%pflx_cwd_vr(j1,8),  this%pflx_cwd_vr(j1,9),  this%pflx_cwd_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'PFLX_INPUT_LITR_CWD_vr tail 3:  ',this%pflx_cwd_vr(j1,1),  this%pflx_cwd_vr(j1,2),  this%pflx_cwd_vr(j1,3),  this%pflx_cwd_vr(j1,4),  this%pflx_cwd_vr(j1,5),  this%pflx_cwd_vr(j1,6),  this%pflx_cwd_vr(j1,7),  this%pflx_cwd_vr(j1,8),  this%pflx_cwd_vr(j1,9),  this%pflx_cwd_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'PFLX_INPUT_LITR_MET_vr first 3:  ',this%pflx_met_vr(j1,1),  this%pflx_met_vr(j1,2),  this%pflx_met_vr(j1,3),  this%pflx_met_vr(j1,4),  this%pflx_met_vr(j1,5),  this%pflx_met_vr(j1,6),  this%pflx_met_vr(j1,7),  this%pflx_met_vr(j1,8),  this%pflx_met_vr(j1,9),  this%pflx_met_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'PFLX_INPUT_LITR_MET_vr tail 3:  ',this%pflx_met_vr(j1,1),  this%pflx_met_vr(j1,2),  this%pflx_met_vr(j1,3),  this%pflx_met_vr(j1,4),  this%pflx_met_vr(j1,5),  this%pflx_met_vr(j1,6),  this%pflx_met_vr(j1,7),  this%pflx_met_vr(j1,8),  this%pflx_met_vr(j1,9),  this%pflx_met_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'NFLX_MINN_INPUT_NH4_vr first 3:  ',this%nflx_nh4_vr(j1,1),  this%nflx_nh4_vr(j1,2),  this%nflx_nh4_vr(j1,3),  this%nflx_nh4_vr(j1,4),  this%nflx_nh4_vr(j1,5),  this%nflx_nh4_vr(j1,6),  this%nflx_nh4_vr(j1,7),  this%nflx_nh4_vr(j1,8),  this%nflx_nh4_vr(j1,9),  this%nflx_nh4_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'NFLX_MINN_INPUT_NH4_vr tail 3:  ',this%nflx_nh4_vr(j1,1),  this%nflx_nh4_vr(j1,2),  this%nflx_nh4_vr(j1,3),  this%nflx_nh4_vr(j1,4),  this%nflx_nh4_vr(j1,5),  this%nflx_nh4_vr(j1,6),  this%nflx_nh4_vr(j1,7),  this%nflx_nh4_vr(j1,8),  this%nflx_nh4_vr(j1,9),  this%nflx_nh4_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'NFLX_MINN_INPUT_NO3_vr first 3:  ',this%nflx_no3_vr(j1,1),  this%nflx_no3_vr(j1,2),  this%nflx_no3_vr(j1,3),  this%nflx_no3_vr(j1,4),  this%nflx_no3_vr(j1,5),  this%nflx_no3_vr(j1,6),  this%nflx_no3_vr(j1,7),  this%nflx_no3_vr(j1,8),  this%nflx_no3_vr(j1,9),  this%nflx_no3_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'NFLX_MINN_INPUT_NO3_vr tail 3:  ',this%nflx_no3_vr(j1,1),  this%nflx_no3_vr(j1,2),  this%nflx_no3_vr(j1,3),  this%nflx_no3_vr(j1,4),  this%nflx_no3_vr(j1,5),  this%nflx_no3_vr(j1,6),  this%nflx_no3_vr(j1,7),  this%nflx_no3_vr(j1,8),  this%nflx_no3_vr(j1,9),  this%nflx_no3_vr(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'PFLX_MINP_INPUT_PO4_vr first 3:  ',this%pflx_po4_vr(j1,1), this%pflx_po4_vr(j1,2),  this%pflx_po4_vr(j1,3),  this%pflx_po4_vr(j1,4),  this%pflx_po4_vr(j1,5),  this%pflx_po4_vr(j1,6),  this%pflx_po4_vr(j1,7),  this%pflx_po4_vr(j1,8),  this%pflx_po4_vr(j1,9),  this%pflx_po4_vr(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'PFLX_MINP_INPUT_PO4_vr tail 3:  ',this%pflx_po4_vr(j1,1), this%pflx_po4_vr(j1,2),  this%pflx_po4_vr(j1,3),  this%pflx_po4_vr(j1,4),  this%pflx_po4_vr(j1,5),  this%pflx_po4_vr(j1,6),  this%pflx_po4_vr(j1,7),  this%pflx_po4_vr(j1,8),  this%pflx_po4_vr(j1,9),  this%pflx_po4_vr(j1,10)
+       enddo
+    !enddo
+    write(stdout, *) 'end of printing CNPData'
+    write(stdout, *) '******************************************************************************************'
+    ! =========================================================================================    -zlyu, end of testing
+
+    
     call ncd_pio_closefile(ncf_in_forc)
 
     deallocate(data_2d)
@@ -378,6 +479,7 @@ contains
     use ncdio_pio    , only : ncd_getvar, ncd_getatt
     use ncdio_pio    , only : ncd_pio_closefile
     use BeTR_GridMod , only : betr_grid_type
+    use betr_constants, only : stdout                       !added, testing if correctly read in, zlyu 
     implicit none
     !ARGUMENTS
     class(ForcingData_type), intent(inout)  :: this
@@ -472,6 +574,27 @@ contains
     endif
     call ncd_pio_closefile(ncf_in_forc)
 
+    ! =========================================================================================   -zlyu
+    write(stdout, *) '******************************************************************************************'
+    write(stdout, *) 'in ReadForcingData, now start to printout read in, check if correct as in forcing file'
+    !do j2 = 1, this%num_levels
+       do j1 = 1, 3     ! print out. -zlyu
+          write(stdout, *)'TSOI first 3:  ',this%t_soi(j1,1),   this%t_soi(j1,2),   this%t_soi(j1,3),   this%t_soi(j1,4),   this%t_soi(j1,5),   this%t_soi(j1,6),   this%t_soi(j1,7),   this%t_soi(j1,8),   this%t_soi(j1,9),   this%t_soi(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time     ! print out. -zlyu
+          write(stdout, *)'TSOI tail 3:  ',this%t_soi(j1,1),   this%t_soi(j1,2),   this%t_soi(j1,3),   this%t_soi(j1,4),   this%t_soi(j1,5),   this%t_soi(j1,6),   this%t_soi(j1,7),   this%t_soi(j1,8),   this%t_soi(j1,9),   this%t_soi(j1,10)
+       enddo
+       do j1 = 1, 3
+          write(stdout, *)'H2OSOI first 3:  ',this%h2osoi_liqvol(j1,1),   this%h2osoi_liqvol(j1,2),   this%h2osoi_liqvol(j1,3),   this%h2osoi_liqvol(j1,4),   this%h2osoi_liqvol(j1,5),   this%h2osoi_liqvol(j1,6),   this%h2osoi_liqvol(j1,7),   this%h2osoi_liqvol(j1,8),   this%h2osoi_liqvol(j1,9),  this%h2osoi_liqvol(j1,10)
+       enddo
+       do j1 = this%num_time-2, this%num_time
+          write(stdout, *)'H2OSOI tail 3:  ',this%h2osoi_liqvol(j1,1),   this%h2osoi_liqvol(j1,2),   this%h2osoi_liqvol(j1,3),   this%h2osoi_liqvol(j1,4),   this%h2osoi_liqvol(j1,5),   this%h2osoi_liqvol(j1,6),   this%h2osoi_liqvol(j1,7),   this%h2osoi_liqvol(j1,8),   this%h2osoi_liqvol(j1,9),  this%h2osoi_liqvol(j1,10)
+       enddo
+    !enddo
+    write(stdout, *) 'end of printing ForcignData'
+    write(stdout, *) '******************************************************************************************'
+    ! =========================================================================================    -zlyu, end of testing
+    
     deallocate(data_2d)
     deallocate(data_1d)
 

@@ -154,6 +154,7 @@ implicit none
   use JarBgcForcType , only : JarBGC_forc_type
   use bshr_const_mod     , only : SHR_CONST_TKFRZ
   use BgcSummsMath     , only : interp1
+  use betr_constants           , only : stdout                              ! added!
   !use InterpolationMod , only : mono_Linear_interp
   implicit none
   ! !ARGUMENTS:
@@ -176,9 +177,13 @@ implicit none
         integer :: trangebot = 220._r8
         integer :: trangetop = 340._r8
         integer, dimension(:), allocatable :: temp0    ! Range of temperatures for interpolation <- integers for now, but want reals
+        integer, dimension(:), allocatable :: temp1
+        integer, dimension(:), allocatable :: temp2
+        
         real(r8), dimension(:), allocatable :: deltag0 ! Change in Gibbs free energy for enzymes over temperature range
         real(r8), dimension(:), allocatable :: t_fact0 ! Fraction of active enzymes over temperature range
         integer :: ii                                  ! Array constructor index
+        integer :: j
         integer :: dimtemp0                            ! Length of temperature range temp0
         real(r8) :: xpar1 = 249.544170969785_r8           ! Number of amino acid residues per enzyme
         real(r8) :: xpar2 = 5341.422691388677_r8          ! Enthalpy change at convergence temperature for enthalpy (J/mol)
@@ -235,7 +240,12 @@ implicit none
   )
 
     catanf_30 = catanf(30._r8)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside decompk_scalar start'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
   !warming effect
   if(use_warm)then
     tempbgc = temp+4
@@ -259,8 +269,21 @@ implicit none
 
   !Update temperature parameters
 
-      temp0 = (/ (ii, ii=trangebot,trangetop) /) ! Generate sequence of temperatures
-
+  !allocate(temp0(220:340))                           !add the allocate
+  allocate(temp0(121))
+  !allocate(temp2(121)) 
+  allocate(deltag0(121))                         !
+  allocate(t_fact0(121))                         !
+  temp0 = (/ (ii, ii=trangebot,trangetop) /) ! Generate sequence of temperatures
+  !do j=220,340
+   !  temp2(j) = j
+  !end do
+      ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'temp0 = ',temp0
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
       ! Fraction of active enzymes using Murphy et al. 1990, see Tang & Riely 2015 Eq.46-48, also see Ratkowsky2005JTB
       cp = -46._r8+30._r8*(1._r8-1.54_r8*(xpar1**(-0.268_r8)))*xpar3 
       deltag0 = xpar2-deltas_star*temp0+cp*(temp0-th_star-temp0*log(temp0/ts_star))
@@ -271,9 +294,24 @@ implicit none
       t_fact0=t_fact0/t_fact1 ! Active enzyme fraction in total enzyme vs temperaure
     
       tinv=1._r8/tempbgc-1._r8/tref ! Modifies activation energy
-      
+            ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 't_fact0 = ',t_fact0
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'deltag0 = ',deltag0
+    !write(stdout, *) '***************************'
+    ! end of the testing    
       call interp1(temp0, t_fact0, tempbgc, t_fact) ! Interpolate to find fraction of active enzymes at current temperature
       ! This subroutine should return t_fact
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside decompk_scalar after interp1'
+    !write(stdout, *) '***************************'
+    ! end of the testing  
 
       fref=t_fact*(tempbgc/tref) ! Modifies non-equilibrium enzymatic reactions
 

@@ -181,6 +181,7 @@ contains
     use PatchType         , only : patch_type
     use LandunitType      , only : landunit_type
     use clm_varpar        , only : nlevsno, nlevsoi, nlevtrc_soil
+    use betr_constants    , only : stdout                                                ! added for checkup
     implicit none
     ! !ARGUMENTS :
     class(betr_simulation_clm_type) , intent(inout) :: this
@@ -197,6 +198,12 @@ contains
     betr_nlevsno       = nlevsno
     betr_nlevtrc_soil  = nlevtrc_soil
 
+    ! testing only, where the run crushed        -zlyu   02/19
+    write(stdout, *) '***************************'
+    write(stdout, *) 'inside clm case'
+    write(stdout, *) '***************************'
+    ! end of the testing
+    
     call this%BeTRSetBounds(betr_bounds)
 
     call this%bsimstatus%reset()

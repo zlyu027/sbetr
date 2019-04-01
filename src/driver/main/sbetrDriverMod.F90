@@ -116,9 +116,9 @@ contains
 
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after assigning pointer'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after assigning pointer'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   !set up mask
@@ -138,26 +138,26 @@ contains
   call init_clm_vertgrid(grid_data%nlevgrnd)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after init_clm_vertgrid'
-    write(stdout, *) '***************************'
+   ! write(stdout, *) '***************************'
+   ! write(stdout, *) 'after init_clm_vertgrid'
+   ! write(stdout, *) '***************************'
     ! end of the testing
 
   call initialize(bounds)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after initialize(bounds)'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after initialize(bounds)'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   allocate(time_vars)
   call time_vars%Init(namelist_buffer)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after time_vars%Init'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after time_vars%Init'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   !read forcing
@@ -165,9 +165,9 @@ contains
   call forcing_data%ReadData(namelist_buffer, grid_data)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after forcing_data%ReadData'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after forcing_data%ReadData'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
 
@@ -188,18 +188,18 @@ contains
   call simulation%BeTRSetFilter(maxpft_per_col=0, boffline=.true.)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after simulation%BeTRSetFilter'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after simulation%BeTRSetFilter'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
 
   if(continue_run)then
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'if case continur_run'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'if case continur_run'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
     ! print*,'continue from restart file'
@@ -212,9 +212,9 @@ contains
     if(trim(finit)/='')then
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'else case continur_run with trim(finit)/='''
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'else case continur_run with trim(finit)/='''
+    !write(stdout, *) '***************************'
     ! end of the testing
       !pass finit to restfname
       write(restfname,'(A)')trim(finit)
@@ -222,18 +222,18 @@ contains
     else
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'else case continur_run with else'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'else case continur_run with else'
+    !write(stdout, *) '***************************'
     ! end of the testing
       restfname=''
     endif
   endif
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before grid_data%UpdateGridConst'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before grid_data%UpdateGridConst'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   call grid_data%UpdateGridConst(bounds, lbj, ubj, simulation%num_soilc, simulation%filter_soilc, soilstate_vars, cnstate_vars)
@@ -249,9 +249,9 @@ contains
        simulation%filter_soilc, waterstate_vars)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before AppInitParameters'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before AppInitParameters'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   !x print*,'bf sim init'
@@ -259,9 +259,9 @@ contains
   call AppInitParameters(reaction_method, bstatus)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before bstatus%check_status()'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before bstatus%check_status()'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
 
@@ -278,9 +278,9 @@ contains
   !x print*,'af sim init'
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before select type (simulation)'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before select type (simulation)'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   select type(simulation)
@@ -311,9 +311,9 @@ contains
   endif
 
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before if loop for simulation%do_soibgc()'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before if loop for simulation%do_soibgc()'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   !x print*,'bf loop'
@@ -321,6 +321,12 @@ contains
     call forcing_data%ReadCNPData()
   endif
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after simulation%do_soilbgc and readCNPData'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+  
   do
     record = record + 1
     call simulation%SetClock(dtime=time_vars%get_step_size(), nelapstep=time_vars%get_nstep())
@@ -329,6 +335,12 @@ contains
 
     call simulation%PreDiagSoilColWaterFlux(simulation%num_soilc,  simulation%filter_soilc)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after simulation%PreDiagSoilColWaterFlux()'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     !x print*,'update forcing for betr'
     !set envrionmental forcing by reading foring data: temperature, moisture, atmospheric resistance
     !from either user specified file or clm history file
@@ -337,6 +349,12 @@ contains
       simulation%filter_soilc, time_vars, col, pft, atm2lnd_vars, soilhydrology_vars, &
       soilstate_vars,waterstate_vars, waterflux_vars, temperature_vars, chemstate_vars, &
       plantMicKinetics_vars, simulation%jtops)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after forcing_data%UpdateForcing'
+    !write(stdout, *) '***************************'
+    ! end of the testing
 
     select type(simulation)
 
@@ -347,8 +365,14 @@ contains
               soilstate_vars, waterstate_vars, soil_water_retention_curve)
     end select
     call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi, waterstate_vars=waterstate_vars, &
-      waterflux_vars=waterflux_vars, soilhydrology_vars = soilhydrology_vars)
-
+         waterflux_vars=waterflux_vars, soilhydrology_vars = soilhydrology_vars)
+    
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after simulation%DiagAdvWaterFlu'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     !x print*,'diagnose water flux'
     call simulation%DiagAdvWaterFlux(simulation%num_soilc, &
       simulation%filter_soilc)
@@ -356,6 +380,12 @@ contains
     !now assign back waterflux_vars
     call simulation%RetrieveBiogeoFlux(bounds, 1, nlevsoi, waterflux_vars=waterflux_vars)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before if record ==0'
+    !write(stdout, *) '***************************'
+    ! end of the testing    
+   
     !no calculation in the first step
     if(record==0)cycle
     call simulation%BeginMassBalanceCheck(bounds)
@@ -386,6 +416,12 @@ contains
         cnstate_vars,  carbonflux_vars, c13_cflx_vars, c14_cflx_vars,  nitrogenflux_vars, phosphorusflux_vars, &
         plantMicKinetics_vars)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************================='
+    !write(stdout, *) 'after simulation%PlantSoilBGCSend() first'
+    !write(stdout, *) '***************************================='
+    ! end of the testing
+      
     class is (betr_simulation_standalone_type)
       call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,               &
         carbonflux_vars=carbonflux_vars,                                                &
@@ -404,6 +440,12 @@ contains
           cnstate_vars,  carbonflux_vars, c13_cflx_vars, c14_cflx_vars,  nitrogenflux_vars, phosphorusflux_vars, &
         plantMicKinetics_vars)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************======================='
+    !write(stdout, *) 'after simulation%PlantSoilBGCSend(..............) second'
+    !write(stdout, *) '***************************======================='
+    ! end of the testing
+      
     class default
       call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,               &
         carbonflux_vars=carbonflux_vars,                                                &
@@ -415,6 +457,12 @@ contains
 
     call simulation%StepWithoutDrainage(bounds, col, pft)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after select type (simulation)'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     select type(simulation)
     class is (betr_simulation_alm_type)
       call simulation%PlantSoilBGCRecv(bounds, col, pft, simulation%num_soilc, simulation%filter_soilc,&
@@ -429,7 +477,12 @@ contains
        waterflux_vars=waterflux_vars )
     call simulation%StepWithDrainage(bounds, col)
 
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************#######################'
+    !write(stdout, *) 'after simulation%MassBalanceCheck(bounds)'
+    !write(stdout, *) '***************************#######################'
+    ! end of the testing
+    
     !x print*,'do mass balance check'
     call simulation%MassBalanceCheck(bounds)
 
@@ -446,7 +499,13 @@ contains
 
     !update time stamp
     call time_vars%update_time_stamp()
-
+    
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************######################'
+    !write(stdout, *) 'after time_vars%update_time_stamp()'
+    !write(stdout, *) '***************************######################'
+    ! end of the testing    
+    
     !x print*,'write output'
     call simulation%WriteOfflineHistory(bounds, simulation%num_soilc,  &
        simulation%filter_soilc, time_vars, waterflux_vars%qflx_adv_col)
@@ -469,12 +528,24 @@ contains
 
        call simulation%BeTRRestartClose(ncid)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after simulation%BeTRRestartClose(ncid)'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+       
        if(simulation%do_soibgc())then
          call time_vars%get_ymdhs(yymmddhhss)
          call hist%histrst(reaction_method, 'write',yymmddhhss)
       endif
     endif
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after if loop and call fro histrst'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     !print*,'next step'
     if(time_vars%its_time_to_exit()) then
        print*,'exit'
@@ -482,11 +553,24 @@ contains
     end if
   enddo
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after do loop for record'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+  
   if(simulation%do_regress_test())then
     call simulation%WriteRegressionOutput(waterflux_vars%qflx_adv_col)
   endif
   call forcing_data%Destroy()
   deallocate(forcing_data)
+  
+    ! testing only, where the run crushed        -zlyu   02/2019
+    write(stdout, *) '********************************************'
+    write(stdout, *) 'at the end of sbetrBGC_driver subroutine'
+    write(stdout, *) '********************************************'
+    ! end of the testing  
+  
 end subroutine sbetrBGC_driver
 
 ! ----------------------------------------------------------------------
@@ -607,17 +691,17 @@ end subroutine sbetrBGC_driver
     endif
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before passing simulator_name to simuator_name_arg'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before passing simulator_name to simuator_name_arg'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
     simulator_name_arg = simulator_name
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before lread_param'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before lread_param'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
     lread_param=trim(run_type)=='sbgc'
@@ -626,9 +710,9 @@ end subroutine sbetrBGC_driver
   endif
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after lread_name and call for init_hist_bgc'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after lread_name and call for init_hist_bgc'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   end subroutine read_name_list
@@ -651,33 +735,33 @@ end subroutine sbetrBGC_driver
   character(len=256) :: gname
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside init_hist_bgc, part-1'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside init_hist_bgc, part-1'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   call histbgc%Init(trim(reaction_method))
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside init_hist_bgc, part-2'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside init_hist_bgc, part-2'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   nhistvars=histbgc%getvarllen()
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside init_hist_bgc, part-3'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside init_hist_bgc, part-3'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   allocate(freql(nhistvars))
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside init_hist_bgc, part-4'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside init_hist_bgc, part-4'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   freql(:) = 'day'
@@ -689,9 +773,9 @@ end subroutine sbetrBGC_driver
   call hist%init(histbgc%varl, histbgc%unitl, histbgc%vartypes, freql, gname)
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside init_hist_bgc, part-5'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside init_hist_bgc, part-5'
+    !write(stdout, *) '***************************'
     ! end of the testing
 
   end subroutine init_hist_bgc

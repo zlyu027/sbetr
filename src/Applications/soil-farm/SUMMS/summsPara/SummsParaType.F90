@@ -164,9 +164,9 @@ contains
   type(betr_status_type)   , intent(out) :: bstatus
 
     ! testing only, where the run crushed        -zlyu   01/27/2019     
-    write(stdout, *) '*******************************************'
-    write(stdout, *) 'inside summspara_init'
-    write(stdout, *) '*******************************************'
+    !write(stdout, *) '*******************************************'
+    !write(stdout, *) 'inside summspara_init'
+    !write(stdout, *) '*******************************************'
     ! end of the testing
   call this%bcon_Init(bstatus)
 

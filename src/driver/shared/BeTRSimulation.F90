@@ -185,9 +185,9 @@ contains
     character(len=*), parameter :: subname = 'BeTRSimulationInit'
 
     ! testing only, where the run crushed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************@@@@@@@@@@@'
-    write(stdout, *) 'are we in subroutine BeTRSimulationInit?'
-    write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) 'are we in subroutine BeTRSimulationInit?'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
     ! end of the testing 
 
     call endrun(msg="ERROR "//subname//" unimplemented. "//errmsg(mod_filename, __LINE__))
@@ -225,9 +225,9 @@ contains
     call endrun(msg="ERROR "//subname//" unimplemented. "//errmsg(mod_filename, __LINE__))
 
     ! testing only, where the run crushed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************@@@@@@@@@@@'
-    write(stdout, *) 'are we in subroutine BeTRSimulationInitOffline?'
-    write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) 'are we in subroutine BeTRSimulationInitOffline?'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
     ! end of the testing 
 
     if (this%num_soilc > 0)                  continue
@@ -236,17 +236,17 @@ contains
     if (len(base_filename) > 0)              continue
     if (len(namelist_buffer) > 0)            continue
     ! testing only, where the run crushed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************@@@@@@@@@@@'
-    write(stdout, *) 'callbetr_time%Init from BeTRSimulationInitOffline?'
-    write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) 'callbetr_time%Init from BeTRSimulationInitOffline?'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
     ! end of the testing 
 
     call this%betr_time%Init(namelist_buffer)
 
     ! testing only, where the run crushed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************@@@@@@@@@@@'
-    write(stdout, *) 'at the end of BeTRSimulationInitOffline?'
-    write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
+    !write(stdout, *) 'at the end of BeTRSimulationInitOffline?'
+    !write(stdout, *) '***************************@@@@@@@@@@@'
     ! end of the testing 
   end subroutine BeTRSimulationInitOffline
 !-------------------------------------------------------------------------------
@@ -266,9 +266,9 @@ contains
     integer :: p
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '###########################'
-    write(stdout, *) 'inside driver/shared/BeTRSimulation.F90 BeTRSetFilter()'
-    write(stdout, *) '###########################'
+    !write(stdout, *) '###########################'
+    !write(stdout, *) 'inside driver/shared/BeTRSimulation.F90 BeTRSetFilter()'
+    !write(stdout, *) '###########################'
     ! end of the testing 
 
     !by default, surface litter layer is off
@@ -298,9 +298,9 @@ contains
     endif
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '###########################'
-    write(stdout, *) 'at the end of driver/shared/BeTRSimulation.F90 BeTRSetFilter()'
-    write(stdout, *) '###########################'
+    !write(stdout, *) '###########################'
+    !write(stdout, *) 'at the end of driver/shared/BeTRSimulation.F90 BeTRSetFilter()'
+    !write(stdout, *) '###########################'
     ! end of the testing 
 
   end subroutine BeTRSetFilter
@@ -329,10 +329,10 @@ contains
   type(file_desc_t)  :: ncid  ! pio netCDF file id
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(iulog, *) '#####################################'
-    write(iulog, *) 'inside driver/shared/BeTRSimulation.F90 BeTRSimulationReadParams()'
-    write(iulog, *) 'open file for parameter reading'
-    write(iulog, *) '#####################################'
+    !write(iulog, *) '#####################################'
+    !write(iulog, *) 'inside driver/shared/BeTRSimulation.F90 BeTRSimulationReadParams()'
+    !write(iulog, *) 'open file for parameter reading'
+    !write(iulog, *) '#####################################'
     ! end of the testing 
 
   !open file for parameter reading
@@ -352,9 +352,9 @@ contains
   endif
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(iulog, *) '#######################################################'
-    write(iulog, *) 'at the end of driver/shared/BeTRSimulation.F90 BeTRSimulationReadParams()'
-    write(iulog, *) '###########################3##########################'
+    !write(iulog, *) '#######################################################'
+    !write(iulog, *) 'at the end of driver/shared/BeTRSimulation.F90 BeTRSimulationReadParams()'
+    !write(iulog, *) '###########################3##########################'
     ! end of the testing 
 
   end subroutine BeTRSimulationReadParams
@@ -655,6 +655,7 @@ contains
     use CanopyStateType   , only : canopystate_type
     use BeTR_TimeMod      , only : betr_time_type
     use pftvarcon         , only : crop
+    use betr_constants    , only : stdout                                  !added for checkup 
     implicit none
   !ARGUMENTS
     class(betr_simulation_type) , intent(inout) :: this
@@ -662,6 +663,12 @@ contains
     type(column_type)           , intent(in)    :: col ! column type
     type(patch_type)            , intent(in)    :: pft
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '********************************************'
+    !write(stdout, *) 'inside share stepwithout'
+    !write(stdout, *) '********************************************'
+    ! end of the testing 
+    
     ! remove compiler warnings about unused dummy args
     if (this%num_soilc > 0)                           continue
     if (this%betr_time%tstep > 0)                          continue

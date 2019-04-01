@@ -169,13 +169,14 @@ contains
   ! DESCRIPTION
   ! read in the parameters for specified bgc implementation
   !begin_appadd
-  use ecacnpParaType   , only : ecacnp_para
+    use ecacnpParaType   , only : ecacnp_para
+    use SummsParaType    , only : summs_para           ! added for introduing 'summs' method from Rose's model
 #if (defined SBETR)
   use ch4soilParaType   , only : ch4soil_para
   use cdomParaType     , only : cdom_para
   use simicParaType    , only : simic_para
   use kecaParaType     , only : keca_para
-  use SummsParaType    , only : summs_para           ! added for introduing 'summs' method from Rose's model 
+   
   !end_appadd
 #endif
   use tracer_varcon    , only : reaction_method
@@ -245,9 +246,9 @@ contains
      call cdom_para%Init(bstatus)
    case ("summs")
     ! testing only, where the run crushed        -zlyu   01/27/2019     
-    write(stdout, *) '*******************************************'
-    write(stdout, *) 'inside AppInitParameters and case for summs method'
-    write(stdout, *) '*******************************************'
+    !write(stdout, *) '*******************************************'
+    !write(stdout, *) 'inside AppInitParameters and case for summs method'
+    !write(stdout, *) '*******************************************'
     ! end of the testing
      call summs_para%Init(bstatus)          ! adding method 'summs' from Rose's model  -zlyu. 01/29/2019
    case ("simic")

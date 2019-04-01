@@ -135,6 +135,7 @@ contains
     use BeTR_TimeMod      , only : betr_time_type
     use LandunitType      , only : lun
     use pftvarcon         , only : crop
+    use betr_constants    , only : stdout                 ! added for printing out error messages   -zlyu, 02/19
     implicit none
     !ARGUMENTS
     class(betr_simulation_standalone_type) , intent(inout) :: this
@@ -149,29 +150,92 @@ contains
     !pass necessary data for correct subroutine call
     !set lbj and ubj
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage before all calls '
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+   
     call this%BeTRSetBounds(betr_bounds)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage before reset '
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+    
     call this%bsimstatus%reset()
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage before BeTRSetcps'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
 
     call this%BeTRSetcps(bounds, col, pft)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage before do loop'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+    
     do c = bounds%begc, bounds%endc
       if(.not. this%active_col(c))cycle
 
       call this%biophys_forc(c)%frac_normalize(this%betr_pft(c)%npfts, 1, betr_nlevtrc_soil)
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage in do after biophys_forc'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+      
       call this%betr(c)%step_without_drainage(this%betr_time, betr_bounds, this%betr_col(c), &
          this%betr_pft(c), this%num_soilc, this%filter_soilc, this%num_soilp, this%filter_soilp, &
          this%biophys_forc(c), this%biogeo_flux(c), this%biogeo_state(c), this%bstatus(c))
 
+    ! testing only, where the run crushed        -zlyu   02.2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage in do before if case'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+      
       if(this%bstatus(c)%check_status())then
-        call this%bsimstatus%setcol(c)
-        call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
+         call this%bsimstatus%setcol(c)
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage in if after setcol'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+         
+    call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage in if after set_msg'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+    
         exit
       endif
-    enddo
+   enddo
+
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage after do loop'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing
+   
     if(this%bsimstatus%check_status()) &
-      call endrun(msg=trim(this%bsimstatus%print_msg()))
+         call endrun(msg=trim(this%bsimstatus%print_msg()))
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***********************************************************8*'
+    !write(stdout, *) 'at the end of standalonestepwithoutdrainage'
+    !write(stdout, *) '*************************************************************'
+    ! end of the testing    
+    
   end subroutine StandaloneStepWithoutDrainage
 
   !---------------------------------------------------------------------------------
@@ -200,7 +264,9 @@ contains
 
     call this%bsimstatus%reset()
     call this%BeTRSetBounds(betr_bounds)
+
     call this%BeTRSetcps(bounds, col)
+
     c_l = 1; begc_l = betr_bounds%begc; endc_l=betr_bounds%endc;
 
     do c = bounds%begc, bounds%endc
@@ -211,8 +277,9 @@ contains
          this%jtops, this%biogeo_flux(c), this%bstatus(c))
 
       if(this%bstatus(c)%check_status())then
-        call this%bsimstatus%setcol(c)
-        call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
+         call this%bsimstatus%setcol(c)
+
+    call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
         exit
       endif
     enddo
@@ -385,6 +452,7 @@ contains
   use pftvarcon           , only : noveg
   use MathfuncMod         , only : safe_div
   use tracer_varcon       , only : reaction_method
+  use betr_constants      , only : stdout                                ! added
   implicit none
   class(betr_simulation_standalone_type) , intent(inout) :: this
   type(bounds_type) , intent(in)  :: bounds
@@ -534,6 +602,11 @@ contains
       c14state_vars%totsomc_1m_col(c) = this%biogeo_state(c)%c14state_vars%totsomc_1m_col(c_l)
     endif
 
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************#######################'
+    !write(stdout, *) 'in plantsoilbgcrecv before  n14state_vars%cwdn_col(c) ='
+    !write(stdout, *) '***************************#######################'
+    ! end of the testing
     n14state_vars%cwdn_col(c) = this%biogeo_state(c)%n14state_vars%cwdn_col(c_l)
     n14state_vars%totlitn_col(c) = this%biogeo_state(c)%n14state_vars%totlitn_col(c_l)
     n14state_vars%totsomn_col(c) = this%biogeo_state(c)%n14state_vars%totsomn_col(c_l)

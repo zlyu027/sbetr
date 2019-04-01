@@ -378,7 +378,17 @@ if(exit_spinup)then
   integer, intent(in) :: lbj, ubj
   integer, intent(in) :: nactpft  !number of active pfts
 
-  integer :: c_l, p, j
+  integer :: c_l, p, j, trcid, gid                       ! add the last two integer  -zlyu
+  
+   associate(                                                      &
+     k_sorbsurf    => tracercoeff_vars%k_sorbsurf_col           , &
+     Q_sorbsurf    => tracercoeff_vars%Q_sorbsurf_col           , &
+     tracer_group_memid => tracers%tracer_group_memid           , &
+     id_trc_nh3x   => tracers%id_trc_nh3x                       , &
+     id_trc_p_sol  => tracers%id_trc_p_sol                      , &
+     adsorbgroupid => tracers%adsorbgroupid                       &
+     )
+     ! added the associate block -zlyu
   !in the following, only one column is assumed for the bgc
   c_l = 1
   this%nactpft = nactpft
@@ -400,10 +410,17 @@ if(exit_spinup)then
 
     !effective p competing decomposers
 
+    trcid=tracer_group_memid(id_trc_p_sol,1); gid = adsorbgroupid(trcid)                   !add from here 
+    k_sorbsurf(c_l,j,gid) = plantNutkinetics%km_minsurf_p_vr_col(c_l,j)                   
+    Q_sorbsurf(c_l,j,gid) = plantNutkinetics%minsurf_p_compet_vr_col(c_l,j) 
+    trcid=tracer_group_memid(id_trc_nh3x,1); gid = adsorbgroupid(trcid)
+    k_sorbsurf(c_l,j,gid) = plantNutkinetics%km_minsurf_nh4_vr_col(c_l,j)
+    Q_sorbsurf(c_l,j,gid) = plantNutkinetics%minsurf_nh4_compet_vr_col(c_l,j)              !add ends here    -zlyu
+    
     this%summsforc(c_l,j)%msurf_nh4 = plantNutkinetics%minsurf_nh4_compet_vr_col(c_l,j)   !this  number needs update
     this%summsforc(c_l,j)%msurf_minp= plantNutkinetics%minsurf_p_compet_vr_col(c_l,j)    !this  number needs update
   enddo
-
+  end associate
   end subroutine set_kinetics_par
   !-------------------------------------------------------------------------------
 
@@ -418,12 +435,14 @@ if(exit_spinup)then
     use betr_varcon                      , only : betr_maxpatch_pft
     use betr_constants                   , only : betr_namelist_buffer_size_ext
     use tracer_varcon                    , only : fix_ip
+    use betr_constants                   , only : stdout                              ! added!
     implicit none
     ! !ARGUMENTS:
     class(bgc_reaction_summs_type)       , intent(inout) :: this
     type(bounds_type)                    , intent(in)    :: bounds
     integer                              , intent(in)    :: lbj, ubj        ! lower and upper bounds, make sure they are > 0
-    type(BeTRtracer_type )               , intent(inout) :: betrtracer_vars !
+    !type(BeTRtracer_type)               , intent(inout) :: betrtracer_vars !
+    type(betrtracer_type)               , intent(inout) :: betrtracer_vars   !zlyu
     character(len=*)                     , intent(in) :: namelist_buffer
     type(betr_status_type)               , intent(out)   :: bstatus
 
@@ -436,7 +455,9 @@ if(exit_spinup)then
     integer   :: c, j, litr_cnt, wood_cnt, Bm_cnt, som_cnt, dom_cnt, itemp_ads, itemp_ads_grp
     integer   :: ngroupmems
     logical   :: carbon_only = .false.
-    logical   :: batch_mode                               !added for this%summseca(c,j)%Init(summs_para, batch_mode. bstatus) 
+    logical   :: batch_mode
+    integer   :: i                       !added for checkup
+    !added for this%summseca(c,j)%Init(summs_para, batch_mode. bstatus) 
 
     call bstatus%reset()
     batch_mode = .false.                                  !added for this%summseca(c,j)%Init(summs_para, batch_mode. bstatus) 
@@ -558,7 +579,7 @@ if(exit_spinup)then
       trc_cnt=itemp_trc, trc_grp=betrtracer_vars%id_trc_dom, &
       trc_grp_beg=betrtracer_vars%id_trc_beg_dom, &
       trc_grp_end=betrtracer_vars%id_trc_end_dom, &
-      is_trc_gw=.true., is_trc_volatile = .false.)
+      is_trc_gw=.true., is_trc_volatile = .false., is_trc_adsorb=.true.)                      ! add is_adsorb for dom, so mono CNP and enz CNP under dom tracer group all have is_trc_adsorb=true!  -zlyu
 
     !three litter groups
     ngroupmems = 3*nelm
@@ -676,9 +697,9 @@ if(exit_spinup)then
     if(bstatus%check_status())return
 
     call betrtracer_vars%set_tracer(bstatus=bstatus,trc_id = betrtracer_vars%id_trc_p_sol, &
-         trc_name='P_SOL', is_trc_mobile=.true. .and. (.not. fix_ip), is_trc_advective = .true. .and. (.not. fix_ip), &
+         trc_name='P_SOL', is_trc_mobile=.false. .and. (.not. fix_ip), is_trc_advective = .false. .and. (.not. fix_ip), &                     !turn both from true to false   -zlyu
          trc_group_id = betrtracer_vars%id_trc_p_sol, trc_group_mem = 1, is_trc_volatile=.false., &
-         trc_vtrans_scal=1._r8)
+         trc_vtrans_scal=0._r8)                            !change from 1._r8 to 0._r8   -zlyu
     if(bstatus%check_status())return
     !------------------------------------------------------------------------------------
     !add monomers
@@ -1161,6 +1182,14 @@ if(exit_spinup)then
          is_trc_mobile=.false., is_trc_advective = .false., &
          trc_group_id = betrtracer_vars%id_trc_minp,  trc_group_mem= addone(itemp_mem), &
          trc_family_name='MINP')
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !do i = 1, size(betrtracer_vars%is_adsorb)
+     !  write(stdout, *) 'is_absorb:', betrtracer_vars%is_adsorb(i)
+     !  write(stdout, *) 'tracernames:', betrtracer_vars%tracernames(i)
+     !  write(stdout, *) 'end of', i, 'th element'
+    !enddo
+     !write(stdout, *) '***************************'
 
   end subroutine Init_betrbgc
 
@@ -1242,6 +1271,7 @@ if(exit_spinup)then
 
       enddo
     end associate
+
   end subroutine set_boundary_conditions
   !-------------------------------------------------------------------------------
 
@@ -1272,6 +1302,7 @@ if(exit_spinup)then
     use BeTR_biogeoStateType     , only : betr_biogeo_state_type
     use PlantSoilBgcSummsType    , only : plant_soilbgc_summs_type
     use betr_ctrl                , only : betr_spinup_state
+    use betr_constants           , only : stdout                              ! added!
     implicit none
     ! !ARGUMENTS
     class(bgc_reaction_summs_type)       , intent(inout) :: this
@@ -1306,10 +1337,19 @@ if(exit_spinup)then
     character(len=5) :: laystr
     call betr_status%reset()
     SHR_ASSERT_ALL((ubound(jtops) == (/bounds%endc/)), errMsg(mod_filename,__LINE__),betr_status)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction start'
+    !write(stdout, *) '***************************'
+    ! end of the testing
     if(betrtracer_vars%debug)call this%debug_info(bounds, num_soilc, filter_soilc, col%dz(bounds%begc:bounds%endc,bounds%lbj:bounds%ubj),&
         betrtracer_vars, tracerstate_vars,  'before bgcreact', betr_status)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after debug_info'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     nstates = this%summsbgc_index%nstvars
     allocate(ystates0(nstates))
     allocate(ystatesf(nstates))
@@ -1317,12 +1357,23 @@ if(exit_spinup)then
     !pass in fluxes and state varaibles into the 1D soil bgc model
     call this%set_summs_forc(bounds, col, lbj, ubj, jtops, num_soilc, filter_soilc, &
         biophysforc, plant_soilbgc, betrtracer_vars, tracercoeff_vars, tracerstate_vars,betr_status)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after set_summs_forc'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     select type(plant_soilbgc)
     type is(plant_soilbgc_summs_type)
       plant_soilbgc%plant_minn_active_yield_flx_col(:) = 0._r8
       plant_soilbgc%plant_minp_active_yield_flx_col(:) = 0._r8
-    end select
+   end select
+       ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after select plant_soilbgc'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
     !run simulation layer by layer
     do j = lbj, ubj
       do fc = 1, num_soilc
@@ -1331,10 +1382,20 @@ if(exit_spinup)then
         is_surflit=(j<=0)
         this%summsforc(c,j)%debug=betrtracer_vars%debug
         this%summseca(c,j)%bgc_on=.not. betrtracer_vars%debug
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction 1st in do loop'
+    !write(stdout, *) '***************************'
+    ! end of the testing
+    
         if(this%summsforc(c,j)%debug)print*,'runbgc',j
         call this%summseca(c,j)%runbgc(is_surflit, dtime, this%summsforc(c,j),nstates, &
-          ystates0, ystatesf, betr_status)
+             ystates0, ystatesf, betr_status)
+            ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after summseca'
+    !write(stdout, *) '***************************'
+    ! end of the testing
         if(betr_status%check_status())then
           write(laystr,'(I2.2)')j
           betr_status%msg=trim(betr_status%msg)//' lay '//trim(laystr)
@@ -1343,13 +1404,27 @@ if(exit_spinup)then
           !if(.not. betrtracer_vars%debug)then
           !apply loss through fire,
           call this%rm_ext_output(c, j, dtime, nstates, ystatesf, this%summsbgc_index,&
-             this%summsforc(c,j), biogeo_flux)
+               this%summsforc(c,j), biogeo_flux)
+              ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after ext_output'
+    !write(stdout, *) '***************************'
+    ! end of the testing
           !endif
         call this%precision_filter(nstates, ystatesf)
         this%summsbgc_index%debug=betrtracer_vars%debug
+            ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after filter'
+    !write(stdout, *) '***************************'
+    ! end of the testing
         call this%retrieve_output(c, j, nstates, ystates0, ystatesf, dtime, betrtracer_vars, tracerflux_vars,&
            tracerstate_vars, plant_soilbgc, biogeo_flux)
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after retrieve_output'
+    !write(stdout, *) '***************************'
+    ! end of the testing
         select type(plant_soilbgc)
         type is(plant_soilbgc_summs_type)
           plant_soilbgc%plant_minn_active_yield_flx_col(c)=plant_soilbgc%plant_minn_active_yield_flx_col(c) + &
@@ -1357,11 +1432,20 @@ if(exit_spinup)then
               plant_soilbgc%plant_minn_nh4_active_yield_flx_vr_col(c,j))*col%dz(c,j)
 
           plant_soilbgc%plant_minp_active_yield_flx_col(c)=  plant_soilbgc%plant_minp_active_yield_flx_col(c) + &
-            plant_soilbgc%plant_minp_active_yield_flx_vr_col(c,j) * col%dz(c,j)
+               plant_soilbgc%plant_minp_active_yield_flx_vr_col(c,j) * col%dz(c,j)
+              ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after second select'
+    !write(stdout, *) '***************************'
+    ! end of the testing
         end select
       enddo
     enddo
-
+    ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside calc_bgc_reaction after enddo'
+    !write(stdout, *) '***************************'
+    ! end of the testing
     deallocate(ystates0)
     deallocate(ystatesf)
 
@@ -1370,10 +1454,20 @@ if(exit_spinup)then
        type is(plant_soilbgc_summs_type)
          write(*,*)'sminn act plant uptake',plant_soilbgc%plant_minn_active_yield_flx_col(bounds%begc:bounds%endc)
          write(*,*)'sminp act plant uptake',plant_soilbgc%plant_minp_active_yield_flx_col(bounds%begc:bounds%endc)
+             ! testing only, where the run crushed        -zlyu   02/2019
+             !write(stdout, *) '***************************'
+             !write(stdout, *) 'inside calc_bgc_reaction start select of plant soilbgc summs type'
+             !write(stdout, *) '***************************'
+             ! end of the testing
        end select
     !   call this%debug_info(bounds, num_soilc, filter_soilc, col%dz(bounds%begc:bounds%endc,bounds%lbj:bounds%ubj),&
     !     betrtracer_vars, tracerstate_vars,  'after bgcreact',betr_status)
-     endif
+    endif
+        ! testing only, where the run crushed        -zlyu   02/2019
+    !write(stdout, *) '***************************##########3'
+    !write(stdout, *) 'at the end of calc_bgc_reaction'
+    !write(stdout, *) '***************************##########'
+    ! end of the testing
   end subroutine calc_bgc_reaction
 
   !--------------------------------------------------------------------

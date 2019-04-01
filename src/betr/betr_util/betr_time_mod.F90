@@ -111,16 +111,16 @@ contains
     if(present(namelist_buffer))then
       if(present(masterproc))then
          ! testing only, where the run collapsed        -zlyu   01/27/2019    
-         write(stdout, *) '***************************'
-         write(stdout, *) 'if case with masterproc'
-         write(stdout, *) '***************************'
+         !write(stdout, *) '***************************'
+         !write(stdout, *) 'if case with masterproc'
+         !write(stdout, *) '***************************'
          ! end of the testing 
         call this%ReadNamelist(namelist_buffer, masterproc)
       else
         ! testing only, where the run collapsed        -zlyu   01/27/2019    
-        write(stdout, *) '***************************'
-        write(stdout, *) 'else case for masterproc'
-        write(stdout, *) '***************************'
+        !write(stdout, *) '***************************'
+        !write(stdout, *) 'else case for masterproc'
+        !write(stdout, *) '***************************'
         ! end of the testing 
         call this%ReadNamelist(namelist_buffer)
       endif
@@ -185,9 +185,9 @@ contains
     end if
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************'
-    write(stdout, *) 'before printing out betr_time setting'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'before printing out betr_time setting'
+    !write(stdout, *) '***************************'
     ! end of the testing 
 
     if (masterproc_loc) then
@@ -219,25 +219,25 @@ contains
     end select
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************'
-    write(stdout, *) 'after case select in betr_time_mod'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'after case select in betr_time_mod'
+    !write(stdout, *) '***************************'
     ! end of the testing 
 
 
     if(restart_dtime < 0._r8)then
       this%restart_dtime  = this%stop_time
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************'
-    write(stdout, *) 'if case restart_dtime < 0._r8'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'if case restart_dtime < 0._r8'
+    !write(stdout, *) '***************************'
     ! end of the testing 
     else
       this%restart_dtime = restart_dtime
     ! testing only, where the run collapsed        -zlyu   01/27/2019    
-    write(stdout, *) '***************************'
-    write(stdout, *) 'else case restart_dtime < 0._r8'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'else case restart_dtime < 0._r8'
+    !write(stdout, *) '***************************'
     ! end of the testing 
     endif
   end subroutine ReadNamelist
