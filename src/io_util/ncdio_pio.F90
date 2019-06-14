@@ -397,6 +397,7 @@ module ncdio_pio
 !
   use netcdf
   use abortutils, only : endrun
+  use betr_constants, only : stdout             !-zlyu
   use shr_kind_mod, only : r8 => shr_kind_r8
 ! !ARGUMENTS:
   implicit none

@@ -574,18 +574,18 @@ contains
 !   call this%end_massbal_check('af add_ext_input')
   !initialize decomposition scaling factors
   ! testing only, where the run crushed        -zlyu
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside BgcSummsType.f90 before decompk_scalar'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside BgcSummsType.f90 before decompk_scalar'
+    !write(stdout, *) '***************************'
     ! end of the testing
     
 !  if(this%bgc_on)then
   !initialize decomposition scaling factors
     call this%decompkf_eca%set_decompk_scalar(ystates1(lid_o2), bgc_forc)
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside BgcSummsType.f90 after decompk_scalar'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside BgcSummsType.f90 after decompk_scalar'
+    !write(stdout, *) '***************************'
     ! end of the testing
     
   !initialize all entries to zero

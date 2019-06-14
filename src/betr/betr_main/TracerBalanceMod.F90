@@ -89,6 +89,7 @@ module TracerBalanceMod
       use betr_constants  , only : betr_errmsg_len
       use betr_columnType , only : betr_column_type
       use betr_constants  , only : betr_var_name_length
+      use betr_constants  , only : stdout                              !added    -zlyu
       implicit none
 
       ! !ARGUMENTS:
@@ -142,8 +143,10 @@ module TracerBalanceMod
            call tracerflux_vars%Temporal_average(c,dtime)
            if(betr_status%check_status())return
            do kk = 1, ntracers
-              !type1_bgc, only check for volatile tracers
-              if(index(bgc_type,'type1_bgc')/=0 .and. .not. is_volatile(kk))cycle
+             !if (.not. is_checkmassbal(kk))cycle              !-zlyu, not check for attribute variables 
+             !type1_bgc, only check for volatile tracers
+              if(index(bgc_type,'type1_bgc')/=0 .and. .not. is_volatile(kk))cycle   !use is_volatile to not check mass balance for attributes       -zlyu
+              if(kk>=40 .and. kk<=45)cycle
               errtracer(c,kk) = beg_tracer_molarmass(c,kk)-end_tracer_molarmass(c,kk)  &
                    + (tracer_flx_netpro(c,kk)-tracer_flx_netphyloss(c,kk))*dtime
               if(abs(errtracer(c,kk))<err_min)then

@@ -198,11 +198,7 @@ contains
     betr_nlevsno       = nlevsno
     betr_nlevtrc_soil  = nlevtrc_soil
 
-    ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside CLMStepWithoutDrainage'
-    write(stdout, *) '***************************'
-    ! end of the testing
+
     call this%BeTRSetBounds(betr_bounds)
 
     call this%bsimstatus%reset()
@@ -223,11 +219,6 @@ contains
     if(this%bsimstatus%check_status()) &
          call endrun(msg=this%bsimstatus%print_msg())
 
-        ! testing only, where the run collapsed        -zlyu   01/27/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'end of CLMStepWithoutDrainage'
-    write(stdout, *) '***************************'
-    ! end of the testing
   end subroutine CLMStepWithoutDrainage
 
   !---------------------------------------------------------------------------------

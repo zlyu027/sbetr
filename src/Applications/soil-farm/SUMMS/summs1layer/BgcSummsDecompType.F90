@@ -239,9 +239,9 @@ implicit none
 
     catanf_30 = catanf(30._r8)
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside decompk_scalar start'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside decompk_scalar start'
+    !write(stdout, *) '***************************'
     ! end of the testing
     
   !warming effect
@@ -274,9 +274,9 @@ implicit none
       temp0 = (/ (ii, ii=trangebot,trangetop) /) ! Generate sequence of temperatures
 
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'temp0 = ',temp0
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'temp0 = ',temp0
+    !write(stdout, *) '***************************'
     ! end of the testing
     
       ! Fraction of active enzymes using Murphy et al. 1990, see Tang & Riely 2015 Eq.46-48, also see Ratkowsky2005JTB
@@ -290,23 +290,23 @@ implicit none
      
       tinv=1._r8/tempbgc-1._r8/tref ! Modifies activation energy
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 't_fact0 = ',t_fact0
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 't_fact0 = ',t_fact0
+    !write(stdout, *) '***************************'
     ! end of the testing
         
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'deltag0 = ',deltag0
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'deltag0 = ',deltag0
+    !write(stdout, *) '***************************'
     ! end of the testing 
       call interp1(temp0, t_fact0, tempbgc, t_fact) ! Interpolate to find fraction of active enzymes at current temperature
       ! This subroutine should return t_fact
       ! This subroutine should return t_fact
     ! testing only, where the run crushed        -zlyu   02/2019
-    write(stdout, *) '***************************'
-    write(stdout, *) 'inside decompk_scalar after interp1'
-    write(stdout, *) '***************************'
+    !write(stdout, *) '***************************'
+    !write(stdout, *) 'inside decompk_scalar after interp1'
+    !write(stdout, *) '***************************'
       ! end of the testing
       
       !fref=t_fact*(tempbgc/tref) ! Modifies non-equilibrium enzymatic reactions

@@ -59,6 +59,7 @@ contains
   !
   use bncdio_pio,  only : ncd_defvar,file_desc_t
   use betr_varcon, only : spval => bspval
+  use betr_constants                   , only : stdout        !-zlyu
   implicit none
   class(file_desc_t), intent(inout) :: ncid                    !file id
   character(len=*), intent(in) :: varname        !variable name

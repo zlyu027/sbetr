@@ -327,31 +327,31 @@ contains
 
       enddo
         call this%add_hist_var2d (it, num2d, fname='DECOMP_vr', units='mol/m3/s', type2d='levtrc',    &                ! added from rzacplsbetr_cmupdated           -zlyu
-          avgflag='A', long_name='vertically-resolved microbial decomposition flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial decomposition flux')    !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='UPTAKE_vr', units='mol/m3/s', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved microbial uptake flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial uptake flux')           !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='CUE_vr', units='unitless', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved microbial cue', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial cue')                   !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='MAINT_vr', units='mol/m3/s', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved microbial maintenance flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial maintenance flux')      !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='KAFFMM_vr', units='mol/m3', type2d='levtrc',    &
           avgflag='A', long_name='vertically-resolved monomer mineral affinity', default='inactive')
 
         call this%add_hist_var2d (it, num2d, fname='KAFFEM_vr', units='mol/m3', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved enzyme mineral affinity', default='inactive')
+          avgflag='A', long_name='vertically-resolved enzyme mineral affinity')     !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='MICGROW_vr', units='mol/m3/s', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved microbial growth flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial growth flux')          !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='ENZPROD_vr', units='mol/m3/s', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved enzyme production flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved enzyme production flux')           !, default='inactive'
 
         call this%add_hist_var2d (it, num2d, fname='TURNOVER_vr', units='mol/m3/s', type2d='levtrc',    &
-          avgflag='A', long_name='vertically-resolved microbial turnover flux', default='inactive')
+          avgflag='A', long_name='vertically-resolved microbial turnover flux')              !, default='inactive'
 
       if(it==1)call this%alloc_hist_list(num1d, num2d)
       num2d = 0; num1d= 0
