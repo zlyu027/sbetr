@@ -581,6 +581,7 @@ contains
     use BeTR_GridMod      , only : betr_grid_type
     use betr_varcon       , only : betr_maxpatch_pft, denh2o=> bdenh2o, denice => bdenice
     use PlantMicKineticsMod, only : PlantMicKinetics_type
+    use betr_constants    , only : stdout   !-zlyu
     implicit none
     !arguments
     class(ForcingData_type)  , intent(in)    :: this
@@ -602,11 +603,33 @@ contains
     type(PlantMicKinetics_type), intent(inout) :: PlantMicKinetics_vars
     integer                  , intent(inout) :: jtops(bounds%begc:bounds%endc)
 
-    integer            :: j, fc, c, tstep, p, pi
+    integer            :: j, fc, c, tstep, p, pi, turbyr, lastyr           !add turbyr, lastyr         -zlyu
     character(len=255) :: subname='update_forcing'
+    real(r8)           :: delta_tsoi(15)                        !-zlyu
+    real(r8)           :: delta_h2osoi_vol(15)                  !-zlyu , temporary corrector
 
+    turbyr = 55*365*48               !*48     it is hourly not half hourly?                    ! testing       -zlyu
+    lastyr = 59*365*48+(180*48)       !just output last half a year, to save time     -zlyu
+    delta_tsoi = (/2.090206_r8, 2.29745_r8, 2.597984_r8, 3.124624_r8, 3.8605_r8, 4._r8, 4._r8, 4._r8, &
+         0._r8,0._r8,0._r8,0._r8,0._r8,0._r8,0._r8/)
+    ! warming soil temperature, depth resolved                  !-zlyu
+    delta_h2osoi_vol = (/0.03997_r8, 0.03997_r8, 0.03997_r8, 0.03997_r8, 0.02909_r8, 0.01864_r8, 0.01950_r8, &
+                         0.02695_r8, 0._r8, 0._r8, 0._r8, 0._r8, 0._r8, 0._r8, 0._r8/)
+    
     !X!write(*, *) 'Updating forcing data'
-
+    ! print to check variables           -zlyu
+    write(stdout, *) 'updateforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
+    if (ttime%tstep_continue > lastyr) then           ! it should be 445._r8*365._r8*48._r8+1._r8, shorten to quickly test
+       write(stdout, *) '---------------------------------------------'
+       write(stdout, *) 'forcingdata in if ttime%tstep= ', ttime%tstep, ',     tstep= ', tstep, ',     tstep_continue=', ttime%tstep_continue
+       write(stdout, *) 'delta_tsoi(1)= ', delta_tsoi(1), ',    delta_tsoi(2)= ', delta_tsoi(2), ',     delta_tsoi(4)= ', delta_tsoi(4)
+       write(stdout, *) 'delta_tsoi(7)= ', delta_tsoi(7), ',    delta_tsoi(15)= ', delta_tsoi(15)
+       write(stdout, *) 'delta_h2osoi(1)= ', delta_h2osoi_vol(1), ',    delta_h2osoi(2)= ', delta_h2osoi_vol(2), ',     delta_h2osoi(4)= ', delta_h2osoi_vol(4)
+       write(stdout, *) 'delta_h2osoi(7)= ', delta_h2osoi_vol(7), ',    delta_h2osoi(15)= ', delta_h2osoi_vol(15)
+       write(stdout, *) '---------------------------------------------'
+    endif
+    ! end of printing and checking       -zlyu
+    
     if (this%forcing_type == steady_state) then
        tstep = 1
     else
@@ -623,6 +646,10 @@ contains
        atm2lnd_vars%forc_t_downscaled_col(c)    = this%tbot(tstep)  ! 2 atmos temperature
     enddo
 
+    !write(stdout, *) '---------------------------------------------'
+    !write(stdout, *) 'check sizes lbj= ',lbj, ',     ubj=', ubj, ',    numf=', numf
+    !write(stdout, *) 'check sizes filter(1)= ',filter(1), ',     filter(numf)=', filter(numf)
+    
     !set up forcing variables
     do j = lbj, ubj
        do fc = 1, numf
@@ -630,11 +657,53 @@ contains
           if(j>=jtops(c))then
              !take the minimum to avoid incompatible combination between uniform steady state forcing with
              !expoential grid.
-             waterstate_vars%h2osoi_liqvol_col(c,j) = min(this%h2osoi_liqvol(tstep,j),grid%watsat(j))
-             waterstate_vars%air_vol_col(c,j)       = grid%watsat(j)-waterstate_vars%h2osoi_liqvol_col(c,j)
-             waterstate_vars%h2osoi_icevol_col(c,j) = this%h2osoi_icevol(tstep,j)
-             soilstate_vars%eff_porosity_col(c,j)   = grid%watsat(j)-this%h2osoi_icevol(tstep,j)
-             temperature_vars%t_soisno_col(c,j)     = this%t_soi(tstep,j)
+             ! need to change h2osoi_liqvol here to reflect warming     -zlyu
+             if (ttime%tstep_continue > turbyr) then               ! shorten time to quickly test      -zlyu
+                waterstate_vars%h2osoi_liqvol_col(c,j) = min(this%h2osoi_liqvol(tstep,j)-delta_h2osoi_vol(j),grid%watsat(j))               !-zlyu
+                waterstate_vars%air_vol_col(c,j)       = grid%watsat(j)-waterstate_vars%h2osoi_liqvol_col(c,j)
+                waterstate_vars%h2osoi_icevol_col(c,j) = this%h2osoi_icevol(tstep,j)
+                soilstate_vars%eff_porosity_col(c,j)   = grid%watsat(j)-this%h2osoi_icevol(tstep,j)
+                  if (ttime%tstep_continue >lastyr) then              ! shorten from 445 to 25 for small test        -zlyu
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'in loop this%h2osoi_liqvol= ',this%h2osoi_liqvol(tstep,j), ',     delta_h2osoi_vol= ',delta_h2osoi_vol(j)
+                   write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep= ', tstep, ',    j=', j
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) '------------------------------------------------'
+                  endif       !end of testing    -zlyu
+               else                 
+                waterstate_vars%h2osoi_liqvol_col(c,j) = min(this%h2osoi_liqvol(tstep,j),grid%watsat(j))
+                waterstate_vars%air_vol_col(c,j)       = grid%watsat(j)-waterstate_vars%h2osoi_liqvol_col(c,j)
+                waterstate_vars%h2osoi_icevol_col(c,j) = this%h2osoi_icevol(tstep,j)
+                soilstate_vars%eff_porosity_col(c,j)   = grid%watsat(j)-this%h2osoi_icevol(tstep,j)
+                 if (ttime%tstep_continue > turbyr-5 .and. ttime%tstep_continue <= turbyr) then              ! shorten from 445 to 25 for small test        -zlyu
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'control loop  this%h2osoi_liqvol= ',this%h2osoi_liqvol(tstep,j), ',    j=', j
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep= ', tstep
+                   write(stdout, *) '------------------------------------------------'
+                  endif       !end of testing    -zlyu
+             endif
+
+             if (ttime%tstep_continue > turbyr) then     !shroten from 445 to 25 for quick test    ! only warm up last 5 years    -zlyu
+                temperature_vars%t_soisno_col(c,j)     = this%t_soi(tstep,j)+delta_tsoi(j)            ! adding warming scenario      -zlyu
+                if (ttime%tstep_continue > lastyr) then     ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then      ! shorten for testing      -zlyu
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'in loop this%t_soi= ',this%t_soi(tstep,j), ',     delta_tsoi= ',delta_tsoi(j)
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep= ', tstep, ',    j=', j
+                   write(stdout, *) '------------------------------------------------'
+                endif                           ! end of testing        -zlyu
+             else
+                temperature_vars%t_soisno_col(c,j)     = this%t_soi(tstep,j)
+                if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'control loop this%t_soi= ',this%t_soi(tstep,j), ',    j=', j
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep= ', tstep
+                   write(stdout, *) '------------------------------------------------'
+                endif                           ! end of testing        -zlyu
+             endif
+             
              waterflux_vars%qflx_rootsoi_col(c,j)   = this%qflx_rootsoi(tstep,j)  !water exchange between soil and root, m/H2O/s
              do pi = 1, betr_maxpatch_pft
                if (pi <= col%npfts(c)) then
@@ -672,15 +741,41 @@ contains
     do j = 1, ubj
        do fc = 1, numf
           c = filter(fc)
-          waterstate_vars%h2osoi_liq_col(c,j) = this%h2osoi_liq(tstep,j)
-          waterstate_vars%h2osoi_ice_col(c,j) = this%h2osoi_ice(tstep,j)
+          ! need to make change to h2osoi_liq to reflect warming
+          if (ttime%tstep_continue > turbyr) then               ! shorten time to quickly test      -zlyu
+             waterstate_vars%h2osoi_liq_col(c,j) = this%h2osoi_liq(tstep,j)-(delta_h2osoi_vol(j)*grid%dzsoi(j)*rhoh2o)             !-zlyu
+             waterstate_vars%h2osoi_ice_col(c,j) = this%h2osoi_ice(tstep,j)
+             if (ttime%tstep_continue > lastyr) then             ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then              ! shorten from 445 to 25 for small test        -zlyu
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'in loop this%h2osoi_liq= ',this%h2osoi_liq(tstep,j), ',     delta_h2osoi_vol*dz*r= ',(delta_h2osoi_vol(j)*grid%dzsoi(j)*rhoh2o)
+                   write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep= ', tstep, ',    j=', j
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) '------------------------------------------------'
+             endif       !end of testing    -zlyu
+             waterstate_vars%h2osoi_vol_col(c,j) = waterstate_vars%h2osoi_liqvol_col(c,j) + &
+                  waterstate_vars%h2osoi_icevol_col(c,j)
+             waterstate_vars%h2osoi_vol_col(c,j) = min(waterstate_vars%h2osoi_vol_col(c,j), grid%watsat(j))
+          else
+             waterstate_vars%h2osoi_liq_col(c,j) = this%h2osoi_liq(tstep,j)
+             waterstate_vars%h2osoi_ice_col(c,j) = this%h2osoi_ice(tstep,j)
 
-          waterstate_vars%h2osoi_vol_col(c,j) = waterstate_vars%h2osoi_liqvol_col(c,j) + &
-            waterstate_vars%h2osoi_icevol_col(c,j)
-          waterstate_vars%h2osoi_vol_col(c,j) = min(waterstate_vars%h2osoi_vol_col(c,j), grid%watsat(j))
+             waterstate_vars%h2osoi_vol_col(c,j) = waterstate_vars%h2osoi_liqvol_col(c,j) + &
+                  waterstate_vars%h2osoi_icevol_col(c,j)
+             waterstate_vars%h2osoi_vol_col(c,j) = min(waterstate_vars%h2osoi_vol_col(c,j), grid%watsat(j))
+             if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
+                   write(stdout, *) '------------------------------------------------'
+                   write(stdout, *) 'control loop this%h2osoi_liq= ',this%h2osoi_liq(tstep,j), ',    j=', j
+                   write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep= ', tstep
+                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                   write(stdout, *) '------------------------------------------------'
+             endif                           ! end of testing        -zlyu
+          endif 
        enddo
     enddo
-
+    ! 
+    ! make changes to soil moisture, let's test a shorter verison now and just apply the same set of correction for all        -zlyu
+    !if (ttime%tstep > (445._r8*365._r8*48._r8) .and. ttime%tstep <= (447._r8*365._r8*48._r8)) then  
+    
     do j = 1, ubj
       do fc = 1, numf
         PlantMicKinetics_vars%minsurf_dom_compet_vr_col(c,j)=grid%msurf_OM(j)
@@ -699,6 +794,7 @@ contains
     use PhosphorusFluxType, only : phosphorusflux_type
     use PlantMicKineticsMod, only : PlantMicKinetics_type
     use BeTR_TimeMod      , only : betr_time_type
+    use betr_constants    , only : stdout                            !-zlyu
   implicit none
   !arguments
     class(ForcingData_type) , intent(in) :: this
@@ -713,10 +809,27 @@ contains
     type(phosphorusflux_type), intent(inout) :: phosphorusflux_vars
     type(PlantMicKinetics_type), intent(inout):: plantMicKinetics_vars
 
-    integer :: c, fc, j, tstep
+    integer :: c, fc, j, tstep, turbyr, lastyr              !add turbyr, lastyr      -zlyu
+    real(r8):: q_rr(15)                                                   !-zlyu
+    ! bring up root respiration dur to soil warming, depth resolved               -zlyu
+    q_rr = (/2._r8**(2.090206_r8/10_r8),2._r8**(2.29745_r8/10_r8),2._r8**(2.597984_r8/10_r8),2._r8**(3.124624_r8/10._r8),2._r8**(3.8605_r8/10._r8), &
+         2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),1._r8,1._r8,1._r8,1._r8,1._r8,1._r8,1._r8/)
+    turbyr = 55*365*48                 !48      it is hourly not half fourly??                 ! testing       -zlyu
+    lastyr = 59*365*48+(180*48)        !just output last half a year, to save time     -zlyu
 
     tstep = ttime%tstep
-
+    write(stdout, *) 'CNPforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
+    ! print to check variables           -zlyu
+    if (ttime%tstep_continue > lastyr) then            ! shorten from 445 to 25 to quickly test     -zlyu
+       write(stdout, *) '---------------------------------------------'
+       write(stdout, *) 'CNPforcingdata in if ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
+       write(stdout, *) 'q_rr(1)= ', q_rr(1), ',    q_rr(2)= ', q_rr(2), ',     q_rr(4)= ', q_rr(4)
+       write(stdout, *) 'q_rr(7)= ', q_rr(7), ',    q_rr(15)= ', q_rr(15)
+       write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+       write(stdout, *) '---------------------------------------------'
+    endif
+    ! end of printing and checking       -zlyu 
+    
     do j = lbj, ubj
       do fc = 1, numf
         c = filter(fc)
@@ -724,8 +837,25 @@ contains
         carbonflux_vars%cflx_input_litr_cel_vr_col(c,j) = this%cflx_cel_vr(tstep,j)
         carbonflux_vars%cflx_input_litr_lig_vr_col(c,j) = this%cflx_lig_vr(tstep,j)
         carbonflux_vars%cflx_input_litr_cwd_vr_col(c,j) = this%cflx_cwd_vr(tstep,j)
-        carbonflux_vars%rr_vr_col(c,j)                  = this%rr_vr(tstep,j)
+        if (ttime%tstep_continue > turbyr) then       ! shroten to quickly test          ! only warm up last 5 years    -zlyu
+           carbonflux_vars%rr_vr_col(c,j)               = this%rr_vr(tstep,j)*q_rr(j)            ! adding warming scenario      -zlyu
+           if (ttime%tstep_continue > lastyr) then           ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then          ! shorten from 445 to 25 to test       -zlyu
+              write(stdout, *) '---------------------------------------------'
+              write(stdout, *) 'in loop this%rr_vr= ', this%rr_vr(tstep,j), ',     q_rr= ', q_rr(j)
+              write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+              write(stdout, *) 'carbonflux_vars%rr_vr_col=',carbonflux_vars%rr_vr_col(c,j), ',     tstep= ', tstep, ',    j=', j
+              write(stdout, *) '---------------------------------------------'
+           endif                   ! end of testing          -zlyu
+        else
+           carbonflux_vars%rr_vr_col(c,j)               = this%rr_vr(tstep,j)
+        endif
 
+        !if(j<=3)then
+         !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+          ! write(stdout, *) 'In Forcingdatatype j= ', j, '        rr_vr= ', this%rr_vr(tstep,j), '      rr_vr_col = ', carbonflux_vars%rr_vr_col(c,j)
+           !write(stdout, *) '##########################################################################'
+        !endif                                                                                                !-zlyu
+         
         nitrogenflux_vars%nflx_input_litr_met_vr_col(c,j) = this%nflx_met_vr(tstep,j)
         nitrogenflux_vars%nflx_input_litr_cel_vr_col(c,j) = this%nflx_cel_vr(tstep,j)
         nitrogenflux_vars%nflx_input_litr_lig_vr_col(c,j) = this%nflx_lig_vr(tstep,j)

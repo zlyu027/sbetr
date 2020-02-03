@@ -681,9 +681,9 @@ end subroutine sbetrBGC_driver
     id = id + 1; ystates(id) = phosphorusstate_vars%som1p_col(c_l)
     id = id + 1; ystates(id) = phosphorusstate_vars%som2p_col(c_l)
     id = id + 1; ystates(id) = phosphorusstate_vars%som3p_col(c_l)
-    ! testing only, where the run collapsed        -zlyu   01/27/2019
+    ! testing only, check output                              -zlyu    
     !write(stdout, *) '********************************************'
-    !write(stdout, *) 'end case of "summs" under subroutine WriteHistBGC, file sbetrDriverMod.F90'
+    !write(stdout, *) 'in WriteHistBGC carbonflux_vars%hr_col(c_l)=', carbonflux_vars%hr_col(c_l), '      hr ystates(id)= ',ystates(1)
     !write(stdout, *) '********************************************'
     ! end of the testing
 

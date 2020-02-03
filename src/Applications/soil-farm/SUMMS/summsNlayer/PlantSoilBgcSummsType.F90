@@ -278,6 +278,7 @@ module PlantSoilBgcSummsType
   use BeTR_decompMod       , only : betr_bounds_type
   use BeTR_biogeophysInputType , only : betr_biogeophys_input_type
   use BeTR_PatchType, only : betr_patch_type
+  use betr_constants       , only : stdout                            !-zlyu
   implicit none
   ! !ARGUMENTS:
   class(plant_soilbgc_summs_type) , intent(inout) :: this
@@ -295,6 +296,12 @@ module PlantSoilBgcSummsType
     do p = 1, betr_pft%npfts
       c = betr_pft%column(p)
       this%rt_vr_col(c,j)  = this%rt_vr_col(c,j) + biogeo_forc%rr_patch(p,j) * betr_pft%wtcol(p) !gC/m2/s
+      !if(j<=3)then 
+       !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~***************'        !-zlyu
+        ! write(stdout, *) 'In plantsoilbgcsummstype j= ', j, '     this%rt_vr_col = ', this%rt_vr_col(c,j),',     this%rt_vr_col= ',this%rt_vr_col(c,j)
+         !write(stdout, *) 'biogeo_forc%rr_patch = ', biogeo_forc%rr_patch(p,j), '     betr_pft%wtcol= ', betr_pft%wtcol(p)
+         !write(stdout, *) '##########################################################################***************'
+       !endif  
     enddo
   enddo
 

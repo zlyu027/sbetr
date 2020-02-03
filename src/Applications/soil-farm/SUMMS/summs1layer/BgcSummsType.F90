@@ -32,7 +32,7 @@ module BgcSummsType
   type, extends(jar_model_type), public :: summsbgceca_type
     type(DecompSumms_type),private       :: decompkf_eca
     type(summs_nitden_type), private     :: nitden
-    type(SummsSom_type), private         :: sumsom
+    type(SummsSom_type), public          :: sumsom                         !change from private to public      -zlyu
     type(Compet_ECA_type), public        :: competECA
     type(summsbgc_index_type), private   :: summsbgc_index
     real(r8), pointer                    :: ystates0(:)
@@ -492,11 +492,12 @@ contains
   end subroutine checksum_cascade
 
   !-------------------------------------------------------------------------------
-  subroutine runbgc_summs(this,  is_surflit, dtime, bgc_forc, nstates, ystates0, ystatesf, bstatus)
+  subroutine runbgc_summs(this,  is_surflit, dtime, bgc_forc, nstates, ystates0, ystatesf, bstatus)         !bgc_reaction_summs, add bgc_reaction_summs for using new affinity     -zlyu
 
   !DESCRIPTION
   !do bgc model integration for one step
-  use JarBgcForcType        , only : JarBGC_forc_type
+    use JarBgcForcType        , only : JarBGC_forc_type
+    !use BgcReactionsSummsType , only : bgc_reaction_summs_type                !add -zlyu
   use MathfuncMod               , only : pd_decomp
   use BetrStatusType            , only : betr_status_type
   use MathfuncMod               , only : safe_div
@@ -507,6 +508,7 @@ contains
   logical                    , intent(in)    :: is_surflit
   real(r8)                   , intent(in)    :: dtime
   type(JarBGC_forc_type)     , intent(in)    :: bgc_forc
+  !type(bgc_reaction_summs_type),intent(in)   :: bgc_reaction_summs              !add  -zlyu
   integer                    , intent(in)    :: nstates
   real(r8)                   , intent(out)   :: ystates0(nstates)
   real(r8)                   , intent(out)   :: ystatesf(nstates)
@@ -585,7 +587,7 @@ contains
   !if(this%summsbgc_index%debug)call this%checksum_cascade(this%summsbgc_index)
 
   !run century decomposition, return decay rates, cascade matrix, potential hr
-  call this%sumsom%run_decomp(is_surflit, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&
+  call this%sumsom%run_decomp(is_surflit, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&          !bgc_reaction_summs, add bgc_reaction_summs,    -zlyu
       this%decompkf_eca, this%alpha_n, this%alpha_p, &
       cascade_matrix, this%k_decay(1:nom_pools), pot_co2_hr, bstatus)
   !call this%sumsom%run_decomp(is_surf, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&
@@ -598,7 +600,10 @@ contains
 
   !calculate potential o2 consumption
   o2_decomp_depth = pot_co2_hr + rt_ar + pot_f_nit_mol_per_sec * this%nitden%get_nit_o2_scef()
-
+  !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+  !write(stdout, *) 'In bgcsummstype  pot_co2_hr= ', pot_co2_hr,',     rt_ar= ',rt_ar
+  !write(stdout, *) '##########################################################################'
+         
   !take a minimum > 0 to avoid singularity in calculating anaerobic fractions
   o2_decomp_depth = max(o2_decomp_depth,1.e-40_r8)
 

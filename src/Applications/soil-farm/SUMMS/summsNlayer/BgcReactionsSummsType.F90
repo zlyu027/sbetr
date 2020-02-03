@@ -47,6 +47,7 @@ module BgcReactionsSummsType
   use BetrStatusType        , only : betr_status_type
   use BgcSummsIndexType     , only : summsbgc_index_type
   use SummsParaType         , only : summs_para
+  use BgcSummsSOMType       , only : SummsSom_type                    !add to pass on new affinity parameter for mono uptake      -zlyu
   implicit none
 
   save
@@ -71,6 +72,13 @@ module BgcReactionsSummsType
     logical :: nop_limit
     logical :: non_limit
     integer :: nactpft               ! number of active pfts
+    integer :: record     !-zlyu
+    
+    ! add some local parameters for moisture effect on mono uptake         -zlyu
+    real(r8) :: kaff_mono_mic_sm(10)            !affinity parameter for mono uptake after considering soil moisture effect     -zlyu
+    real(r8) :: phys_hydr(10)                   ! normalized physiological hydration funtion (equation 35)          -zlyu
+    ! end of adding new parameters     -zlyu
+    
   contains
     procedure :: Init_betrbgc                 ! initialize betr bgc
     procedure :: set_boundary_conditions      ! set top/bottom boundary conditions for various tracers
@@ -460,6 +468,8 @@ if(exit_spinup)then
     logical   :: batch_mode                               !added for this%summseca(c,j)%Init(summs_para, batch_mode. bstatus)
     integer   :: i                       !added for checkup
 
+    this%record = 0
+    
     call bstatus%reset()
     batch_mode = .false.                                  !added for this%summseca(c,j)%Init(summs_para, batch_mode. bstatus) 
 
@@ -1370,7 +1380,7 @@ if(exit_spinup)then
         this%summseca(c,j)%bgc_on=.not. betrtracer_vars%debug
 
         if(this%summsforc(c,j)%debug)print*,'runbgc',j
-        call this%summseca(c,j)%runbgc(is_surflit, dtime, this%summsforc(c,j),nstates, &
+        call this%summseca(c,j)%runbgc(is_surflit, dtime, this%summsforc(c,j), nstates, &             !this, passing on this current bgc_reaction_summs_type       -zlyu
              ystates0, ystatesf, betr_status)
   
         if(betr_status%check_status())then
@@ -1401,7 +1411,8 @@ if(exit_spinup)then
  
         end select
       enddo
-    enddo
+   enddo
+   this%record = modulo(this%record+1,12)            !-zlyu
     deallocate(ystates0)
     deallocate(ystatesf)
 
@@ -1773,6 +1784,38 @@ if(exit_spinup)then
   integer :: j, fc, c
   integer :: k1, k2
   real(r8), parameter :: tiny_cval =1.e-16_r8
+  ! starting adding constant parameters                 -zlyu
+  real(r8) :: rgas = 8.31446_r8 ! Universal gas constant (J/K/mol)
+  real(r8) :: pi = 3.1415926_r8
+  real(r8) :: micb_rc2rp
+  real(r8) :: micb_k2f1
+  real(r8) :: micb_k2f2
+  real(r8) :: chb(10)                         !shape parameter in clapp-hornberg equation   -zlyu
+  real(r8) :: watsat(10)                      !saturated water content, vol/vol                  -zlyu
+  real(r8) :: psisat(10)                      !soil matric potential, mm           -zlyu
+  real(r8) :: soim0(10)                       !relative saturation           -zlyu
+  real(r8) :: theta(10)                       !water filled content
+  real(r8) :: tauw(10)                        !turtosity                 -zlyu
+  real(r8) :: grav_sm = 9.8_r8                   !gravity constant             -zlyu
+  real(r8) :: NA = 6.02e23_r8                    !Avogadro's number
+  integer  :: T0 = 298                           !reference temp0
+  real(r8) :: psi_monoup(10)                     !psi for moisture effect on mono uptake      -zlyu
+  real(r8) :: filmthkw(10)                       !water film thickness
+  real(r8) :: difo2w(10)                         !aqueous diffusivity for O2            -zlyu
+  real(r8) :: vsoim(10)                          !water filled volumn       -zlyu
+  real(r8) :: difDW(10), difDbw(10)              !diffusivity and bulk diffusivity
+  real(r8) :: Delta_S_s=17._r8                   ! entropy change at T_s
+  real(r8) :: T_Hs=375.5_r8                      ! the convergence temperature for enthalpy, [K]
+  real(r8) :: T_s=390.9_r8                       ! the convergence temperature of entropy, [K]
+  real(r8) :: Delta_H_s=4874._r8                 ! J/mol amino acid residue
+  integer  :: mic_N_CH=6                         ! number of non-polar hydrogen atmos per amino acids
+  integer  :: mic_n=270                          !number of amino acids                   -zlyu
+  real(r8) :: Delta_Cp                           !heat capacity
+  real(r8) :: Delta_G_E(10)
+  real(r8) :: fact_mic(10)                       !-zlyu
+  real(r8) :: fint(10)                           !intermediate
+  real(r8) :: ko2_1wdNA(10), gamma_D(10), fT(10), K0_DB(10)
+  ! end of adding paras on moisture effect calculation for mono uptake         -zlyu
   associate( &
      litr_beg =>  this%summsbgc_index%litr_beg  , &
      litr_end =>  this%summsbgc_index%litr_end  , &
@@ -1920,6 +1963,58 @@ if(exit_spinup)then
       this%summsforc(c,j)%cellorg = biophysforc%cellorg_col(c,j)
       this%summsforc(c,j)%pH = biophysforc%soil_pH(c,j)
 
+      !moisture effect on mono uptake by microbes                                                  -zlyu
+      micb_rc2rp = summs_para%micb_radc/summs_para%micb_radp
+      micb_k2f1 = pi*summs_para%micb_vdpmaxr*micb_rc2rp
+      micb_k2f2 = summs_para%micb_vdpmaxr*summs_para%micb_Nports
+      chb(j) = 2.91_r8+0.195_r8*summs_para%pct_clay(j)
+      watsat(j) =0.489_r8-0.00126_r8*summs_para%pct_sand(j)
+      psisat(j) =-10.0_r8**(1.88_r8-0.0131_r8*summs_para%pct_sand(j))
+      soim0(j) = max(biophysforc%h2osoi_vol_col(c,j)/watsat(j), 0.01_r8)                           !relative saturation            -zlyu
+      theta(j) = watsat(j)*soim0(j)                                                                !water filled content
+      tauw(j) = theta(j)*(soim0(j)+1.0e-10_r8)**(chb(j)/3-1)
+      psi_monoup(j) = max(psisat(j)*(soim0(j)+1.0e-20_r8)**(-chb(j)),-1.0e8_r8)*grav_sm
+      filmthkw(j) = max(exp(-13.65_r8-0.857_r8*log(-psi_monoup(j)*1.0e-6_r8)),1.0e-8_r8)
+      difDw(j) = 5.5e-10_r8*biophysforc%t_soisno_col(c,j)/298
+      difo2w(j) = 2.4e-9_r8*biophysforc%t_soisno_col(c,j)/298.0
+      vsoim(j) = watsat(j)*soim0(j)
+      difDbw(j) = difDw(j)*vsoim(j)*tauw(j)
+      Delta_Cp = -46.0_r8+30*(1-1.54_r8*mic_n**(-0.268_r8))*mic_N_CH                               !heat capacity
+      Delta_G_E(j) = Delta_H_s-biophysforc%t_soisno_col(c,j)*Delta_S_s+Delta_Cp*((biophysforc%t_soisno_col(c,j)-T_Hs)-&
+                     biophysforc%t_soisno_col(c,j)*log(biophysforc%t_soisno_col(c,j)/T_s))
+      fact_mic(j) = 1/(1+exp(-mic_n*Delta_G_E(j)/(rgas*biophysforc%t_soisno_col(c,j))))
+      fint(j) = summs_para%micb_Nports*fact_mic(j)/(summs_para%micb_Nports*fact_mic(j)+pi*micb_rc2rp)
+      ! calculate k1w
+      ko2_1wdNA(j) = 4._r8*pi*difo2w(j)*summs_para%micb_radc*fint(j)
+      gamma_D(j) = 1+summs_para%micsite_ncell/(4._r8*pi*(summs_para%micsite_rad+filmthkw(j)))*&
+                   (filmthkw(j)/(difDw(j)*summs_para%micsite_rad)+1._r8/difDbw(j))*ko2_1wdNA(j)
+      fT(j) = exp(-summs_para%ea_kaff_mono_mic/rgas*(1.0_r8/biophysforc%t_soisno_col(c,j)-1.0_r8/T0))*biophysforc%t_soisno_col(c,j)/T0
+      !arrhenius function --> k=Ae^(-Ea/RT), temperature dependence of reaction rate
+      K0_DB(j) = (micb_k2f1*fact_mic(j)+micb_k2f2)*fT(j)/(4*pi*difDw(j)*summs_para%micb_radc*NA)
+      this%kaff_mono_mic_sm(j) = K0_DB(j)*gamma_D(j)*12_r8                                         ! unit conversion, from mol/m3 to g/m3              -zlyu
+      this%phys_hydr(j) = soim0(j)**(1._r8/2.52_r8)                                                !normalized length analogous to the aqueous cluster size inWang and Or (2012)          -zlyu
+      !pass on data                                                        -zlyu
+      !this%summseca(c,j)%kaff_mono_mic_sm = 1
+      this%summseca(c,j)%sumsom%kaff_mono_mic_sm = this%kaff_mono_mic_sm(j)        !-zlyu
+      this%summseca(c,j)%sumsom%phys_hydr = this%phys_hydr(j)                      !-zlyu
+      this%summseca(c,j)%sumsom%record = this%record                               !-zlyu
+      !end of moisture effect on mono uptake by microbes          -zlyu
+
+      ! testing only                                              -zlyu
+     ! if (this%record == 0 .and. j < 3)then
+         !write(stdout, *) '*****************************************=============================================='
+      !   write(stdout, *) 'decompk_scalar j= ',j
+       !  write(stdout, *) 'kaff_mono_mic_sm= ',this%kaff_mono_mic_sm(j)
+        ! write(stdout, *) 'phys_hydr= ',this%phys_hydr(j)
+         !write(stdout, *) 'inside decompk_scalar  gamma_D= ',gamma_D(j),',     K0_DB= ',K0_DB(j) , ',         fact_mic= ',fact_mic(j)
+        ! write(stdout, *) 'soim0= ',soim0(j)
+         !write(stdout, *) 'filmthkw= ',filmthkw(j)
+         !write(stdout, *) 'difo2w= ',difo2w(j)
+         !write(stdout, *) 'inside decompk_scalar  difDw= ',difDw(j),  ',     ko2_1wdNA= ',ko2_1wdNA(j) , ',        fT= ',fT(j) 
+         !write(stdout, *) '****************************************================================================='
+       !endif
+      ! end of the testing                                        -zlyu
+      
       !conductivity for plant-aided gas transport
       this%summsforc(c,j)%aren_cond_n2 = &
           tracercoeff_vars%aere_cond_col(c,betrtracer_vars%volatilegroupid(betrtracer_vars%id_trc_n2)) * &
@@ -1998,6 +2093,11 @@ if(exit_spinup)then
     do fc = 1, num_soilc
       c = filter_soilc(fc)
       this%summsforc(c,j)%rt_ar  = plant_soilbgc%rt_vr_col(c,j)            !root autotrophic respiration, mol CO2/m3/s
+      !if(j<=3)then 
+       !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+        ! write(stdout, *) 'In set_summs_forc j= ', j, '     plant_soilbgc%rt_vr_col = ', plant_soilbgc%rt_vr_col(c,j),',     this%summsforc(c,j)%rt_ar= ', this%summsforc(c,j)%rt_ar
+         !write(stdout, *) '##########################################################################'
+       !endif
     enddo
   enddo
   end select
@@ -2071,6 +2171,7 @@ if(exit_spinup)then
   use PlantSoilBGCMod          , only : plant_soilbgc_type
   use PlantSoilBgcSummsType      , only : plant_soilbgc_summs_type
   use tracer_varcon            , only : catomw, natomw, patomw, fix_ip
+  use betr_constants      , only : stdout                                        !-zlyu 
   implicit none
   class(bgc_reaction_summs_type) , intent(inout)    :: this
   integer                              , intent(in) :: c, j
@@ -2346,6 +2447,14 @@ if(exit_spinup)then
         (ystatesf(this%summsbgc_index%lid_co2_hr) - &
         ystates0(this%summsbgc_index%lid_co2_hr))*catomw/dtime
 
+      !if(j<=3)then 
+       !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+        ! write(stdout, *) 'In retrieve_output where j= ', j, '     ystatesf(this%summsbgc_index%lid_co2_hr) = ', ystatesf(this%summsbgc_index%lid_co2_hr),',    lid_co2_hr= ',this%summsbgc_index%lid_co2_hr
+         !write(stdout, *) 'ystates0(this%summsbgc_index%lid_co2_hr) = ', ystates0(this%summsbgc_index%lid_co2_hr), '    catomw= ', catomw, '     dtime= ', dtime
+         !write(stdout, *) 'hr_vr_col(c,j) = ',  biogeo_flux%c12flux_vars%hr_vr_col(c,j)
+         !write(stdout, *) '##########################################################################'
+       !endif                                                                                                  !-zlyu
+      
       biogeo_flux%p31flux_vars%secondp_to_occlp_vr_col(c,j) = &
          (ystatesf(this%summsbgc_index%lid_minp_occlude) - &
           ystates0(this%summsbgc_index%lid_minp_occlude))*patomw/dtime

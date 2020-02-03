@@ -104,6 +104,7 @@ implicit none
   !------------------------------------------------------------------------
   subroutine summary(this, bounds, lbj, ubj, dz)
 
+  use betr_constants      , only : stdout                            !-zlyu
   implicit none
   class(betr_carbonflux_recv_type), intent(inout)  :: this
   type(betr_bounds_type), intent(in) :: bounds
@@ -120,6 +121,9 @@ implicit none
       this%fire_decomp_closs_col(c) = this%fire_decomp_closs_col(c) + dz(c,j) * &
            this%fire_decomp_closs_vr_col(c,j)
     enddo
-  enddo
+ enddo
+         !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+         !write(stdout, *) 'In carbonfluxrecvtype  where hr_col= ', this%hr_col(c), '      hr_vr_col(c,1) = ', this%hr_vr_col(c,1),',     hr_vr_col(c,2)= ',this%hr_vr_col(c,2)
+         !write(stdout, *) '##########################################################################'        !-zlyu
   end subroutine summary
 end module BeTR_carbonfluxRecvType

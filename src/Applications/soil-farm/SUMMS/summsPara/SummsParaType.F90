@@ -38,6 +38,26 @@ implicit none
     real(r8) :: ref_kaff_mono_mic
     real(r8) :: ref_vmax_mic
 
+    ! microbial parameters for moisture effect on mono uptake     -zlyu
+    real(r8) :: micb_radc               ! microbial cell radius (m)
+    real(r8) :: micb_radp               ! transporters radius (m)
+    real(r8) :: micb_rc2rp              ! radc/radp
+    real(r8) :: micb_vdpmaxr            ! maximum substrate processing rate per transporters on cell surface  (1/s)
+    real(r8) :: micb_Nports             ! # of substrate transporters per microbial cell
+    real(r8) :: micb_k2f1               ! pi*micb_vdpmaxr*micb_rc2rp;
+    real(r8) :: micb_k2f2               ! micb_vdpmaxr*micb_Nports;
+
+
+    ! soil texture values overwrite here, just for moisture effect on mono uptake       -zlyu
+    real(r8) :: pct_clay(10)            ! clay content, %
+    real(r8) :: pct_sand(10)            ! sand content, %
+    ! end of adding parameters for moisture effect on mono uptake         -zlyu
+
+    ! microsite parameters for mositure effect on mono uptake     -zlyu
+    real(r8) :: micsite_ncell           ! # of microbial cells per microsite
+    real(r8) :: micsite_rad             ! (80*micsite_ncell).^(1/3)*micb_radc
+    ! end of adding parameters for moisture effect on mono uptake    -zlyu
+
     !logical :: use_warm          !added for consistency with BgcSummsDecompType.F90    ! already declared in soil-farm/bgcfarm_util/BiogeoConType.F90   -zlyu
 
   !decomposition
@@ -235,24 +255,24 @@ contains
 
   ! start of new paras from rzacplsbetr_cmupdated         -zlyu 
   ! Microbes
-    this%decay_mic0 = 4.12e-3_r8*365._r8*0.6_r8/year_sec          !-zlyu        ! Reference microbial death rate (1/second)
+    this%decay_mic0 = 4.12e-3_r8*365._r8*0.7_r8/year_sec          !     -zlyu        ! Reference microbial death rate (1/second)
     this%gmax_mic  = 0.8760_r8*365._r8/year_sec      !0.6_r8*     ! 0.088031564_r8*365._r8/year_sec    !-zlyu     ! Maximum microbial growth rate (1/second)              ! back to oginial para      -zlyu
-    this%pmax_enz = 0.003599271_r8*365._r8*4._r8/year_sec      !   !*10._r8     !-zlyu       ! Maximum enzyme production rate (1/second)
-    this%yld_mic = 0.252307388_r8          !0.8_r8       !-zlyu     *4._r8        ! Growth efficiency of microbes (g mic/g res)
+    this%pmax_enz = 0.003599271_r8*365._r8*6._r8/year_sec      !   !*10._r8     !-zlyu       ! Maximum enzyme production rate (1/second)
+    this%yld_mic = 0.252307388_r8*4._r8          !0.8_r8       !-zlyu         ! Growth efficiency of microbes (g mic/g res)
     this%yld_enz = 0.999705849_r8           !*0.5_r8                 !-zlyu        ! Growth efficiency of enzymes (g enz/g res)
     this%ref_mr_mic             = 0.00230282_r8*365._r8/year_sec       ! Microbial maintenance rate (1/second)
     this%ref_kappa_mic          = 0.083996608_r8*365._r8/year_sec       ! Reserve turnover rate (1/second)
     this%mic_transp = 0.046561048_r8              ! Scaling factor between transporter and microbial structural biomass
-    this%ref_vmax_mic           = 20.75191411_r8*365._r8/year_sec     ! Maximum rate of monomer assimilation (1/second) 
+    this%ref_vmax_mic           = 20.75191411_r8*365._r8*2._r8/year_sec      ! -zlyu (add *2._r8)     ! Maximum rate of monomer assimilation (1/second) 
     this%decay_mic1 = 1.04e-4_r8*365._r8/year_sec             ! Half saturation population for density dependent mortality
     this%ref_kaff_mono_mic      = 0.100035349_r8         ! Affinity parameter for microbial monomer uptake (g monomers/m3)
     this%yld_res = 0.850251061_r8               ! 0.5_r8        ! Assimilation efficiency from monomer uptake (g res/g mono)
     
     ! Enzymes
     this%decay_enz = 0.005289921_r8*365._r8/year_sec             ! Enzyme turnover tate (1/second)
-    this%ref_vmax_enz           = 3.833835166_r8*365._r8/year_sec     ! *4.5_r8    !*4_r8     !-zlyu    ! Maximum rate of polymer degradation (1/second)
-    this%ref_kaff_enz_poly      = 202.6648678_r8            !*2._r8       !-zlyu   ! Affinity parameter for enzymatic polymer degradation (g enzymes/m3)
-    this%ref_kaff_enz_msurf     = 45.5122168_r8          !*0.5_r8           !-zlyu     ! Affinity parameter for surface adsorption of enzymes (g enzymes/m3)
+    this%ref_vmax_enz           = 3.833835166_r8*365._r8*4.5_r8/year_sec     ! *3._r8    !*4_r8     !-zlyu    ! Maximum rate of polymer degradation (1/second)
+    this%ref_kaff_enz_poly      = 202.6648678_r8*0.45_r8            !*2._r8       !-zlyu   ! Affinity parameter for enzymatic polymer degradation (g enzymes/m3)
+    this%ref_kaff_enz_msurf     = 45.5122168_r8*1.5_r8          !*0.5_r8           !-zlyu     ! Affinity parameter for surface adsorption of enzymes (g enzymes/m3)
     this%fenz2poly = 0.000513795_r8                ! Proportion of degraded exoenzyme into polymers (g poly/g enz)
     
     ! Surfaces
@@ -269,7 +289,20 @@ contains
     this%ea_kaff_mono_msurf     = 10000._r8/rgas      ! Ea for monomer-mineral affinity (K)
     this%ea_kaff_enz_msurf      = 10000._r8/rgas      ! Ea for enzyme-mineral affinity (K)
     ! end of new paras from rzacplsbetr_cmupdated        -zlyu 
-  
+
+    ! set up parameters for moisture effect on mono uptake in SUMMS         -zlyu
+    this%micb_radc              = 1._r8/1000000        ! cell radius (m)
+    this%micb_radp              = 1._r8/1000000000     ! transporter radius (m)
+    this%micb_vdpmaxr           = 300                  ! max substrate processing rate per transporter (1/s)
+    this%micb_Nports            = 3000                 ! # of substrate transporters per cell
+    this%micsite_ncell          = 10                   ! # of cells per microsite
+    this%micsite_rad            = ((80._r8*10)**(1/3))/1000000
+    this%pct_clay               = (/16._r8, 16._r8, 16._r8, 17._r8, 20._r8, 20._r8, 20._r8, 20._r8, 20._r8, 15._r8/)
+    this%pct_clay               = (/60._r8, 60._r8, 60._r8, 70._r8, 65._r8, 65._r8, 62._r8, 55._r8, 55._r8, 55._r8/)
+    ! end of adding parameter for moisture effect on mono uptake       -zlyu
+
+
+    
   ! Parameters
     !this%gmax_mic  = 0.1025_r8*365._r8/year_sec            ! Maximum microbial growth rate (1/second)
     !this%yld_mic = 0.8_r8                  ! Growth efficiency of microbes (g mic/g res)

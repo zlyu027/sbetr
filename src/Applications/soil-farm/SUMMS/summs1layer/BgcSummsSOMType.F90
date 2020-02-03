@@ -16,7 +16,7 @@ implicit none
   !We consider mono and enz as DOM; poly as som
   !
   integer :: nsummspools
-  type, public :: SummsSom_type
+  type, public :: SummsSom_type     
     real(r8), pointer :: icn_ratios(:)  => null()
     real(r8), pointer :: icp_ratios(:) => null()
     real(r8), pointer :: icc14_ratios(:)=> null()
@@ -25,6 +25,9 @@ implicit none
     real(r8), pointer :: def_cp(:)=> null()
     real(r8), pointer :: def_cc13(:)=> null()
     real(r8), pointer :: def_cc14(:)=> null()
+    real(r8) :: kaff_mono_mic_sm           !add new affinity paramter after considering soil moisture limitation, getting from bgcreactionsummstype    -zlyu
+    real(r8) :: phys_hydr                  !add normalized physiological hydration funtion (equation 35)          -zlyu
+    integer :: record                      !-zlyu 
 
     !private parameters
     real(r8) :: gmax_mic !constants
@@ -98,6 +101,7 @@ contains
   type(SummsPara_type)        , intent(in)    :: biogeo_con
   type(betr_status_type)        , intent(out)   :: bstatus
 
+  this%record = 0              !-zlyu
   call bstatus%reset()
   nsummspools = summsbgc_index%nom_pools
 
@@ -223,7 +227,7 @@ contains
   end subroutine UpdateParas
 !------------------------------------------
 
-  subroutine run_decomp(this, is_surflit, summsbgc_index, dtime, ystates,&
+  subroutine run_decomp(this, is_surflit, summsbgc_index,  dtime, ystates,&         ! bgc_reaction_summs, add for using new affinity     -zlyu
       decompkf_eca, alpha_n, alpha_p, cascade_matrix, &
       k_decay, pot_co2_hr, bstatus)
   !
@@ -231,6 +235,7 @@ contains
   !
   use BgcSummsIndexType     , only : summsbgc_index_type
   use BgcSummsDecompType    , only : DecompSumms_type
+  !use BgcReactionsSummsType , only : bgc_reaction_summs_type                !add       -zlyu
   use BetrStatusType        , only : betr_status_type
   use betr_ctrl           , only : betr_spinup_state
   implicit none
@@ -239,6 +244,7 @@ contains
   real(r8)                    , intent(in) :: dtime
   real(r8)                    , intent(inout) :: ystates(1:summsbgc_index%nom_tot_elms)
   type(DecompSumms_type)      , intent(in) :: decompkf_eca
+  !type(bgc_reaction_summs_type),intent(in) :: bgc_reaction_summs            !add      -zlyu
   logical                     , intent(in) :: is_surflit
   !real(r8)                    , intent(in) :: pct_sand
   !real(r8)                    , intent(in) :: pct_clay
@@ -269,7 +275,7 @@ contains
   if (bstatus%check_status())return
   !calculate potential decay coefficients (1/s)
   !call this%calc_som_decay_k(lay, summsbgc_index, decompkf_eca, k_decay, ystates, bstatus)
-  call this%calc_som_decay_k(lay, summsbgc_index, decompkf_eca, k_decay(1:nsummspools), ystates, bstatus)
+  call this%calc_som_decay_k(lay, summsbgc_index, decompkf_eca, k_decay(1:nsummspools), ystates, bstatus)            !bgc_reaction_summs, add bgc_reaction_summs,  -zlyu
 
   !scale potential decay coefficients by temp (1/s)
   call this%calc_som_scale_k(lay, summsbgc_index, decompkf_eca, k_decay(1:nsummspools))
@@ -315,8 +321,9 @@ contains
   ! in all the reactions, the nominal carbon oxidation status is assumed as zero, which is apparently not correct.
   ! It is also assumed the recycling of nitrogen and phosphorus during decomposition is 100%, which is likely
   ! not quite right as well.
-  use BgcSummsIndexType , only : summsbgc_index_type
+  use BgcSummsIndexType   , only : summsbgc_index_type
   use MathfuncMod         , only : safe_div, fpmax
+  use betr_constants      , only : stdout                            !-zlyu
   implicit none
   class(SummsSom_type),          intent(inout) :: this
   type(summsbgc_index_type)    , intent(in)    :: summsbgc_index
@@ -872,9 +879,13 @@ contains
     f1 = cwd_fcel*(1._r8-rf_l2s1_bgc(lay))
     f2 = (1._r8-cwd_fcel)*(1._r8-rf_l3s2_bgc)
 
-    !call wood_decomp_cascade(fwd, reac, f1, f2)
-    call wood_decomp_cascade(cwd, reac, f1, f2)           ! correction  -zlyu
-
+    call wood_decomp_cascade(cwd, reac, f1, f2)           !  -zlyu
+    !if(lay==1)then
+     !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+      ! write(stdout, *) 'In cascade matrix where lid_co2_hr= ', lid_co2_hr,',    lid_co2= ',lid_co2
+       !write(stdout, *) '##########################################################################'
+    !endif
+    
     !---------------------------------------------------------------------------------
     !reaction 8, the partition lwd into som1 and som2
     reac = lwd_dek_reac
@@ -1330,7 +1341,7 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
        k_decay(res)  = k_decay(res)   * o_scalar * (1._r8-w_scalar)                 ! zlyu for w_scalar
        k_decay(enz)  = k_decay(enz)   * (1._r8-w_scalar)                 ! zlyu for w_scalar
   end if
-  k_decay(mono) = k_decay(mono)  * o_scalar * w_scalar
+  k_decay(mono) = k_decay(mono)  * o_scalar                              !* w_scalar, no longer need this scalar, kaff_mono_mic_sm and phys_hydr has already include the effect      -zlyu
   
   k_decay(cwd)  = k_decay(cwd)   * t_scalar *  w_scalar * o_scalar * depth_scalar
   k_decay(lwd)  = k_decay(lwd)   * t_scalar *  w_scalar * o_scalar * depth_scalar
@@ -1344,18 +1355,20 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
     ! testing only, check variable                        !-zlyu
     !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     !write(stdout, *) 'calc_som_scale_k -->  w_scalar= ', w_scalar,',    new k_decay(mic)= ',k_decay(mic),',    new k_decay(poly)= ', k_decay(poly)
-    !write(stdout, *) 'new k_decay(res)= ', k_decay(res),',    new k_decay(enz)= ',k_decay(enz), ',    new k_decay(mono)= ',k_decay(mono)
+    !write(stdout, *) 'new k_decay(res)= ', k_decay(res),',    new k_decay(enz)= ',k_decay(enz)
+    !write(stdout, *) 'new k_decay(mono)= ',k_decay(mono)
     !write(stdout, *) 'o_scalar= ', o_scalar,',    t_sclar= ',t_scalar, ',    depth_scalar= ',depth_scalar
     !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-    ! end of the testing
+    ! end of the testing                                  !-zlyu
   
   end associate
   end subroutine calc_som_scale_k
   !-------------------------------------------------------------------------------
-   subroutine calc_som_decay_k(this, lay, summsbgc_index, decompkf_eca, k_decay, ystates, bstatus)
+   subroutine calc_som_decay_k(this, lay, summsbgc_index, decompkf_eca, k_decay, ystates, bstatus)          !add and delete    -zlyu
 
   use BgcSummsIndexType       , only : summsbgc_index_type
   use BgcSummsDecompType      , only : DecompSumms_type
+  !use BgcReactionsSummsType   , only : bgc_reaction_summs_type             !add  --zlyu
   use MathfuncMod             , only : safe_div
   !use FindRootMod             , only : brent
   !use func_data_type_mod      , only : func_data_type
@@ -1363,12 +1376,14 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
   use BgcSummsDebType         , only : debs
   use DebGrowMod              , only : deb_grow
   use BetrStatusType      , only : betr_status_type
+  use betr_constants          , only : stdout                            !-zlyu
 
   implicit none
   class(SummsSom_type)        , intent(inout)   :: this !this will update the relevant values for cascade_matrix
   integer                     , intent(in) :: lay
   type(DecompSumms_type)      , intent(in)    :: decompkf_eca
   type(summsbgc_index_type)   , intent(in)    :: summsbgc_index
+  !type(bgc_reaction_summs_type), intent(in)   :: bgc_reaction_summs                   !add   -zlyu
   real(r8)                    , intent(in)    :: ystates(1:summsbgc_index%nom_tot_elms)
   !real(r8)                    , intent(out)   :: k_decay(nsummspools)
   real(r8)                    , intent(out)   :: k_decay(1:nsummspools)
@@ -1401,6 +1416,10 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
     real(r8), parameter :: macheps = 1.e-8_r8
     real(r8), parameter :: tol = 1.e-8_r8
     real(r8), parameter :: tiny_val=1.e-35_r8
+    real(r8) :: tester_k_decay_mono                  !-zlyu, testing purpose, old decay rate in comparison with after moisture limitation
+    real(r8) :: kaff_mono_mic_sm          !add for new mono uptake               -zlyu
+    real(r8) :: phys_hydr                 !add for new mono uptake               -zlyu
+    integer  :: record                    !-zlyu
 
   type(debs) :: deb
   allocate(deb%gB)
@@ -1453,6 +1472,9 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
    actgB          => this%actgB                        , &  !start adding from rzacplsbetr_cmupdated              -zlyu  
    actpE          => this%actpE                        , &
    actmr          => this%actmr                        , &
+   kaff_mono_mic_sm => this%kaff_mono_mic_sm           , &   !add for new affinity of mono uptake                  -zlyu
+   phys_hydr      => this%phys_hydr                    , &   !add for new affinity of mono uptake                  -zlyu
+   record         => this%record                       , &   !-zlyu
    decay_mic      => this%decay_mic                      & 
   )
   call bstatus%reset()
@@ -1560,10 +1582,23 @@ subroutine calc_som_decay_r(this, summsbgc_index, dtime, om_k_decay, om_pools, o
   !k_decay(poly) = safe_div( y_enz*vmax_enz , kaff_enz_poly+y_poly+y_enz+minsite*safe_div( kaff_enz_poly , kaff_enz_msurf ))
   !k_decay(mic) = safe_div( y_mic*vmax_mic*mic_transp , kaff_mono_mic+y_mono+y_mic+minsite*safe_div( kaff_mono_mic ,&
       ! kaff_mono_msurf ))
-  !start adding from rzacplsbetr_cmupdated              -zlyu
+  !start adding from rzacplsbetr_cmupdated                   -zlyu
   k_decay(poly) = safe_div( y_enz*vmax_enz , kaff_enz_poly+y_poly+y_enz+minsite*safe_div( kaff_enz_poly , kaff_enz_msurf ))
-  k_decay(mono) = safe_div( y_mic*vmax_mic*mic_transp , kaff_mono_mic+y_mono+ mic_transp*y_mic +minsite*safe_div( kaff_mono_mic ,&
-       kaff_mono_msurf ))
+  !old version as comparison test                            -zlyu
+  tester_k_decay_mono  = safe_div( y_mic*vmax_mic*mic_transp , kaff_mono_mic+y_mono+ mic_transp*y_mic +minsite*safe_div( kaff_mono_mic ,&
+       kaff_mono_msurf ))                                   !-zlyu
+  k_decay(mono) = safe_div( y_mic*vmax_mic*mic_transp ,kaff_mono_mic_sm+y_mono+ mic_transp*y_mic +minsite*safe_div( kaff_mono_mic_sm, kaff_mono_msurf ))*phys_hydr
+  ! use new affinity parameter and hydraulic equation for aqueous diffusivity of mono uptaken by microbes               -zlyu
+
+  !if(record ==0)then
+     !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'         !-zlyu
+     !write(stdout, *) 'k_decay(lit1)= ', k_decay(lit1),',    k_decay(poly)= ',k_decay(poly), ',    k_decay(mic)= ',k_decay(mic)
+   !  write(stdout, *) 'k_decay(mono)= ',k_decay(mono)
+    ! write(stdout, *) 'tester_k_decay_mono= ', tester_k_decay_mono
+     !write(stdout, *) 'kaff_mono_mic_sm= ', kaff_mono_mic_sm, ',     phys_hydr= ', phys_hydr
+     !write(stdout, *) '##########################################################################'         !-zlyu
+ ! endif
+  
   k_decay(mic) = decay_mic-actgB
   k_decay(res) = kappa_mic-actgB+decay_mic
   k_decay(enz) = decay_enz

@@ -21,7 +21,7 @@ module BeTR_TimeMod
      real(r8) :: timef
      real(r8) :: toy
      real(r8) :: restart_dtime
-     integer  :: tstep
+     integer  :: tstep, tstep_continue          ! add tstep_contine, this one won't be reset to 1st year after each 30 years       -zlyu
      integer  :: nelapstep
      integer  :: dow, dom, doy
      integer  :: moy, cyears, cdays
@@ -97,6 +97,7 @@ contains
     character(len=*), optional, intent(in) :: namelist_buffer
     logical, optional, intent(in) :: masterproc
     this%tstep = 1
+    this%tstep_continue = 1           ! add     -zlyu
     this%time0 = 0._r8
     this%time  = 0._r8
     this%tod   = 0._r8
@@ -263,15 +264,18 @@ contains
     character(len=80) :: subname='update_time_stamp'
 
     real(r8), parameter :: secpyear= 86400._r8*365._r8
+    !real(r8), parameter :: secpyear= 86400._r8*365._r8*(this%stop_time/this%delta_time)       !step_time/delta_time = stop_n, how many years of input are given      -zlyu
+                                                                                              
 
     this%time = this%time + this%delta_time
     this%toy  = this%toy + this%delta_time
 
     this%tstep = this%tstep + 1
-    !
+    this%tstep_continue = this%tstep_continue + 1           ! keep counting time, don't reset in the if below      -zlyu
+    
     ! reset the clock every year, and assuming the time step
     ! size is always
-    if(mod(this%toy, secpyear) == 0) then
+    if(mod(this%toy, (secpyear*30._r8)) == 0) then           !prevent from resetting forcing after each year, because your forcing data has only 30 years, so iterate every 30 years       -zlyu
        this%tstep = 1
     end if
 

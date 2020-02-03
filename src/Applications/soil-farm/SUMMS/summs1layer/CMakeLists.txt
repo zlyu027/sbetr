@@ -14,7 +14,7 @@ set(SUMMS1LAYER_SOURCES
   include_directories(${CMAKE_BINARY_DIR}/src/betr/betr_util)
   include_directories(${CMAKE_BINARY_DIR}/src/betr/betr_math)
   include_directories(${CMAKE_BINARY_DIR}/src/Applications/soil-farm/bgcfarm_util)
-  include_directories(${CMAKE_BINARY_DIR}/src/Applications/soil-farm/SUMMS/summsPara)
+  include_directories(${CMAKE_BINARY_DIR}/src/Applications/soil-farm/SUMMS/summsPara)                
   include(add_betr_library)
   add_betr_library(summs1layer ${SUMMS1LAYER_SOURCES})
 

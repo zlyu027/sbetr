@@ -249,6 +249,7 @@ contains
   use CNCarbonFluxType  , only : carbonflux_type
   use CanopyStateType   , only : canopystate_type
   use clm_varpar        , only : nlevsno, nlevsoi
+  use betr_constants    , only : stdout                            !-zlyu
   implicit none
   !ARGUMENTS
   class(betr_simulation_standalone_type) , intent(inout)        :: this
@@ -266,16 +267,24 @@ contains
   type(chemstate_type)                   , optional, intent(in) :: chemstate_vars
   type(soilstate_type)                   , optional, intent(in) :: soilstate_vars
   integer :: j, c, c_l
-
+  write(stdout, *) 'In standalone checkpoint, carbonflux_vars =', carbonflux_vars, '       active_col(c)= ',  this%active_col(c)
   if(present(carbonflux_vars))then
     c_l=1
     do j = 1, betr_nlevsoi
-      do c = bounds%begc, bounds%endc
+       do c = bounds%begc, bounds%endc
+          write(stdout, *) 'In standalone checkpoin after do'
         if(.not. this%active_col(c))cycle
         this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j) = carbonflux_vars%rr_vr_col(c,j)
+       !  if(j<=3)then 
+        ! write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+         !write(stdout, *) 'In standalone j= ', j, '     carbonflux_vars%rr_vr_col= ', carbonflux_vars%rr_vr_col(c,j),',     c12flx%rt_vr_col= ',this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)
+         !write(stdout, *) '##########################################################################'
+         !endif                           !-zlyu
       enddo
     enddo
   endif
+  write(stdout, *) 'In standalone after ifloop carbonflux_vars%rr_vr_col(1,1)= ', carbonflux_vars%rr_vr_col(1,1),',     c12flx%rt_vr_col(1,1)= ',this%biophys_forc(bounds%begc)%c12flx%rt_vr_col(1,1)
+ 
   call this%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi, carbonflux_vars, waterstate_vars, &
       waterflux_vars, temperature_vars, soilhydrology_vars, atm2lnd_vars, canopystate_vars, &
       chemstate_vars, soilstate_vars)
