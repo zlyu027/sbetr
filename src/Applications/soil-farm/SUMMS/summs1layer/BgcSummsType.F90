@@ -552,6 +552,8 @@ contains
     ystates1 => this%ystates1                         , &
     debug => bgc_forc%debug                             & 
   )
+    !write(stdout, *) '******************************************'       
+    !write(stdout, *) 'Inside BgcSummsType.f90 at beginning'           !-zlyu
     
   !if(this%summsbgc_index%debug)print*,'enter runbgc'
   if(debug)print*,'enter runbgc_summs'
@@ -559,23 +561,26 @@ contains
   frc_c13 = safe_div(rt_ar_c13,rt_ar); frc_c14 = safe_div(rt_ar_c14,rt_ar)
   call bstatus%reset()
 
+  !write(stdout, *) 'Inside BgcSummsType.f90 after reset'           !-zlyu
   !initialize state variables
   call this%init_states(this%summsbgc_index, bgc_forc)
 !  call this%begin_massbal_check()
   ystates0(:) = this%ystates0(:)
+  !write(stdout, *) 'Inside BgcSummsType.f90 after init ystates0'           !-zlyu
 
   !add all external input
   call this%add_ext_input(dtime, this%summsbgc_index, bgc_forc, &
       this%c_inflx, this%n_inflx, this%p_inflx)
 !   call this%end_massbal_check('af add_ext_input')
   !initialize decomposition scaling factors
+  !write(stdout, *) 'Inside BgcSummsType.f90 after add_ext_input'           !-zlyu
  
 !  if(this%bgc_on)then
   !initialize decomposition scaling factors
     call this%decompkf_eca%set_decompk_scalar(ystates1(lid_o2), bgc_forc)
     ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***************************'
-    !write(stdout, *) 'inside BgcSummsType.f90 after decompk_scalar'
+    !write(stdout, *) 'Inside BgcSummsType.f90 after decompk_scalar'           !-zlyu
     !write(stdout, *) '***************************'
     ! end of the testing
     
@@ -585,7 +590,8 @@ contains
   !calculate default stoichiometry entries
   call this%calc_cascade_matrix(this%summsbgc_index, cascade_matrix, frc_c13, frc_c14)
   !if(this%summsbgc_index%debug)call this%checksum_cascade(this%summsbgc_index)
-
+  !write(stdout, *) 'Inside BgcSummsType.f90 after calc_cascade_matrix'           !-zlyu
+  
   !run century decomposition, return decay rates, cascade matrix, potential hr
   call this%sumsom%run_decomp(is_surflit, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&          !bgc_reaction_summs, add bgc_reaction_summs,    -zlyu
       this%decompkf_eca, this%alpha_n, this%alpha_p, &
@@ -593,11 +599,13 @@ contains
   !call this%sumsom%run_decomp(is_surf, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&
   !    this%decompkf_eca, bgc_forc%pct_sand, bgc_forc%pct_clay, this%alpha_n, this%alpha_p, &
   !    cascade_matrix, this%k_decay(1:nom_pools), pot_co2_hr, spinup_scalar, spinup_flg, bstatus)
-
+  write(stdout, *) 'Inside BgcSummsType.f90 after run_decomp'           !-zlyu
+  
   if(bstatus%check_status())return
 
   call this%nitden%calc_pot_nitr(ystates1(lid_nh4), bgc_forc, this%decompkf_eca, pot_f_nit_mol_per_sec)
-
+  !write(stdout, *) 'Inside BgcSummsType.f90 after calc_pot_nitr'           !-zlyu
+  
   !calculate potential o2 consumption
   o2_decomp_depth = pot_co2_hr + rt_ar + pot_f_nit_mol_per_sec * this%nitden%get_nit_o2_scef()
   !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
@@ -611,6 +619,7 @@ contains
   call this%nitden%run_nitden(this%summsbgc_index, bgc_forc, this%decompkf_eca, &
     ystates1(lid_nh4), ystates1(lid_no3), ystates1(lid_o2), o2_decomp_depth, &
     pot_f_nit_mol_per_sec, pot_co2_hr, this%pot_f_nit, this%pot_f_denit, cascade_matrix)
+  !write(stdout, *) 'Inside BgcSummsType.f90 after run_nitden'           !-zlyu
   !---------------------
   !turn off nitrification and denitrification
   !this%pot_f_denit = 0._r8
@@ -623,9 +632,10 @@ contains
   call this%arenchyma_gas_transport(this%summsbgc_index, dtime)
   !do the stoichiometric matrix separation
   call pd_decomp(nprimvars, nreactions, cascade_matrix(1:nprimvars, 1:nreactions), &
-     cascade_matrixp, cascade_matrixd, bstatus)
+       cascade_matrixp, cascade_matrixd, bstatus)
+  !write(stdout, *) 'Inside BgcSummsType.f90 after pd_decomp'           !-zlyu
   if(bstatus%check_status())return
-
+  
   time = 0._r8
   yf(:) = ystates1(:)
 
@@ -634,6 +644,8 @@ contains
 !    print*,'nh4',ystates1(lid_nh4),ystates1(lid_no3)
 !  endif
   !if(this%summsbgc_index%debug)call this%checksum_cascade(this%summsbgc_index)
+  !write(stdout, *) 'Inside BgcSummsType.f90 after ebbks1'           !-zlyu
+  
   if(this%use_c14)then
     call this%c14decay(this%summsbgc_index, dtime, ystates1)
   endif
@@ -643,7 +655,7 @@ contains
 !  if(this%summsbgc_index%debug)call this%end_massbal_check('bf exit runbgc')
 !  endif
   ystatesf(:) = ystates1(:)
-
+  !write(stdout, *) 'Inside BgcSummsType.f90 at end'           !-zlyu 
   end associate
   end subroutine runbgc_summs
   !-------------------------------------------------------------------------------

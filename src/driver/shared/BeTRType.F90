@@ -340,17 +340,21 @@ contains
     real(r8)           :: Rfactor(bounds%begc:bounds%endc, bounds%lbj:bounds%ubj,1:this%tracers%ngwmobile_tracer_groups) !retardation factor
     integer            :: j
     integer            :: lbj, ubj
-    
+
+    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 beginning'       !-zlyu
     call betr_status%reset()
     lbj = bounds%lbj; ubj = bounds%ubj
     
     dtime = betr_time%get_step_size()
-
+    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 dtime=', dtime       !-zlyu
+    
     if(this%active_soibgc)then
       !set up kinetic parameters that are passed in from the mother lsm. Mostly they
-      !are plant-nutrient related parameters.
+       !are plant-nutrient related parameters.
+       !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 inside active_soilbgc'         !-zlyu
       call this%bgc_reaction%set_kinetics_par(1, ubj, this%nactpft, &
-           this%plantNutkinetics, this%tracers, this%tracercoeffs)    
+           this%plantNutkinetics, this%tracers, this%tracercoeffs)
+      !write(stdout, *) 'after calling set_kinetics_par'             !-zlyu
     endif
     
     call stage_tracer_transport(betr_time, bounds, col, pft, num_soilc,&
@@ -358,11 +362,12 @@ contains
          biogeo_state, biogeo_flux, this%aereconds, this%tracers, this%tracercoeffs, &
          this%tracerboundaryconds, this%tracerstates, this%tracerfluxes, this%bgc_reaction, &
          Rfactor, this%advection_on, betr_status)
+    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 after stage_tracer_transport'           !-zlyu
     
     if(betr_status%check_status())return
     ! testing only, where the run crushed        -zlyu   01/27/2019
     !write(stdout, *) '**************************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 after check_status'
+    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 after check_status'          !-zlyu
     !write(stdout, *) '**************************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
     
@@ -370,10 +375,11 @@ contains
        num_soilc, filter_soilc,  biophysforc, this%advection_on, &
        this%tracers, this%tracerstates,    &
        this%tracercoeffs,  this%tracerfluxes, betr_status)
-
+    !write(stdout, *) 'inside step_without_drainage after surface_tracer_hydropath_update'          !-zlyu
     if(betr_status%check_status())return
     
     if(this%reaction_on)                     &      ! deleted if condition  -->  .and. inloop_reaction   -zlyu
+         !write(stdout, *) 'inside step_without_drainage inside traction_on loop'              !-zlyu
     call this%bgc_reaction%calc_bgc_reaction(bounds, col, lbj, ubj, &
          num_soilc,                                            &
          filter_soilc,                                         &
@@ -387,19 +393,23 @@ contains
          this%tracerstates,                                    &
          this%tracerfluxes,                                    &
          this%tracerboundaryconds,                             &
-         this%plant_soilbgc, biogeo_flux, betr_status)
-    
+         this%plant_soilbgc, biogeo_flux, betr_status)       
+    !write(stdout, *) 'inside step_without_drainage in loop after calc_bgc_reaction'          !-zlyu
     if(betr_status%check_status())return
 
     if(this%tracers%debug)call this%debug_info(bounds, col, num_soilc, filter_soilc, 'afbgc react\n bef gwstransp',betr_status)
-
+    !write(stdout, *) 'inside step_without_drainage after debug_info'         !-zlyu
+    
     call tracer_gws_transport(betr_time, bounds, col, pft, num_soilc, filter_soilc, &
       Rfactor, biophysforc, biogeo_flux, this%tracers, this%tracerboundaryconds  , &
       this%tracercoeffs,  this%tracerstates, this%tracerfluxes, this%bgc_reaction, &
       this%advection_on, this%diffusion_on, betr_status)
+    !write(stdout, *) 'inside step_without_drainage after tracer_gws_transport'           !-zlyu
+    
     if(betr_status%check_status())return
     if(this%tracers%debug)call this%debug_info(bounds, col, num_soilc, filter_soilc, 'aff gwstransp',betr_status)
-
+    !write(stdout, *) 'inside step_without_drainage after second debug_info'           !-zlyu
+    
     call calc_ebullition(bounds, 1, ubj,                                                                  &
          this%tracerboundaryconds%jtops_col,                                                              &
          col%lbots,                                                                                       &
@@ -416,6 +426,7 @@ contains
          this%tracerstates,                                                                               &
          this%tracerfluxes%tracer_flx_ebu_col(bounds%begc:bounds%endc, 1:this%tracers%nvolatile_tracers), &
          this%ebullition_on, betr_status)
+    !write(stdout, *) 'inside step_without_drainage after calc_ebullition'           !-zlyu 
     if(betr_status%check_status())return
     
     !update nutrient uptake fluxes
@@ -424,7 +435,8 @@ contains
           num_soilc, filter_soilc,  dtime                              , &
           col%dz(bounds%begc:bounds%endc,1:ubj)                        , &
           this%tracers, this%tracerfluxes, biogeo_flux, betr_status)
- 
+    !write(stdout, *) 'inside step_without_drainage at end after summary'           !-zlyu
+    !write(stdout, *) '************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
   end subroutine step_without_drainage
 
   !--------------------------------------------------------------------------------

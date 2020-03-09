@@ -238,9 +238,8 @@ implicit none
   )
 
     catanf_30 = catanf(30._r8)
-    ! testing only, where the run crushed        -zlyu   02/2019
-    !write(stdout, *) '***************************'
-    !write(stdout, *) 'inside decompk_scalar start'
+    ! testing only                              -zlyu   
+    
     !write(stdout, *) '***************************'
     ! end of the testing
     
@@ -250,7 +249,7 @@ implicit none
   else
     tempbgc = temp
   endif
-
+  write(stdout, *) 'inside decompk_scalar no temp rewrite --> tempbgc=', tempbgc, ',     temp=', temp                !-zlyu
 
   !temperature scalar
   this%t_scalar     = 1._r8
@@ -260,7 +259,8 @@ implicit none
   else
     this%t_scalar= (Q10**(-25._r8/10._r8))*(froz_q10**((tempbgc-SHR_CONST_TKFRZ)/10._r8))
   endif
-
+  write(stdout, *) 'inside decompk_scalar after Q10  --> this%t_scalar=', this%t_scalar                !-zlyu
+  
   ! scale all decomposition rates by a constant to compensate for offset between original CENTURY temp func and Q10
   normalization_factor = (catanf(normalization_tref)/catanf_30) / (q10**((normalization_tref-25._r8)/10._r8))
   this%t_scalar = this%t_scalar * normalization_factor
@@ -275,7 +275,7 @@ implicit none
 
     ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***************************'
-    !write(stdout, *) 'temp0 = ',temp0
+    !write(stdout, *) 'inside decompk_scalar   --> temp0 = ',temp0              !-zlyu
     !write(stdout, *) '***************************'
     ! end of the testing
     
@@ -289,13 +289,16 @@ implicit none
       !t_fact0=t_fact0/t_fact1 ! Active enzyme fraction in total enzyme vs temperaure           !comment out in rzacplsbetr_cmupdated,   -zlyu
      
       tinv=1._r8/tempbgc-1._r8/tref ! Modifies activation energy
-
+     ! write(stdout, *) 'inside decompk_scalar before interp1  --> t_fact0=', t_fact0               !-zlyu
+     ! write(stdout, *) 'deltag1=', deltag1, ',      cp=', cp, ',     t_fact1=', t_fact1 
       call interp1(temp0, t_fact0, tempbgc, t_fact) ! Interpolate to find fraction of active enzymes at current temperature
       ! This subroutine should return t_fact
       
       !fref=t_fact*(tempbgc/tref) ! Modifies non-equilibrium enzymatic reactions
       fref=t_fact/t_fact1*(tempbgc/tref)                        !change from zacplsbetr_cmupdated,   -zlyu        
-
+      write(stdout, *) 'inside decompk_scalar after interp1   --> fref=', fref            !-zlyu
+      !write(stdout, *) 't_fact=', t_fact,',      tref=', tref
+      
   !Update parameters
     this%vmax_mic         = ref_vmax_mic *fref*exp(-ea_vmax_mic*tinv)
     this%vmax_enz         = ref_vmax_enz *fref*exp(-ea_vmax_enz*tinv)
@@ -335,7 +338,7 @@ implicit none
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside case psi > minpsi'
-    !write(stdout, *) 'w_scalar = ',this%w_scalar, '    psi = ', psi
+    write(stdout, *) 'w_scalar = ',this%w_scalar, '    psi = ', psi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
   else
@@ -343,7 +346,7 @@ implicit none
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside else case where psi < minpsi'
-    !write(stdout, *) 'w_scalar = ',this%w_scalar, '       psi = ',psi
+    write(stdout, *) 'w_scalar = ',this%w_scalar, '       psi = ',psi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
   end if
@@ -366,7 +369,7 @@ implicit none
     !write(stdout, *) '***************************@***********************************************'
     !write(stdout, *) 'just to check depth_scalar'
     !write(stdout, *) 'depth_scalar = ',this%depth_scalar, '    depz = ',depz, '     decomp_depth_efolding = ',decomp_depth_efolding
-    !write(stdout, *) '***************************************************************************'
+    !write(stdout, *) '**************************************************$$$$$$$$$$$$$$$$$$$'
     ! end of the testing
 
   end associate

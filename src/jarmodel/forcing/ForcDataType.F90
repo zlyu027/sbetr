@@ -99,7 +99,8 @@ contains
   end subroutine init
   !--------------------------------------------------------------------
   subroutine ReadForcingData(this, forcing_filename)
-  use ncdio_pio    , only : ncd_getvar
+    use ncdio_pio    , only : ncd_getvar
+    use betr_constants, only : stdout                                     !-zlyu    
   implicit none
   class(forc_data_type), intent(inout) :: this
   character(len=*), intent(in) :: forcing_filename
@@ -135,17 +136,18 @@ contains
   call ncd_getvar(ncf_in_forc, 'nflx_nh4', this%nflx_nh4)
   call ncd_getvar(ncf_in_forc, 'nflx_no3', this%nflx_no3)
   call ncd_getvar(ncf_in_forc, 'pflx_po4', this%pflx_po4)
-
   call ncd_pio_closefile(ncf_in_forc)
 
   end subroutine ReadForcingData
-  !--------------------------------------------------------------------
+ 
+  !---------------------------------------------------------------------
   subroutine init_forc(namelist_buffer)
 
   use ncdio_pio    , only : get_dim_len
   use betr_constants , only : betr_filename_length, betr_string_length_long
   use babortutils    , only : endrun
   use bshr_log_mod    , only : errMsg => shr_log_errMsg
+  use betr_constants, only : stdout                                     !-zlyu
   implicit none
   character(len=*), intent(in) :: namelist_buffer
 
@@ -160,7 +162,7 @@ contains
   integer :: data_len
   type(file_desc_t) :: ncf_in_forc
   data_len=1
-
+  
   if ( .true. )then
      ioerror_msg=''
      read(namelist_buffer, nml=forcing_inparm, iostat=nml_error, iomsg=ioerror_msg)

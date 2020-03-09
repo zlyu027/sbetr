@@ -22,8 +22,6 @@ implicit none
   call get_command_argument(1, namelist_filename)
   base_filename = remove_filename_extension(namelist_filename)
   write(stdout, '(a, a)') 'Using base filename for output : ', trim(base_filename)
-
-  write(stdout, '(a, a)') 'Reading namelist filename : ', trim(namelist_filename)
   namelist_buffer = ''
 
   call namelist_to_buffer(namelist_filename, namelist_buffer)
@@ -65,6 +63,7 @@ subroutine run_model(namelist_buffer)
   use ForcDataType     , only : load_forc, init_forc
   use betr_constants   , only : betr_string_length_long
   use bshr_log_mod    , only : errMsg => shr_log_errMsg
+  use betr_constants   , only : stdout                    !-zlyu, test printing 
   implicit none
   character(len=*), intent(in) :: namelist_buffer
 

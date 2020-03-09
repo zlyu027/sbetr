@@ -1288,7 +1288,7 @@ if(exit_spinup)then
   subroutine calc_bgc_reaction(this, bounds, col, lbj, ubj, num_soilc, filter_soilc, &
        num_soilp,filter_soilp, jtops, dtime, betrtracer_vars, tracercoeff_vars, biophysforc,    &
        tracerstate_vars, tracerflux_vars, tracerboundarycond_vars, plant_soilbgc, &
-       biogeo_flux,  betr_status)
+       biogeo_flux,  betr_status)                    !add record      -zlyu
 
     !
     ! !DESCRIPTION:
@@ -1312,7 +1312,8 @@ if(exit_spinup)then
     use BeTR_biogeoStateType     , only : betr_biogeo_state_type
     use PlantSoilBgcSummsType    , only : plant_soilbgc_summs_type
     use betr_ctrl                , only : betr_spinup_state
-    use betr_constants           , only : stdout                              ! added!
+    use betr_constants           , only : stdout                              ! added       !-zlyu
+    !use BeTR_TimeMod             , only : betr_time_type                      !-zlyu     added
     implicit none
     ! !ARGUMENTS
     class(bgc_reaction_summs_type)       , intent(inout) :: this
@@ -1338,6 +1339,7 @@ if(exit_spinup)then
     ! !LOCAL VARIABLES:
     character(len=32), parameter :: subname ='calc_bgc_reaction'
     integer                      :: fc, c, j, k
+    !integer                      :: record                             !added  -zlyu
     logical :: is_surflit  !surface litter layer?
     integer :: nstates
     real(r8), allocatable :: ystates0(:)
@@ -1348,6 +1350,12 @@ if(exit_spinup)then
     call betr_status%reset()
     SHR_ASSERT_ALL((ubound(jtops) == (/bounds%endc/)), errMsg(mod_filename,__LINE__),betr_status)
 
+    !record = betr_time_type%tstep              !-zlyu
+    !if (record > 788399) then             !-zlyu
+       !write(stdout, *) '#######################################################'         !-zlyu
+       !write(stdout, *) 'In calc_bgc_reaction after reset'
+    !endif
+    
     if(betrtracer_vars%debug)call this%debug_info(bounds, num_soilc, filter_soilc, col%dz(bounds%begc:bounds%endc,bounds%lbj:bounds%ubj),&
          betrtracer_vars, tracerstate_vars,  'before bgcreact', betr_status)
 
@@ -1355,12 +1363,16 @@ if(exit_spinup)then
     allocate(ystates0(nstates))
     allocate(ystatesf(nstates))
 
+    !if (record > 788399)
+    !write(stdout, *) 'In calc_bgc_reaction after allocate of ystate'                   !-zlyu
+    
     !pass in fluxes and state varaibles into the 1D soil bgc model
     call this%set_summs_forc(bounds, col, lbj, ubj, jtops, num_soilc, filter_soilc, &
         biophysforc, plant_soilbgc, betrtracer_vars, tracercoeff_vars, tracerstate_vars,betr_status)
     ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***************************'
-    !write(stdout, *) 'inside calc_bgc_reaction after set_summs_forc'
+    !if (record > 788399)
+    !write(stdout, *) 'In calc_bgc_reaction after set_summs_forc'                     !-zlyu
     !write(stdout, *) '***************************'
     ! end of the testing
     
@@ -1369,19 +1381,27 @@ if(exit_spinup)then
       plant_soilbgc%plant_minn_active_yield_flx_col(:) = 0._r8
       plant_soilbgc%plant_minp_active_yield_flx_col(:) = 0._r8
    end select
-    
+   !if (record > 788399)
+   !write(stdout, *) 'In calc_bgc_reaction after select for plant_soilbgc'                   !-zlyu
+   
     !run simulation layer by layer
     do j = lbj, ubj
-      do fc = 1, num_soilc
+       do fc = 1, num_soilc
+          !if (record > 788399)
+          !write(stdout, *) 'inside calc_bgc_reaction double do loop, at beginning'                  !-zlyu
         c = filter_soilc(fc)
         if(j<jtops(c))cycle
         is_surflit=(j<=0)
         this%summsforc(c,j)%debug=betrtracer_vars%debug
         this%summseca(c,j)%bgc_on=.not. betrtracer_vars%debug
-
+        !if (record > 788399)
+        write(stdout, *) 'inside calc_bgc_reaction do loop before call runbgc'                   !-zlyu
+        
         if(this%summsforc(c,j)%debug)print*,'runbgc',j
         call this%summseca(c,j)%runbgc(is_surflit, dtime, this%summsforc(c,j), nstates, &             !this, passing on this current bgc_reaction_summs_type       -zlyu
              ystates0, ystatesf, betr_status)
+        !if (record > 788399)
+       ! write(stdout, *) 'inside calc_bgc_reaction after run_bgc'                         !-zlyu
   
         if(betr_status%check_status())then
           write(laystr,'(I2.2)')j
@@ -1392,13 +1412,19 @@ if(exit_spinup)then
           !apply loss through fire,
           call this%rm_ext_output(c, j, dtime, nstates, ystatesf, this%summsbgc_index,&
                this%summsforc(c,j), biogeo_flux)
+          !if (record > 788399)
+          !write(stdout, *) 'inside calc_bgc_reaction after rm_ext_output'                    !-zlyu
 
           !endif
         call this%precision_filter(nstates, ystatesf)
         this%summsbgc_index%debug=betrtracer_vars%debug
+        !if (record > 788399)
+        !write(stdout, *) 'inside calc_bgc_reaction after passing on debug'                   !-zlyu
 
         call this%retrieve_output(c, j, nstates, ystates0, ystatesf, dtime, betrtracer_vars, tracerflux_vars,&
-           tracerstate_vars, plant_soilbgc, biogeo_flux)
+             tracerstate_vars, plant_soilbgc, biogeo_flux)
+        !if (record > 788399)
+        !write(stdout, *) 'inside calc_bgc_reaction after retrive_output'                     !-zlyu
 
         select type(plant_soilbgc)
         type is(plant_soilbgc_summs_type)
@@ -1408,14 +1434,19 @@ if(exit_spinup)then
 
           plant_soilbgc%plant_minp_active_yield_flx_col(c)=  plant_soilbgc%plant_minp_active_yield_flx_col(c) + &
                plant_soilbgc%plant_minp_active_yield_flx_vr_col(c,j) * col%dz(c,j)
+
+          !if (record > 788399)
+          !write(stdout, *) 'inside calc_bgc_reaction in select for plant_soilbgc_summs_type'                   !-zlyu
  
         end select
       enddo
    enddo
-   this%record = modulo(this%record+1,12)            !-zlyu
+   !this%record = modulo(this%record+1,12)            !-zlyu
     deallocate(ystates0)
     deallocate(ystatesf)
-
+    !if (record > 788399)
+    !write(stdout, *) 'inside calc_bgc_reaction after deallcation'              !-zlyu
+    
      if(betrtracer_vars%debug)then
        select type(plant_soilbgc)
        type is(plant_soilbgc_summs_type)
@@ -1425,7 +1456,9 @@ if(exit_spinup)then
 
     !   call this%debug_info(bounds, num_soilc, filter_soilc, col%dz(bounds%begc:bounds%endc,bounds%lbj:bounds%ubj),&
     !     betrtracer_vars, tracerstate_vars,  'after bgcreact',betr_status)
-          endif
+   endif
+   !if (record > 788399)
+   !write(stdout, *) 'inside calc_bgc_reaction at end'              !-zlyu
 
   end subroutine calc_bgc_reaction
 
@@ -1935,12 +1968,16 @@ if(exit_spinup)then
       this%summsforc(c,j)%frac_loss_lit_to_fire = biophysforc%frac_loss_lit_to_fire_col(c)
       this%summsforc(c,j)%frac_loss_cwd_to_fire = biophysforc%frac_loss_cwd_to_fire_col(c)
       !environmental variables
+      write(stdout, *) '-------------------------------------------------------------------'
+      write(stdout, *) 'In BgcReactionSummsType before assign  --> %temp=', this%summsforc(c,j)%temp            !-zlyu
+      write(stdout, *) 'when c = ',c, ',      j = ',j
       this%summsforc(c,j)%temp   = biophysforc%t_soisno_col(c,j)            !temperature
       this%summsforc(c,j)%depz   = col%z(c,j)            !depth of the soil
       this%summsforc(c,j)%dzsoi  = col%dz(c,j)            !soil thickness
       this%summsforc(c,j)%sucsat  = biophysforc%sucsat_col(c,j)            ! Input:  [real(r8) (:,:)] minimum soil suction [mm]
       this%summsforc(c,j)%soilpsi = max(biophysforc%smp_l_col(c,j)*grav*1.e-6_r8,-15._r8)    ! Input:  [real(r8) (:,:)] soilwater pontential in each soil layer [MPa]
       !this%summsforc(c,j)%soilpsi = max(smp_l_col(c,j)*grav*1.e-6_r8,-15._r8)         !-zlyu
+      write(stdout, *) 'In BgcReactionSummsType after assign  --> %temp=', this%summsforc(c,j)%temp, ',     t_soisno_col(c,j)=', biophysforc%t_soisno_col(c,j)            !-zlyu
       
     ! testing only, checking variables               -zlyu  
     !write(stdout, *) '*******************************************************@@@@@@@@@@@@@@@@@@@@@@'

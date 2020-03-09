@@ -24,8 +24,6 @@ program main
   call get_command_argument(1, namelist_filename)
   base_filename = remove_filename_extension(namelist_filename)
   write(stdout, '(a, a)') 'Using base filename for output : ', trim(base_filename)
-
-  write(stdout, '(a, a)') 'Reading namelist filename : ', trim(namelist_filename)
   namelist_buffer = ''
   call namelist_to_buffer(namelist_filename, namelist_buffer)
 

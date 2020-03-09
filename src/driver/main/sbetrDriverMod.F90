@@ -101,6 +101,7 @@ contains
   type(histf_type) :: hist
   character(len=64) :: case_id
   logical :: lread_param
+  logical :: is_disturb                      ! flag read in from forcing type, whether certain years need disturbance data        -zlyu
   call spmd_init
 
   !initialize parameters
@@ -134,12 +135,15 @@ contains
   !read forcing
   allocate(forcing_data)
   call forcing_data%ReadData(namelist_buffer, grid_data)
-
-    ! testing only, where the run crushed        -zlyu   01/27/2019
-    !write(stdout, *) '***************************'
-    !write(stdout, *) 'after forcing_data%ReadData'
-    !write(stdout, *) '***************************'
-    ! end of the testing
+  is_disturb = forcing_data%is_disturbance       ! passing on, so later knows whether we need to use new readCNPdata    -zlyu
+  write(stdout, *) '================================================================'
+  write(stdout, *) 'In sbetrDriverMod after forcing_data%ReadData  --> is =_disturb=', is_disturb         !-zlyu
+  
+  !testing only                                 -zlyu    
+  !write(stdout, *) '***************************'
+  !write(stdout, *) 'sbetrdrivermod 1) after forcing_data%ReadData'
+  !write(stdout, *) '***************************'
+  ! end of the testing
 
 
   lbj = 1
@@ -184,6 +188,12 @@ contains
        soilstate_vars,waterstate_vars, waterflux_vars, temperature_vars, chemstate_vars, &
        plantMicKinetics_vars, simulation%jtops)
 
+  !testing only                                 -zlyu    
+  !write(stdout, *) '***************************'
+  write(stdout, *) 'sbetrdrivermod 2) after forcing_data%UpdateForcing'          !change here 
+  !write(stdout, *) '***************************'
+  ! end of the testing
+  
   !x print*,'af init update',forcing_data%t_soi(1,:)
   !print*,'initial water state variable output',time_vars%tstep
   call calc_qadv(ubj, simulation%num_soilc, &
@@ -229,10 +239,23 @@ contains
 
   !x print*,'bf loop'
   if(simulation%do_soibgc())then
-    call forcing_data%ReadCNPData()
+     if (is_disturb) then
+        call forcing_data%ReadCNPData()
+        !write(stdout, *) '================================================================'
+        !write(stdout, *) 'In sbetrDriverMod before calling readdisturbancecnpdata'
+        call forcing_data%ReadDisturbCNPData()          ! read disturb CNP data as well if there are      -zlyu
+        write(stdout, *) 'In sbetrDriverMod after calling readdisturbancecnpdata'
+        !write(stdout, *) 'In sbetrDriverMod  record =', record
+        !write(stdout, *) '================================================================'
+     else
+        call forcing_data%ReadCNPData()
+     end if 
   endif
 
   do
+     !write(stdout, *) 'In sbetrDriverMod in the do loop !  --> record=', record
+     !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+     ! testing print out                    -zlyu
     record = record + 1
     call simulation%SetClock(dtime=time_vars%get_step_size(), nelapstep=time_vars%get_nstep())
     !x print*,'prepare for diagnosing water flux'
@@ -247,11 +270,13 @@ contains
       simulation%filter_soilc, time_vars, col, pft, atm2lnd_vars, soilhydrology_vars, &
       soilstate_vars,waterstate_vars, waterflux_vars, temperature_vars, chemstate_vars, &
       plantMicKinetics_vars, simulation%jtops)
+    !write(stdout, *) 'In sbetrDriverMod do loop after forcing_data%UpdateForcing'                  !-zlyu
 
     select type(simulation)
 
     class is (betr_simulation_standalone_type)
-
+       !write(stdout, *) 'In the do loop, class standalone -->  record=', record                  !-zlyu
+       
       call simulation%CalcSmpL(bounds, 1, nlevsoi, simulation%num_soilc, simulation%filter_soilc, &
               temperature_vars%t_soisno_col(bounds%begc:bounds%endc,1:nlevsoi), &
               soilstate_vars, waterstate_vars, soil_water_retention_curve)            !, biophysforc)          !-zlyu, add biophysforc
@@ -260,7 +285,7 @@ contains
       waterflux_vars=waterflux_vars, soilhydrology_vars = soilhydrology_vars)
     ! testing only, check variables                       !-zlyu
     !write(stdout, *) '================================================================'
-    !write(stdout, *) 'In sbetrDriverMod checking after setbiophysforcing --> smp(1,1)= ',simulation%biophys_forc%smp_l_col(1,1)
+    !write(stdout, *) 'In the do loop after setbiophysforcing --> smp(1,1)= ',simulation%biophys_forc%smp_l_col(1,1)
     !write(stdout, *) '================================================================'
     ! end of the testing
 
@@ -330,8 +355,11 @@ contains
         chemstate_vars=chemstate_vars,           soilstate_vars=soilstate_vars)
     end select
 
+    !write(stdout, *) 'In the do loop after class selection'                  !-zlyu
+    
     call simulation%StepWithoutDrainage(bounds, col, pft)
-
+    !write(stdout, *) 'In the do loop after stepwithoudrainage'                  !-zlyu
+    
     select type(simulation)
     class is (betr_simulation_alm_type)
       call simulation%PlantSoilBGCRecv(bounds, col, pft, simulation%num_soilc, simulation%filter_soilc,&
@@ -345,15 +373,18 @@ contains
     call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,&
        waterflux_vars=waterflux_vars )
     call simulation%StepWithDrainage(bounds, col)
-
+    !write(stdout, *) 'In the do loop after stepwithdrianage'                  !-zlyu
+    
     !x print*,'do mass balance check'
     call simulation%MassBalanceCheck(bounds)
 
     select type(simulation)
     class is (betr_simulation_standalone_type)
+       !write(stdout, *) 'In the do loop, second class select standalone'                  !-zlyu
       call simulation%PlantSoilBGCRecv(bounds, col, pft,  simulation%num_soilc, simulation%filter_soilc,&
           carbonstate_vars, carbonflux_vars, c13state_vars, c13_cflx_vars, c14state_vars, c14_cflx_vars, &
           nitrogenstate_vars, nitrogenflux_vars, phosphorusstate_vars, phosphorusflux_vars)
+       !write(stdout, *) 'second select standalone, after plantbgcrecv'                  !-zlyu
     end select
 
     !specific for water tracer transport
@@ -361,13 +392,16 @@ contains
     !  simulation%filter_soilc, waterstate_vars)
     !update time stamp
     call time_vars%update_time_stamp()
-
+    write(stdout, *) 'out of second select, after update_time_stamp  --> time_vars%tstep=', time_vars%tstep                  !-zlyu
+    
     !x print*,'write output'
     call simulation%WriteOfflineHistory(bounds, simulation%num_soilc,  &
        simulation%filter_soilc, time_vars, waterflux_vars%qflx_adv_col)
-
+    !write(stdout, *) 'In the do loop after writeofflinehistory '                  !-zlyu
+    
     if(simulation%do_soibgc()) call WriteHistBGC(hist, time_vars, carbonstate_vars, carbonflux_vars, &
          nitrogenstate_vars, nitrogenflux_vars, phosphorusstate_vars, phosphorusflux_vars, reaction_method)
+    !write(stdout, *) 'In the do loop, after writehistbgc'                  !-zlyu
 
 
     if(time_vars%its_time_to_write_restart()) then
@@ -390,21 +424,29 @@ contains
          call hist%histrst(reaction_method, 'write',yymmddhhss)
       endif
     endif
-
+    !write(stdout, *) 'In the do loop after do_soibgc endif'                  !-zlyu
+    
     !print*,'next step'
     if(time_vars%its_time_to_exit()) then
        print*,'exit'
        exit
     end if
+    !write(stdout, *) 'Before exiting do loop '                  !-zlyu
   enddo
 
   if(simulation%do_regress_test())then
     call simulation%WriteRegressionOutput(waterflux_vars%qflx_adv_col)
  endif
+ !write(stdout, *) 'outside do loop, after do_regress_test'                  !-zlyu
 
-  call forcing_data%Destroy()
+ call forcing_data%Destroy()
+ if (is_disturb) then
+    call forcing_data%Destroy_disturb()         ! need to release space disturbance if disturbance foricng is used   -zlyu
+    write(stdout, *) 'successfully destroy_disturb'                  !-zlyu
+ endif 
   deallocate(forcing_data)
-
+  !write(stdout, *) 'End of sbetrDriverMod'                  !-zlyu
+  
 end subroutine sbetrBGC_driver
 
 ! ----------------------------------------------------------------------

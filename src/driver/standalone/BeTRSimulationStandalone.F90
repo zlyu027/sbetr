@@ -149,38 +149,47 @@ contains
     integer  :: c
     !pass necessary data for correct subroutine call
     !set lbj and ubj
-
+    !write(stdout, *) 'inside standalonestepwithoutdrainage beginning'               !-zlyu
     call this%BeTRSetBounds(betr_bounds)
+    !write(stdout, *) 'inside standalonestepwithoutdrainage after bounds'         !-zlyu
 
     call this%bsimstatus%reset()
+    !write(stdout, *) 'inside standalonestepwithoutdrainage after reset'        !-zlyu
 
     call this%BeTRSetcps(bounds, col, pft)
+    !write(stdout, *) 'inside standalonestepwithoutdrainage after setcps'         !-zlyu
 
     do c = bounds%begc, bounds%endc
+      ! write(stdout, *) 'inside standalonestepwithoutdrainage inside do loop'        !-zlyu
       if(.not. this%active_col(c))cycle
-
+      !write(stdout, *) 'inside standalonestepwithoutdrainage inside if cycle'        !-zlyu
       call this%biophys_forc(c)%frac_normalize(this%betr_pft(c)%npfts, 1, betr_nlevtrc_soil)
 
        ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***********************************************************8*'
-    !write(stdout, *) 'inside standalonestepwithoutdrainage in do after biophys_forc'
+    !write(stdout, *) 'inside standalonestepwithoutdrainage in do after frac_normalize'        !-zlyu
     !write(stdout, *) '*************************************************************'
     ! end of the testing
       call this%betr(c)%step_without_drainage(this%betr_time, betr_bounds, this%betr_col(c), &
          this%betr_pft(c), this%num_soilc, this%filter_soilc, this%num_soilp, this%filter_soilp, &
          this%biophys_forc(c), this%biogeo_flux(c), this%biogeo_state(c), this%bstatus(c))
+      write(stdout, *) 'inside standalonestepwithoutdrainage in do after betr(c)%step_without_drainage'        !-zlyu
 
       if(this%bstatus(c)%check_status())then
          call this%bsimstatus%setcol(c)
+         !write(stdout, *) 'inside standalonestepwithoutdrainage after setcol'         !-zlyu
 
          call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
+         !write(stdout, *) 'inside standalonestepwithoutdrainage after set_msg'        !-zlyu
 
         exit
       endif
    enddo
-
+   !write(stdout, *) 'inside standalonestepwithoutdrainage enddo'     !-zlyu
     if(this%bsimstatus%check_status()) &
          call endrun(msg=trim(this%bsimstatus%print_msg()))
+    !write(stdout, *) 'inside standalonestepwithoutdrainage after endrun'        !-zlyu
+    !write(stdout, *) '*********************************************************'
 
   end subroutine StandaloneStepWithoutDrainage
 
@@ -283,7 +292,7 @@ contains
       enddo
     enddo
   endif
-  write(stdout, *) 'In standalone after ifloop carbonflux_vars%rr_vr_col(1,1)= ', carbonflux_vars%rr_vr_col(1,1),',     c12flx%rt_vr_col(1,1)= ',this%biophys_forc(bounds%begc)%c12flx%rt_vr_col(1,1)
+  !write(stdout, *) 'In standalone after ifloop carbonflux_vars%rr_vr_col(1,1)= ', carbonflux_vars%rr_vr_col(1,1),',     c12flx%rt_vr_col(1,1)= ',this%biophys_forc(bounds%begc)%c12flx%rt_vr_col(1,1)
  
   call this%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi, carbonflux_vars, waterstate_vars, &
       waterflux_vars, temperature_vars, soilhydrology_vars, atm2lnd_vars, canopystate_vars, &
