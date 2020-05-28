@@ -249,7 +249,7 @@ implicit none
   else
     tempbgc = temp
   endif
-  write(stdout, *) 'inside decompk_scalar no temp rewrite --> tempbgc=', tempbgc, ',     temp=', temp                !-zlyu
+  !write(stdout, *) 'inside decompk_scalar no temp rewrite --> tempbgc=', tempbgc, ',     temp=', temp                !-zlyu
 
   !temperature scalar
   this%t_scalar     = 1._r8
@@ -259,7 +259,7 @@ implicit none
   else
     this%t_scalar= (Q10**(-25._r8/10._r8))*(froz_q10**((tempbgc-SHR_CONST_TKFRZ)/10._r8))
   endif
-  write(stdout, *) 'inside decompk_scalar after Q10  --> this%t_scalar=', this%t_scalar                !-zlyu
+  !write(stdout, *) 'inside decompk_scalar after Q10  --> this%t_scalar=', this%t_scalar                !-zlyu
   
   ! scale all decomposition rates by a constant to compensate for offset between original CENTURY temp func and Q10
   normalization_factor = (catanf(normalization_tref)/catanf_30) / (q10**((normalization_tref-25._r8)/10._r8))
@@ -296,7 +296,7 @@ implicit none
       
       !fref=t_fact*(tempbgc/tref) ! Modifies non-equilibrium enzymatic reactions
       fref=t_fact/t_fact1*(tempbgc/tref)                        !change from zacplsbetr_cmupdated,   -zlyu        
-      write(stdout, *) 'inside decompk_scalar after interp1   --> fref=', fref            !-zlyu
+      !write(stdout, *) 'inside decompk_scalar after interp1   --> fref=', fref            !-zlyu
       !write(stdout, *) 't_fact=', t_fact,',      tref=', tref
       
   !Update parameters
@@ -326,15 +326,15 @@ implicit none
 
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-    !write(stdout, *) 'w_scalar = ',this%w_scalar,'      sucsat = ',sucsat,'      maxpsi = ',maxpsi
-    !write(stdout, *) 'soilpsi = ',soilpsi,'      psi = ',psi, '     minpsi = ', minpsi
+    write(stdout, *) 'w_scalar = ',this%w_scalar,'      sucsat = ',sucsat,'      maxpsi = ',maxpsi
+    write(stdout, *) 'soilpsi = ',soilpsi,'      psi = ',psi, '     minpsi = ', minpsi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
 
   ! decomp only if soilpsi is higher than minpsi, some modification is needed for the following
   ! double check the paper by Wilson and Griffin, 1975
   if (psi > minpsi) then
-    this%w_scalar = (log(minpsi/psi)/log(minpsi/maxpsi))
+    this%w_scalar = (log(minpsi/psi)/log(minpsi/(maxpsi*0.7_r8)))               ! testing, multiply 0.7 to maxpsi         -zlyu
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside case psi > minpsi'
@@ -346,7 +346,7 @@ implicit none
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside else case where psi < minpsi'
-    write(stdout, *) 'w_scalar = ',this%w_scalar, '       psi = ',psi
+    !write(stdout, *) 'w_scalar = ',this%w_scalar, '       psi = ',psi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
   end if

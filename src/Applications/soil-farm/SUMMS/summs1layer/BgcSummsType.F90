@@ -599,7 +599,7 @@ contains
   !call this%sumsom%run_decomp(is_surf, this%summsbgc_index, dtime, ystates1(1:nom_tot_elms),&
   !    this%decompkf_eca, bgc_forc%pct_sand, bgc_forc%pct_clay, this%alpha_n, this%alpha_p, &
   !    cascade_matrix, this%k_decay(1:nom_pools), pot_co2_hr, spinup_scalar, spinup_flg, bstatus)
-  write(stdout, *) 'Inside BgcSummsType.f90 after run_decomp'           !-zlyu
+  !write(stdout, *) 'Inside BgcSummsType.f90 after run_decomp'           !-zlyu
   
   if(bstatus%check_status())return
 

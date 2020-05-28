@@ -68,9 +68,9 @@ implicit none
   begc = bounds%begc ; endc=bounds%endc
   lbj = bounds%lbj   ; ubj=bounds%ubj
     ! testing only, where the run crushed        -zlyu   01/27/2019
-    write(stdout, *) '*************************************'
-    write(stdout, *) 'inside BeTR_nitrogenstateRevType.F90' 
-    write(stdout, *) '*************************************@'
+    !write(stdout, *) '*************************************'
+    !write(stdout, *) 'inside BeTR_nitrogenstateRevType.F90' 
+    !write(stdout, *) '*************************************@'
     ! end of the testing
   SPVAL_ALLOC(this%cwdn_col(begc:endc))
   SPVAL_ALLOC(this%totlitn_col(begc:endc))

@@ -385,6 +385,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%cflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_met_vr(j1, j2) = this%cflx_met_vr(j1, j2) * 0.5_r8             ! cut input lit C by half for test        -zlyu
        enddo
     enddo
 
@@ -392,6 +393,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%cflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_cel_vr(j1, j2) = this%cflx_cel_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -399,6 +401,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%cflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_lig_vr(j1, j2) = this%cflx_lig_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -406,6 +409,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%cflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_cwd_vr(j1, j2) = this%cflx_cwd_vr(j1, j2) * 0.5_r8             ! cut input lit C by half for test        -zlyu
        enddo
     enddo
 
@@ -423,6 +427,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_met_vr(j1, j2) = this%nflx_met_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -430,6 +435,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_cel_vr(j1, j2) = this%nflx_cel_vr(j1, j2) * 0.5_r8              ! cut input lit N by half for test        -zlyu
        enddo
     enddo
 
@@ -437,6 +443,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_lig_vr(j1, j2) = this%nflx_lig_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -444,6 +451,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_cwd_vr(j1, j2) = this%nflx_cwd_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -451,6 +459,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%pflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_met_vr(j1, j2) = this%pflx_met_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -458,6 +467,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%pflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+           this%pflx_cel_vr(j1, j2) =  this%pflx_cel_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -465,6 +475,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%pflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_lig_vr(j1, j2) = this%pflx_lig_vr(j1, j2) * 0.5_r8                   ! cut input lit P by half for test        -zlyu
        enddo
     enddo
 
@@ -472,6 +483,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%pflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_cwd_vr(j1, j2) = this%pflx_cwd_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -479,6 +491,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_nh4_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_nh4_vr(j1, j2) = this%nflx_nh4_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -486,6 +499,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%nflx_no3_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_no3_vr(j1, j2)  = this%nflx_no3_vr(j1, j2) * 0.5_r8
        enddo
     enddo
 
@@ -493,6 +507,7 @@ contains
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
           this%pflx_po4_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_po4_vr(j1, j2) = this%pflx_po4_vr(j1, j2) * 0.5_r8                  ! cut input lit P by half for test        -zlyu
        enddo
     enddo
 
@@ -536,28 +551,28 @@ contains
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%cflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
@@ -571,85 +586,85 @@ contains
       enddo
     endif
 
-    write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
-    write(stdout, *) 'In Dis readCNPdata  --> rr_vr_disturb(1, 1)=', this%rr_vr_disturb(1, 1), ',     rr_vr_disturb(50, 8)=', this%rr_vr_disturb(50, 1)
-    write(stdout, *) 'num_disturb_time=', this%num_disturb_time                                          !-zlyu
-    write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
+    !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
+    !write(stdout, *) 'In Dis readCNPdata  --> rr_vr_disturb(1, 1)=', this%rr_vr_disturb(1, 1), ',     rr_vr_disturb(50, 8)=', this%rr_vr_disturb(50, 1)
+    !write(stdout, *) 'num_disturb_time=', this%num_disturb_time                                          !-zlyu
+    !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8             ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8                 ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_MINN_INPUT_NH4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_nh4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_nh4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_MINN_INPUT_NO3_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_no3_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%nflx_no3_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_MINP_INPUT_PO4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_po4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+          this%pflx_po4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8               ! cut lit input by half     -zlyu
        enddo
     enddo
 
@@ -882,10 +897,10 @@ contains
           this%h2osoi_liqvol_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
        enddo
     enddo
-    write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
-    write(stdout, *) 'In readDisdata after h2osoi_liqvol_disturb(1,1)=', this%h2osoi_liqvol_disturb(1, 1), ',     h2osoi_liqvol_disturb(50, 8)=', this%h2osoi_liqvol_disturb(50, 1)
-    write(stdout, *) 'num_disturb_time=', this%num_disturb_time                                          !-zlyu
-    write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+    !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'             !-zlyu
+    !write(stdout, *) 'In readDisdata after h2osoi_liqvol_disturb(1,1)=', this%h2osoi_liqvol_disturb(1, 1), ',     h2osoi_liqvol_disturb(50, 8)=', this%h2osoi_liqvol_disturb(50, 1)
+    !write(stdout, *) 'num_disturb_time=', this%num_disturb_time                                          !-zlyu
+    !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     
     !X!write(*, *) 'Reading SOILICE'
     call ncd_getvar(ncf_in_disturb_forc, 'SOILICE', data_2d)
@@ -1125,7 +1140,7 @@ contains
     
     !X!write(*, *) 'Updating forcing data'
     ! print to check variables           -zlyu
-    write(stdout, *) 'updateforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
+    !write(stdout, *) 'updateforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
     
     !if (ttime%tstep_continue > lastyr) then           ! it should be 445._r8*365._r8*48._r8+1._r8, shorten to quickly test
      !  write(stdout, *) '---------------------------------------------'
@@ -1147,7 +1162,7 @@ contains
     !if (ttime%tstep_continue > turbyr) then           ! add to calculate corresponding index of disturbance foricng data based on step on original forcing   -zlyu
        tstep_disturb = ttime%tstep_continue-turbyr
     !end if
-    write(stdout, *) 'tstep_continue=', ttime%tstep_continue, ',     tstep_disturb=', tstep_disturb        !-zlyu
+    !write(stdout, *) 'tstep_continue=', ttime%tstep_continue, ',     tstep_disturb=', tstep_disturb        !-zlyu
     
     !setup top boundary
     if (ttime%tstep_continue > turbyr) then
@@ -1187,45 +1202,45 @@ contains
                 waterstate_vars%air_vol_col(c,j)       = grid%watsat(j)-waterstate_vars%h2osoi_liqvol_col(c,j)
                 waterstate_vars%h2osoi_icevol_col(c,j) = this%h2osoi_icevol(tstep_disturb,j)
                 soilstate_vars%eff_porosity_col(c,j)   = grid%watsat(j)-this%h2osoi_icevol_disturb(tstep_disturb,j)           ! disturbance     -zlyu
-                  if (ttime%tstep_continue > turbyr) then              ! shorten from 445 to 25 for small test        -zlyu
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'in loop this%h2osoi_liqvol= ',this%h2osoi_liqvol_disturb(tstep_disturb,j), ',    j=', j            !, ',     delta_h2osoi_vol= ',delta_h2osoi_vol(j)
-                   write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep_disturb= ', tstep_disturb
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep=', tstep, ',      control h2osoi_liqvol(tstep,j)=', this%h2osoi_liqvol(tstep,j)
-                   write(stdout, *) '------------------------------------------------'
-                  endif       !end of testing    -zlyu
+                  !if (ttime%tstep_continue > turbyr) then              ! shorten from 445 to 25 for small test        -zlyu
+                   !write(stdout, *) '------------------------------------------------'
+                   !write(stdout, *) 'in loop this%h2osoi_liqvol= ',this%h2osoi_liqvol_disturb(tstep_disturb,j), ',    j=', j            !, ',     delta_h2osoi_vol= ',delta_h2osoi_vol(j)
+                   !write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep_disturb= ', tstep_disturb
+                   !write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep=', tstep, ',      control h2osoi_liqvol(tstep,j)=', this%h2osoi_liqvol(tstep,j)
+                   !write(stdout, *) '------------------------------------------------'
+                  !endif       !end of testing    -zlyu
                else                 
                 waterstate_vars%h2osoi_liqvol_col(c,j) = min(this%h2osoi_liqvol(tstep,j),grid%watsat(j))
                 waterstate_vars%air_vol_col(c,j)       = grid%watsat(j)-waterstate_vars%h2osoi_liqvol_col(c,j)
                 waterstate_vars%h2osoi_icevol_col(c,j) = this%h2osoi_icevol(tstep,j)
                 soilstate_vars%eff_porosity_col(c,j)   = grid%watsat(j)-this%h2osoi_icevol(tstep,j)
-                 if (ttime%tstep_continue > turbyr-5 .and. ttime%tstep_continue <= turbyr) then              !    -zlyu
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'control loop  this%h2osoi_liqvol= ',this%h2osoi_liqvol(tstep,j), ',    j=', j
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
-                   write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep= ', tstep
-                   write(stdout, *) '------------------------------------------------'
-                  endif       !end of testing    -zlyu
+                 !if (ttime%tstep_continue > turbyr-5 .and. ttime%tstep_continue <= turbyr) then              !    -zlyu
+                  ! write(stdout, *) '------------------------------------------------'
+                  ! write(stdout, *) 'control loop  this%h2osoi_liqvol= ',this%h2osoi_liqvol(tstep,j), ',    j=', j
+                  ! write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                  ! write(stdout, *) 'waterstate_vars%h2osoi_liqvol_col =',waterstate_vars%h2osoi_liqvol_col(c,j), ',     tstep= ', tstep
+                  ! write(stdout, *) '------------------------------------------------'
+                  !endif       !end of testing    -zlyu
              endif
 
              if (ttime%tstep_continue > turbyr) then     !shroten from 445 to 25 for quick test    ! only warm up last 5 years    -zlyu
                 temperature_vars%t_soisno_col(c,j)     = this%t_soi_disturb(tstep_disturb,j)         !+delta_tsoi(j)            ! adding warming scenario      -zlyu
-                if (ttime%tstep_continue > turbyr) then     ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then      ! shorten for testing      -zlyu
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'in loop this%t_soi= ',this%t_soi_disturb(tstep_disturb,j), ',    j=', j                   ! , ',     delta_tsoi= ',delta_tsoi(j)
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',      tstep=', tstep, ',     control t_soi(tstep,j)=', this%t_soi(tstep,j)
-                   write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep_disturb= ', tstep_disturb
-                   write(stdout, *) '------------------------------------------------'
-                endif                           ! end of testing        -zlyu
+                !if (ttime%tstep_continue > turbyr) then     ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then      ! shorten for testing      -zlyu
+                 !  write(stdout, *) '------------------------------------------------'
+                 !  write(stdout, *) 'in loop this%t_soi= ',this%t_soi_disturb(tstep_disturb,j), ',    j=', j                   ! , ',     delta_tsoi= ',delta_tsoi(j)
+                 !  write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',      tstep=', tstep, ',     control t_soi(tstep,j)=', this%t_soi(tstep,j)
+                 !  write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep_disturb= ', tstep_disturb
+                 !  write(stdout, *) '------------------------------------------------'
+                !endif                           ! end of testing        -zlyu
              else
                 temperature_vars%t_soisno_col(c,j)     = this%t_soi(tstep,j)
-                if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'control loop this%t_soi= ',this%t_soi(tstep,j), ',    j=', j
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
-                   write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep= ', tstep
-                   write(stdout, *) '------------------------------------------------'
-                endif                           ! end of testing        -zlyu
+                !if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
+                 !  write(stdout, *) '------------------------------------------------'
+                 !  write(stdout, *) 'control loop this%t_soi= ',this%t_soi(tstep,j), ',    j=', j
+                 !  write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+                 !  write(stdout, *) 'temperature_vars%t_soisno_col =',temperature_vars%t_soisno_col(c,j), ',     tstep= ', tstep
+                 !  write(stdout, *) '------------------------------------------------'
+                !endif                           ! end of testing        -zlyu
              endif
              !not using the following variable, so doesn't matter        -zlyu
              waterflux_vars%qflx_rootsoi_col(c,j)   = this%qflx_rootsoi(tstep,j)  !water exchange between soil and root, m/H2O/s  
@@ -1269,13 +1284,13 @@ contains
           if (ttime%tstep_continue > turbyr) then               ! shorten time to quickly test      -zlyu
              waterstate_vars%h2osoi_liq_col(c,j) = this%h2osoi_liq_disturb(tstep_disturb,j)              !-(delta_h2osoi_vol(j)*grid%dzsoi(j)*rhoh2o)             !-zlyu
              waterstate_vars%h2osoi_ice_col(c,j) = this%h2osoi_ice_disturb(tstep_disturb,j)
-             if (ttime%tstep_continue > turbyr) then             ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then              ! shorten from 445 to 25 for small test        -zlyu
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'in loop this%h2osoi_liq= ',this%h2osoi_liq_disturb(tstep_disturb,j), ',    j=', j                    !, ',     delta_h2osoi_vol*dz*r= ',(delta_h2osoi_vol(j)*grid%dzsoi(j)*rhoh2o)
-                   write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep_disturb= ', tstep_disturb
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep=', tstep, ',     control h2osoi_liq(tstep,j)=', this%h2osoi_liq(tstep,j)
-                   write(stdout, *) '------------------------------------------------'
-             endif       !end of testing    -zlyu
+             !if (ttime%tstep_continue > turbyr) then             ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then              ! shorten from 445 to 25 for small test        -zlyu
+              !     write(stdout, *) '------------------------------------------------'
+              !     write(stdout, *) 'in loop this%h2osoi_liq= ',this%h2osoi_liq_disturb(tstep_disturb,j), ',    j=', j                    !, ',     delta_h2osoi_vol*dz*r= ',(delta_h2osoi_vol(j)*grid%dzsoi(j)*rhoh2o)
+               !    write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep_disturb= ', tstep_disturb
+               !    write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep=', tstep, ',     control h2osoi_liq(tstep,j)=', this%h2osoi_liq(tstep,j)
+               !    write(stdout, *) '------------------------------------------------'
+             !endif       !end of testing    -zlyu
              waterstate_vars%h2osoi_vol_col(c,j) = waterstate_vars%h2osoi_liqvol_col(c,j) + &
                   waterstate_vars%h2osoi_icevol_col(c,j)
              waterstate_vars%h2osoi_vol_col(c,j) = min(waterstate_vars%h2osoi_vol_col(c,j), grid%watsat(j))
@@ -1286,13 +1301,13 @@ contains
              waterstate_vars%h2osoi_vol_col(c,j) = waterstate_vars%h2osoi_liqvol_col(c,j) + &
                   waterstate_vars%h2osoi_icevol_col(c,j)
              waterstate_vars%h2osoi_vol_col(c,j) = min(waterstate_vars%h2osoi_vol_col(c,j), grid%watsat(j))
-             if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'control loop this%h2osoi_liq= ',this%h2osoi_liq(tstep,j), ',    j=', j
-                   write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep= ', tstep
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
-                   write(stdout, *) '------------------------------------------------'
-             endif                           ! end of testing        -zlyu
+             !if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
+              !     write(stdout, *) '------------------------------------------------'
+              !     write(stdout, *) 'control loop this%h2osoi_liq= ',this%h2osoi_liq(tstep,j), ',    j=', j
+              !     write(stdout, *) 'waterstate_vars%h2osoi_liq_col =',waterstate_vars%h2osoi_liq_col(c,j), ',     tstep= ', tstep
+              !     write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+              !     write(stdout, *) '------------------------------------------------'
+             !endif                           ! end of testing        -zlyu
           endif 
        enddo
     enddo
@@ -1344,8 +1359,8 @@ contains
 
     tstep = ttime%tstep
     tstep_disturb = ttime%tstep_continue-turbyr                 ! -zlyu
-    write(stdout, *) 'Update CNPforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
-    write(stdout, *) 'tstep_disturb= ', tstep_disturb, ',       tstep_continue= ',ttime%tstep_continue            !-zlyu
+    !write(stdout, *) 'Update CNPforcingdata before if  --> ttime%tstep= ', ttime%tstep, ',    tstep= ', tstep
+    !write(stdout, *) 'tstep_disturb= ', tstep_disturb, ',       tstep_continue= ',ttime%tstep_continue            !-zlyu
     ! print to check variables           -zlyu
     !if (ttime%tstep_continue > lastyr) then            ! shorten from 445 to 25 to quickly test     -zlyu
 
@@ -1354,7 +1369,7 @@ contains
        !write(stdout, *) 'q_rr(1)= ', q_rr(1), ',    q_rr(2)= ', q_rr(2), ',     q_rr(4)= ', q_rr(4)
        !write(stdout, *) 'q_rr(7)= ', q_rr(7), ',    q_rr(15)= ', q_rr(15)
       ! write(stdout, *) 'tstep_continue =',ttime%tstep_continue
-       write(stdout, *) '---------------------------------------------'
+      ! write(stdout, *) '---------------------------------------------'
     !endif
     ! end of printing and checking       -zlyu 
     
@@ -1369,13 +1384,13 @@ contains
            carbonflux_vars%cflx_input_litr_lig_vr_col(c,j) = this%cflx_lig_vr_disturb(tstep_disturb,j)
            carbonflux_vars%cflx_input_litr_cwd_vr_col(c,j) = this%cflx_cwd_vr_disturb(tstep_disturb,j)
            carbonflux_vars%rr_vr_col(c,j)                  = this%rr_vr_disturb(tstep_disturb,j)                             ! *q_rr(j)            ! adding warming scenario      -zlyu
-           if (ttime%tstep_continue > turbyr) then           ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then          ! shorten from 445 to 25 to test       -zlyu
-              write(stdout, *) '---------------------------------------------'
-              write(stdout, *) 'in loop this%rr_vr= ', this%rr_vr(tstep_disturb,j), ',    j=', j, ',      control rr_vr(tstep,j)=',this%rr_vr(tstep,j)
-              write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep_disturb=', tstep_disturb
-              write(stdout, *) 'carbonflux_vars%rr_vr_col=',carbonflux_vars%rr_vr_col(c,j), ',     tstep= ', tstep
-              write(stdout, *) '---------------------------------------------'
-           endif                   ! end of testing          -zlyu
+           !if (ttime%tstep_continue > turbyr) then           ! .and. ttime%tstep < 445._r8*365._r8*48._r8+97) then          ! shorten from 445 to 25 to test       -zlyu
+            !  write(stdout, *) '---------------------------------------------'
+            !  write(stdout, *) 'in loop this%rr_vr= ', this%rr_vr(tstep_disturb,j), ',    j=', j, ',      control rr_vr(tstep,j)=',this%rr_vr(tstep,j)
+            !  write(stdout, *) 'tstep_continue =',ttime%tstep_continue, ',     tstep_disturb=', tstep_disturb
+            !  write(stdout, *) 'carbonflux_vars%rr_vr_col=',carbonflux_vars%rr_vr_col(c,j), ',     tstep= ', tstep
+            !  write(stdout, *) '---------------------------------------------'
+           !endif                   ! end of testing          -zlyu
            nitrogenflux_vars%nflx_input_litr_met_vr_col(c,j) = this%nflx_met_vr_disturb(tstep_disturb,j)
            nitrogenflux_vars%nflx_input_litr_cel_vr_col(c,j) = this%nflx_cel_vr_disturb(tstep_disturb,j)
            nitrogenflux_vars%nflx_input_litr_lig_vr_col(c,j) = this%nflx_lig_vr_disturb(tstep_disturb,j)
@@ -1410,13 +1425,13 @@ contains
            nitrogenflux_vars%nflx_minn_input_nh4_vr_col(c,j) = this%nflx_nh4_vr(tstep,j)
            nitrogenflux_vars%nflx_minn_input_no3_vr_col(c,j) = this%nflx_no3_vr(tstep,j)
            phosphorusflux_vars%pflx_minp_input_po4_vr_col(c,j) = this%pflx_po4_vr(tstep,j)
-           if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
-                   write(stdout, *) '------------------------------------------------'
-                   write(stdout, *) 'control loop this%rr_vr= ',this%rr_vr(tstep,j), ',    j=', j
-                   write(stdout, *) 'carbonflux_vars%rr_vr_col =',carbonflux_vars%rr_vr_col(c,j), ',     tstep= ', tstep
-                   write(stdout, *) 'tstep_continue =',ttime%tstep_continue
-                   write(stdout, *) '------------------------------------------------'
-             endif                           ! end of testing        -zlyu                                                             
+           !if (ttime%tstep_continue >turbyr-5 .and. ttime%tstep_continue <= turbyr) then
+            !       write(stdout, *) '------------------------------------------------'
+            !       write(stdout, *) 'control loop this%rr_vr= ',this%rr_vr(tstep,j), ',    j=', j
+            !       write(stdout, *) 'carbonflux_vars%rr_vr_col =',carbonflux_vars%rr_vr_col(c,j), ',     tstep= ', tstep
+            !       write(stdout, *) 'tstep_continue =',ttime%tstep_continue
+            !       write(stdout, *) '------------------------------------------------'
+            ! endif                           ! end of testing        -zlyu                                                             
            
         endif
 

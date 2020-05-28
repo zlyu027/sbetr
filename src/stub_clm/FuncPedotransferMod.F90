@@ -5,7 +5,9 @@ module FuncPedotransferMod
 !compute the mineral soil hydraulic properties.
 !currenty, only the Clapp-Hornberg formulation is used.
 !HISTORY:
-!created by Jinyun Tang, Mar.1st, 2014
+  !created by Jinyun Tang, Mar.1st, 2014
+  use clm_varctl  , only: iulog          !-zlyu, for output check
+  
 implicit none
   private
   public :: pedotransf
@@ -44,12 +46,17 @@ contains
    real(r8), intent(out):: xksat  !mm/s, saturated hydraulic conductivity
 
    character(len=32) :: subname = 'pedotransf'  ! subroutine name
+   write(iulog, *) 'In FuncPedotransferMod start case select'         !-zlyu
+   
    select case (ipedof)
    case (cosby_1984_table4)
+      write(iulog, *) 'case cosby 1984 table4'         !-zlyu
       call pedotransf_cosby1984_table4(sand, clay, watsat, bsw, sucsat, xksat)
    case (noilhan_lacarrere_1995)
+      write(iulog, *) 'case lacarrere 1995'         !-zlyu
       call pedotransf_noilhan_lacarrere1995(sand, clay, watsat, bsw, sucsat, xksat)
    case (cosby_1984_table5)
+      write(iulog, *) 'case cosby 1984 table5'         !-zlyu
       call pedotransf_cosby1984_table5(sand, clay, watsat, bsw, sucsat, xksat)
    case default
       call endrun(subname // ':: a pedotransfer function must be specified!')
@@ -75,6 +82,7 @@ contains
    watsat = 0.505_r8-0.00142_r8*sand-0.00037*clay
    bsw = 3.10+0.157*clay-0.003*sand
    sucsat  = 10._r8 * ( 10._r8**(1.54_r8-0.0095_r8*sand+0.0063*(100._r8-sand-clay)))
+   write(iulog, *) 'In case cosby table4  --> sucsat=',sucsat, ',        sand=',sand         !-zlyu
    xksat         = 0.0070556 *(10.**(-0.60+0.0126*sand-0.0064*clay) )     !mm/s now use table 4.
 
    end subroutine pedotransf_cosby1984_table4
@@ -98,6 +106,7 @@ contains
    watsat = 0.489_r8 - 0.00126_r8*sand
    bsw    = 2.91 + 0.159*clay
    sucsat = 10._r8 * ( 10._r8**(1.88_r8-0.0131_r8*sand) )
+   write(iulog, *) 'In case cosby table5   --> sucsat=', sucsat, ',    sand=', sand         !-zlyu
    xksat         = 0.0070556 *( 10.**(-0.884+0.0153*sand) ) ! mm/s, from table 5
 
    end subroutine pedotransf_cosby1984_table5
@@ -121,6 +130,7 @@ contains
    watsat = -0.00108*sand+0.494305
    bsw = 0.137*clay + 3.501
    sucsat = 10._r8**(-0.0088*sand+2.85)
+   write(iulog, *) 'In case 1995    --> sucsat=', sucsat, '    sand=', sand         !-zlyu
    xksat = 10._r8**(-0.0582*clay-0.00091*sand+0.000529*clay**2._r8-0.0001203*sand**2._r8-1.38)
    end subroutine pedotransf_noilhan_lacarrere1995
 !------------------------------------------------------------------------------------------

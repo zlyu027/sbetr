@@ -136,8 +136,8 @@ contains
   allocate(forcing_data)
   call forcing_data%ReadData(namelist_buffer, grid_data)
   is_disturb = forcing_data%is_disturbance       ! passing on, so later knows whether we need to use new readCNPdata    -zlyu
-  write(stdout, *) '================================================================'
-  write(stdout, *) 'In sbetrDriverMod after forcing_data%ReadData  --> is =_disturb=', is_disturb         !-zlyu
+  !write(stdout, *) '================================================================'
+  !write(stdout, *) 'In sbetrDriverMod after forcing_data%ReadData  --> is =_disturb=', is_disturb         !-zlyu
   
   !testing only                                 -zlyu    
   !write(stdout, *) '***************************'
@@ -190,7 +190,7 @@ contains
 
   !testing only                                 -zlyu    
   !write(stdout, *) '***************************'
-  write(stdout, *) 'sbetrdrivermod 2) after forcing_data%UpdateForcing'          !change here 
+  !write(stdout, *) 'sbetrdrivermod 2) after forcing_data%UpdateForcing'          !change here 
   !write(stdout, *) '***************************'
   ! end of the testing
   
@@ -244,7 +244,7 @@ contains
         !write(stdout, *) '================================================================'
         !write(stdout, *) 'In sbetrDriverMod before calling readdisturbancecnpdata'
         call forcing_data%ReadDisturbCNPData()          ! read disturb CNP data as well if there are      -zlyu
-        write(stdout, *) 'In sbetrDriverMod after calling readdisturbancecnpdata'
+        !write(stdout, *) 'In sbetrDriverMod after calling readdisturbancecnpdata'
         !write(stdout, *) 'In sbetrDriverMod  record =', record
         !write(stdout, *) '================================================================'
      else
@@ -392,7 +392,7 @@ contains
     !  simulation%filter_soilc, waterstate_vars)
     !update time stamp
     call time_vars%update_time_stamp()
-    write(stdout, *) 'out of second select, after update_time_stamp  --> time_vars%tstep=', time_vars%tstep                  !-zlyu
+    !write(stdout, *) 'out of second select, after update_time_stamp  --> time_vars%tstep=', time_vars%tstep                  !-zlyu
     
     !x print*,'write output'
     call simulation%WriteOfflineHistory(bounds, simulation%num_soilc,  &
@@ -442,7 +442,7 @@ contains
  call forcing_data%Destroy()
  if (is_disturb) then
     call forcing_data%Destroy_disturb()         ! need to release space disturbance if disturbance foricng is used   -zlyu
-    write(stdout, *) 'successfully destroy_disturb'                  !-zlyu
+    !write(stdout, *) 'successfully destroy_disturb'                  !-zlyu
  endif 
   deallocate(forcing_data)
   !write(stdout, *) 'End of sbetrDriverMod'                  !-zlyu

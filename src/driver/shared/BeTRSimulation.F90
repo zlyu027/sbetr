@@ -1185,10 +1185,10 @@ contains
 !      this%biophys_forc(c)%t_soisno_col(cc,lbj:ubj) = col_es%t_soisno(c,lbj:ubj)
       this%biophys_forc(c)%t_soi_10cm(cc)           = temperature_vars%t_soi10cm_col(c)
       this%biophys_forc(c)%t_soisno_col(cc,lbj:ubj) = temperature_vars%t_soisno_col(c,lbj:ubj)
-      write(stdout, *) '-------------------------------------------------------------------'
-      write(stdout, *) 'In BeTRSimulation after assign  -->   lbj=', lbj, ',      ubj=', ubj
-      write(stdout, *) 'biophys_forc(c)%t_soisno_col(cc,1)=',  this%biophys_forc(c)%t_soisno_col(cc,1), 'biophys_forc(c)%t_soisno_col(cc,8)=',  this%biophys_forc(c)%t_soisno_col(cc,8)            !-zlyu
-      write(stdout, *) 'temperature_vars%t_soisno_col(c,1)=',  temperature_vars%t_soisno_col(c,1), ',       temperature_vars%t_soisno_col(c,8)=',  temperature_vars%t_soisno_col(c,8)
+      !write(stdout, *) '-------------------------------------------------------------------'
+      !write(stdout, *) 'In BeTRSimulation after assign  -->   lbj=', lbj, ',      ubj=', ubj
+      !write(stdout, *) 'biophys_forc(c)%t_soisno_col(cc,1)=',  this%biophys_forc(c)%t_soisno_col(cc,1), 'biophys_forc(c)%t_soisno_col(cc,8)=',  this%biophys_forc(c)%t_soisno_col(cc,8)            !-zlyu
+      !write(stdout, *) 'temperature_vars%t_soisno_col(c,1)=',  temperature_vars%t_soisno_col(c,1), ',       temperature_vars%t_soisno_col(c,8)=',  temperature_vars%t_soisno_col(c,8)
       ! testing only         -zlyu
       pp = 0
       do pi = 1, betr_maxpatch_pft

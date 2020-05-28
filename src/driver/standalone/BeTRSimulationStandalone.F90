@@ -173,7 +173,7 @@ contains
       call this%betr(c)%step_without_drainage(this%betr_time, betr_bounds, this%betr_col(c), &
          this%betr_pft(c), this%num_soilc, this%filter_soilc, this%num_soilp, this%filter_soilp, &
          this%biophys_forc(c), this%biogeo_flux(c), this%biogeo_state(c), this%bstatus(c))
-      write(stdout, *) 'inside standalonestepwithoutdrainage in do after betr(c)%step_without_drainage'        !-zlyu
+      !write(stdout, *) 'inside standalonestepwithoutdrainage in do after betr(c)%step_without_drainage'        !-zlyu
 
       if(this%bstatus(c)%check_status())then
          call this%bsimstatus%setcol(c)
@@ -276,7 +276,7 @@ contains
   type(chemstate_type)                   , optional, intent(in) :: chemstate_vars
   type(soilstate_type)                   , optional, intent(in) :: soilstate_vars
   integer :: j, c, c_l
-  write(stdout, *) 'In standalone checkpoint, carbonflux_vars =', carbonflux_vars, '       active_col(c)= ',  this%active_col(c)
+  !write(stdout, *) 'In standalone checkpoint, carbonflux_vars =', carbonflux_vars, '       active_col(c)= ',  this%active_col(c)
   if(present(carbonflux_vars))then
     c_l=1
     do j = 1, betr_nlevsoi

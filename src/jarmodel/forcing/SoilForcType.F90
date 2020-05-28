@@ -110,7 +110,8 @@ contains
   !-----------------------------------------------------------------------
   subroutine set_soil_hydro_property(sand, clay, om_frac, zsoi, bd, watsat, bsw, sucsat, hksat)
 
-  use FuncPedotransferMod, only : pedotransf, init_pedof, get_ipedof
+    use FuncPedotransferMod, only : pedotransf, init_pedof, get_ipedof
+    use betr_constants           , only : stdout
   implicit none
   real(r8), intent(in) :: sand
   real(r8), intent(in) :: clay
@@ -133,9 +134,10 @@ contains
   real(r8) :: uncon_frac, uncon_hksat
   call init_pedof
   ipedof = get_ipedof(0)
-
+  write(stdout, *) 'In set soilforctype   --> call pedotransf   --> ipedof=', ipedof
+  write(stdout, *) 'sand=', sand,',     clay=', clay
   call pedotransf(ipedof, sand, clay, watsat, bsw, sucsat, xksat)
-
+  write(stdout, *) 'after pedotransf --> sucsat = ',sucsat
   om_watsat  = max(0.93_r8 - 0.1_r8   *(zsoi/zsapric), 0.83_r8)
   om_b       = min(2.7_r8  + 9.3_r8   *(zsoi/zsapric), 12.0_r8)
   om_sucsat  = min(10.3_r8 - 0.2_r8   *(zsoi/zsapric), 10.1_r8)
@@ -145,8 +147,10 @@ contains
   watsat    = (1._r8 - om_frac) * watsat + om_watsat*om_frac
 
   bsw       = (1._r8-om_frac) * (2.91_r8 + 0.159_r8*clay) + om_frac*om_b
+  write(stdout, *) 'om_frac=', om_frac, ',     om_sucsat=', om_sucsat
   sucsat    = (1._r8-om_frac) * sucsat + om_sucsat*om_frac
 
+  write(stdout, *) 'final sucsat=', sucsat
 
   ! perc_frac is zero unless perf_frac greater than percolation threshold
   if (om_frac > pcalpha) then

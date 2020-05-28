@@ -143,7 +143,8 @@ contains
     use TracerParamsMod , only : tracer_param_init
     use BetrStatusType  , only : betr_status_type
     use betr_columnType , only : betr_column_type
-    implicit none
+    use betr_constants , only : stdout                   !-zlyu
+    implicit none                              
     !arguments
     class(betr_type)                         , intent(inout)        :: this
     character(len=betr_namelist_buffer_size) , intent(in)           :: namelist_buffer
@@ -193,6 +194,8 @@ contains
     call this%plant_soilbgc%Init_plant_soilbgc(bounds, lbj, ubj, namelist_buffer)
 
     !initialize state variable
+
+    write(stdout, *) 'In BeTRType, call bgc_reaction%initcold'            !-zlyu
     call this%bgc_reaction%initCold(bounds, col, this%tracers, biophysforc, this%tracerstates)
 
     !initialize boundary condition type
