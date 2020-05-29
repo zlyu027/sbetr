@@ -2017,7 +2017,8 @@ if(exit_spinup)then
       write(stdout, *) 'In set forc BgcReactionSummsType'
       write(stdout, *) 'pct_clay=',this%summsforc(c,j)%pct_clay,',     pct_sand=', this%summsforc(c,j)%pct_sand
       write(stdout, *) 'c = ',c, ',      j = ',j
-      write(stdout, *), 'this%summsforc(c,j)%ystates(this%summsbgc_index%lid_co2)=', this%summsforc(c,j)%ystates(this%summsbgc_index%lid_co2)
+      write(stdout, *) 'this%summsforc(c,j)%ystates(lid_co2)=', this%summsforc(c,j)%ystates(this%summsbgc_index%lid_co2)
+      write(stdout, *) 'tracerstate_vars%tracer_conc_mobile_col(c,j,id_trc_co2x)=',tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)
       
       !moisture effect on mono uptake by microbes                                                  -zlyu
       micb_rc2rp = summs_para%micb_radc/summs_para%micb_radp
@@ -2153,7 +2154,8 @@ if(exit_spinup)then
       this%summsforc(c,j)%rt_ar  = plant_soilbgc%rt_vr_col(c,j)            !root autotrophic respiration, mol CO2/m3/s
       !if(j<=3)then 
        !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
-         write(stdout, *) 'In set_summs_forc j= ', j, '     plant_soilbgc%rt_vr_col = ', plant_soilbgc%rt_vr_col(c,j),',     this%summsforc(c,j)%rt_ar= ', this%summsforc(c,j)%rt_ar
+      write(stdout, *) 'In set_summs_forc j= ', j
+      write(stdout, *) 'plant_soilbgc%rt_vr_col = ', plant_soilbgc%rt_vr_col(c,j),',     this%summsforc(c,j)%rt_ar= ', this%summsforc(c,j)%rt_ar
          !write(stdout, *) '##########################################################################'
        !endif
     enddo
@@ -2281,7 +2283,25 @@ if(exit_spinup)then
         ystatesf(som_beg:som_end)
 
       tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_beg_dom:betrtracer_vars%id_trc_end_dom) = &
-        ystatesf(dom_beg:dom_end)
+           ystatesf(dom_beg:dom_end)
+      write(stdout, *) 'litr_end=', litr_end, ',    som_end=', som_end
+      write(stdout, *) 'dom_end=', dom_end, ',     Bm_end=', Bm_end
+
+write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg)=', this%summsforc(c,j)%ystates(litr_beg)
+write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg+1)=', this%summsforc(c,j)%ystates(litr_beg+1)
+write(stdout, *) 'this%summsforc(c,j)%ystates(litr_end)=', this%summsforc(c,j)%ystates(litr_end)
+
+write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg)=', this%summsforc(c,j)%ystates(som_beg)
+write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg+1)=', this%summsforc(c,j)%ystates(som_beg+1)
+write(stdout, *) 'this%summsforc(c,j)%ystates(som_end)=', this%summsforc(c,j)%ystates(som_end)
+
+write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg)=',  this%summsforc(c,j)%ystates(dom_beg)
+write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg+1)=',  this%summsforc(c,j)%ystates(dom_beg+1)
+write(stdout, *) 'this%summsforc(c,j)%ystates(dom_end)=',  this%summsforc(c,j)%ystates(dom_end)
+
+write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg)=', this%summsforc(c,j)%ystates(Bm_beg)
+write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg+1)=', this%summsforc(c,j)%ystates(Bm_beg+1)
+write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_end)=', this%summsforc(c,j)%ystates(Bm_end)
 
       tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_n2) = &
         ystatesf(this%summsbgc_index%lid_n2)

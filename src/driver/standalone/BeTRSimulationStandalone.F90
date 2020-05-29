@@ -285,8 +285,10 @@ contains
         if(.not. this%active_col(c))cycle
         this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j) = carbonflux_vars%rr_vr_col(c,j)
        !  if(j<=3)then 
-        ! write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
-         !write(stdout, *) 'In standalone j= ', j, '     carbonflux_vars%rr_vr_col= ', carbonflux_vars%rr_vr_col(c,j),',     c12flx%rt_vr_col= ',this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)
+         write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+         write(stdout, *) 'In standalone j= ', j
+         write(stdout, *) 'standalone  carbonflux_vars%rr_vr_col= ', carbonflux_vars%rr_vr_col(c,j)
+         write(stdout, *) 'standalone  c12flx%rt_vr_col= ',this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)
          !write(stdout, *) '##########################################################################'
          !endif                           !-zlyu
       enddo

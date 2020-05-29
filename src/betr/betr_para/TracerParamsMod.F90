@@ -198,6 +198,7 @@ contains
 
     ! !USES:
     use BetrStatusType        , only : betr_status_type
+    use betr_constants     , only : stdout         ! add for debug   -zlyu
     implicit none
     type(bounds_type)                , intent(in)  :: bounds                                  ! bounds
     type(betr_column_type)           , intent(in)  :: col
@@ -292,11 +293,15 @@ contains
                         aqu_diffus_col(c,n,j) = h2osoi_liqvol(c,n)*tau_liq(c,n)*aqu_diffus0_col(c,n,j)
                         bulk_diffus_col(c,n,j)=air_vol(c,n)*tau_gas(c,n)*diffgas+ &
                              aqu_diffus_col(c,n,j)*bunsencef_col(c,n,k)
-                     endif
+                     endif                   
                      !to prevent division by zero
                      bulk_diffus_col(c,n,j)=max(bulk_diffus_col(c,n,j),minval_diffus)
                      bulk_diffus_col(c,n,j)=bulk_diffus_col(c,n,j)*move_scalar(j)
                      aqu_diffus_col(c,n,j)=max(aqu_diffus_col(c,n,j), minval_diffus)
+                     
+                     write(stdout, *) 'cal bulk diff  --> bulk_diffus_col(c,n,j)=', bulk_diffus_col(c,n,j)
+                     write(stdout, *) 'c=',c , ',     n=', n, ',     j=', j
+                     
                   endif
                enddo
             enddo

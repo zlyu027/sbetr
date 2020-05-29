@@ -1130,8 +1130,8 @@ contains
     real(r8)           :: delta_tsoi(15)                        !-zlyu
     real(r8)           :: delta_h2osoi_vol(15)                  !-zlyu , temporary corrector
 
-    turbyr = 445*365*48               !*48     it is hourly not half hourly?                    ! testing       -zlyu
-    lastyr = 449*365*48+(180*48)       !just output last half a year, to save time     -zlyu
+    turbyr = 45*365*48        !445            !*48     it is hourly not half hourly?                    ! testing       -zlyu
+    lastyr = 49*365*48+(180*48)        !449    !just output last half a year, to save time     -zlyu
     !delta_tsoi = (/2.090206_r8, 2.29745_r8, 2.597984_r8, 3.124624_r8, 3.8605_r8, 4._r8, 4._r8, 4._r8, &
      !    0._r8,0._r8,0._r8,0._r8,0._r8,0._r8,0._r8/)
     ! warming soil temperature, depth resolved                  !-zlyu
@@ -1354,8 +1354,8 @@ contains
     ! bring up root respiration dur to soil warming, depth resolved               -zlyu
     !q_rr = (/2._r8**(2.090206_r8/10_r8),2._r8**(2.29745_r8/10_r8),2._r8**(2.597984_r8/10_r8),2._r8**(3.124624_r8/10._r8),2._r8**(3.8605_r8/10._r8), &
      !    2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),1._r8,1._r8,1._r8,1._r8,1._r8,1._r8,1._r8/)
-    turbyr = 445*365*48                 !48      it is hourly not half fourly??                 ! testing       -zlyu
-    lastyr = 449*365*48+(180*48)        !just output last half a year, to save time     -zlyu
+    turbyr = 45*365*48           !445         !48      it is hourly not half fourly??                 ! testing       -zlyu
+    lastyr = 49*365*48+(180*48)      !449    !just output last half a year, to save time     -zlyu
 
     tstep = ttime%tstep
     tstep_disturb = ttime%tstep_continue-turbyr                 ! -zlyu

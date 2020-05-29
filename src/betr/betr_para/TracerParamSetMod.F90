@@ -3,6 +3,7 @@ module TracerParamSetMod
 
   use bshr_kind_mod            , only : r8 => shr_kind_r8
   use BeTR_decompMod           , only : bounds_type  => betr_bounds_type
+  use betr_ctrl                , only : iulog => biulog                      ! add for output,  zlyu
  implicit none
  private
  public :: get_lgsorb_KL_Xsat, get_lnsorb_Kd
@@ -119,7 +120,8 @@ contains
    !
    ! USES
    !
-   use BeTRTracerType     , only : betrtracer_type
+     use BeTRTracerType     , only : betrtracer_type
+     use betr_ctrl      , only : iulog  => biulog                   ! add for debug, zlyu
    implicit none
    integer               , intent(in) :: trcid
    real(r8)              , intent(in) :: temp  !kelvin
@@ -137,6 +139,7 @@ contains
       diff=1.8e-5_r8*(temp/273.0_r8)**1.82_r8
    elseif(trcid==betrtracer_vars%id_trc_co2x)then
       diff=1.47e-5_r8*(temp/273.15_r8)**1.82_r8
+      write(iulog, *) 'get fas diffusivity  --> diff=', diff
    elseif(trcid==betrtracer_vars%id_trc_air_co2x)then
       diff=1.47e-5_r8*(temp/273.15_r8)**1.82_r8
    elseif(trcid==betrtracer_vars%id_trc_arrt_co2x)then
@@ -179,7 +182,8 @@ contains
    !
    ! USES
    !
-   use BeTRTracerType     , only : betrtracer_type
+     use BeTRTracerType     , only : betrtracer_type
+     use betr_ctrl          , only : iulog  => biulog            ! add for debug,   zlyu
    implicit none
    integer               ,           intent(in) :: trcid
    real(r8)              ,           intent(in) :: temp
@@ -203,6 +207,7 @@ contains
       diff=2.15e-9_r8*temp/298.0_r8
    elseif(trcid==betrtracer_vars%id_trc_co2x)then
       diff=1.81e-6_r8*exp(-2032.6/temp)
+      write(iulog, *), 'get aqu diffusivity  --> diff=', diff
    elseif(trcid==betrtracer_vars%id_trc_air_co2x)then
       diff=1.81e-6_r8*exp(-2032.6/temp)
    elseif(trcid==betrtracer_vars%id_trc_arrt_co2x)then
@@ -251,7 +256,7 @@ contains
    !Moldrup et al, 2003
    !
    ! USES
-   !
+   use betr_ctrl      , only : iulog  => biulog      ! add for debug, zlyu
 
    implicit none
    real(r8),           intent(in) :: eff_por   ! effective porosity
@@ -270,6 +275,9 @@ contains
       else
          taugas= eff_por**(1._r8/3._r8)*(airvol/eff_por)**(7._r8/3._r8)
       endif
+      write(iulog, *) 'get_taugas --> taugas=', taugas
+      write(iulog, *) 'airvol=', airvol
+      write(iulog, *) 'eff_por=', eff_por
    endif
    end function get_taugas
 
