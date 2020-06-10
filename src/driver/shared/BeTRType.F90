@@ -195,7 +195,7 @@ contains
 
     !initialize state variable
 
-    write(stdout, *) 'In BeTRType, call bgc_reaction%initcold'            !-zlyu
+   ! write(stdout, *) 'In BeTRType, call bgc_reaction%initcold'            !-zlyu
     call this%bgc_reaction%initCold(bounds, col, this%tracers, biophysforc, this%tracerstates)
 
     !initialize boundary condition type
@@ -344,7 +344,7 @@ contains
     integer            :: j
     integer            :: lbj, ubj
 
-    !write(stdout, *) 'inside step_without_drainage in BeTRType.F90 beginning'       !-zlyu
+!    write(stdout, *) 'inside step_without_drainage in BeTRType.F90 beginning'       !-zlyu
     call betr_status%reset()
     lbj = bounds%lbj; ubj = bounds%ubj
     
@@ -382,7 +382,7 @@ contains
     if(betr_status%check_status())return
     
     if(this%reaction_on)                     &      ! deleted if condition  -->  .and. inloop_reaction   -zlyu
-         !write(stdout, *) 'inside step_without_drainage inside traction_on loop'              !-zlyu
+    !  write(stdout, *) 'inside step_without_drainage before calc_bgc_reaction'              !-zlyu
     call this%bgc_reaction%calc_bgc_reaction(bounds, col, lbj, ubj, &
          num_soilc,                                            &
          filter_soilc,                                         &
@@ -397,7 +397,7 @@ contains
          this%tracerfluxes,                                    &
          this%tracerboundaryconds,                             &
          this%plant_soilbgc, biogeo_flux, betr_status)       
-    !write(stdout, *) 'inside step_without_drainage in loop after calc_bgc_reaction'          !-zlyu
+  !  write(stdout, *) 'inside step_without_drainage after calc_bgc_reaction'          !-zlyu
     if(betr_status%check_status())return
 
     if(this%tracers%debug)call this%debug_info(bounds, col, num_soilc, filter_soilc, 'afbgc react\n bef gwstransp',betr_status)
@@ -488,7 +488,8 @@ contains
   subroutine retrieve_biofluxes(this, num_soilc, filter_soilc, &
     num_soilp, filter_soilp, biogeo_flux)
 
-  use BeTR_biogeoFluxType      , only : betr_biogeo_flux_type
+    use BeTR_biogeoFluxType      , only : betr_biogeo_flux_type
+    use betr_constants           , only : stdout                   !-zlyu
   implicit none
   ! !ARGUMENTS:
   class(betr_type)                     , intent(inout) :: this
@@ -498,6 +499,8 @@ contains
   integer                              , intent(in)    :: filter_soilp(:)
   type(betr_biogeo_flux_type)          , intent(inout) :: biogeo_flux
   integer ::  p, fp
+  !write(stdout, *) 'In BeTRType retrieve_biofluxes --> call bgc_reaction%retrieve_biogeoflux'          !-zlyu
+  
   call this%bgc_reaction%retrieve_biogeoflux(num_soilc, &
      filter_soilc, this%tracerfluxes, this%tracers, biogeo_flux)
 

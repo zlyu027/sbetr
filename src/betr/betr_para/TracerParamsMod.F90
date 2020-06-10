@@ -299,8 +299,8 @@ contains
                      bulk_diffus_col(c,n,j)=bulk_diffus_col(c,n,j)*move_scalar(j)
                      aqu_diffus_col(c,n,j)=max(aqu_diffus_col(c,n,j), minval_diffus)
                      
-                     write(stdout, *) 'cal bulk diff  --> bulk_diffus_col(c,n,j)=', bulk_diffus_col(c,n,j)
-                     write(stdout, *) 'c=',c , ',     n=', n, ',     j=', j
+                     !write(stdout, *) 'cal bulk diff  --> bulk_diffus_col(c,n,j)=', bulk_diffus_col(c,n,j)
+                     !write(stdout, *) 'c=',c , ',     n=', n, ',     j=', j
                      
                   endif
                enddo

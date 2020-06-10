@@ -167,13 +167,13 @@ contains
 
        ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***********************************************************8*'
-    !write(stdout, *) 'inside standalonestepwithoutdrainage in do after frac_normalize'        !-zlyu
+    !write(stdout, *) 'inside standalonestepwithoutdrainage before betr%step_without_drainage'        !-zlyu
     !write(stdout, *) '*************************************************************'
     ! end of the testing
       call this%betr(c)%step_without_drainage(this%betr_time, betr_bounds, this%betr_col(c), &
          this%betr_pft(c), this%num_soilc, this%filter_soilc, this%num_soilp, this%filter_soilp, &
          this%biophys_forc(c), this%biogeo_flux(c), this%biogeo_state(c), this%bstatus(c))
-      !write(stdout, *) 'inside standalonestepwithoutdrainage in do after betr(c)%step_without_drainage'        !-zlyu
+      !write(stdout, *) 'inside standalonestepwithoutdrainage after betr(c)%step_without_drainage'        !-zlyu
 
       if(this%bstatus(c)%check_status())then
          call this%bsimstatus%setcol(c)
@@ -281,14 +281,14 @@ contains
     c_l=1
     do j = 1, betr_nlevsoi
        do c = bounds%begc, bounds%endc
-          write(stdout, *) 'In standalone checkpoin after do'
+         ! write(stdout, *) 'In standalone setbiophysforcing, start pass rr_vr_col'                 !-zlyu
         if(.not. this%active_col(c))cycle
         this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j) = carbonflux_vars%rr_vr_col(c,j)
        !  if(j<=3)then 
-         write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
-         write(stdout, *) 'In standalone j= ', j
-         write(stdout, *) 'standalone  carbonflux_vars%rr_vr_col= ', carbonflux_vars%rr_vr_col(c,j)
-         write(stdout, *) 'standalone  c12flx%rt_vr_col= ',this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)
+         !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+         !write(stdout, *) 'In standalone j= ', j
+         !write(stdout, *) 'standalone  carbonflux_vars%rr_vr_col= ', carbonflux_vars%rr_vr_col(c,j)
+         !write(stdout, *) 'standalone  c12flx%rt_vr_col= ',this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)
          !write(stdout, *) '##########################################################################'
          !endif                           !-zlyu
       enddo
@@ -324,6 +324,7 @@ contains
   use PlantMicKineticsMod, only : PlantMicKinetics_type
   use mathfuncMod        , only : apvb,bisnan
   use tracer_varcon      , only : use_c13_betr, use_c14_betr, use_warm_betr
+  use betr_constants     , only : stdout                                      ! add -zlyu
   implicit none
   class(betr_simulation_standalone_type) , intent(inout)        :: this
   type(bounds_type) , intent(in)  :: bounds
@@ -401,6 +402,10 @@ contains
       this%biophys_forc(c)%p31flx%pflx_minp_input_po4_vr_col(c_l,j) = phosphorusflux_vars%pflx_minp_input_po4_vr_col(c,j)
 
       this%biophys_forc(c)%biochem_pmin_vr(c_l,j) =0._r8
+
+      this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j) = carbonflux_vars%rr_vr_col(c,j)                !-zlyu
+     ! write(stdout, *) 'plantsoilbgcsend carbonflux%rr_vr_col=', carbonflux_vars%rr_vr_col(c,j)
+     ! write(stdout, *) 'biophys%rt_vr_col=', this%biophys_forc(c)%c12flx%rt_vr_col(c_l,j)          !-zlyu
     enddo
   enddo
 
@@ -454,6 +459,9 @@ contains
 
   !summarize the fluxes and state variables
   c_l = 1
+
+ ! write(stdout, *) 'In StandalonePlantSoilBGCRecv'           !-zlyu
+  
   call this%BeTRSetBounds(betr_bounds)
   begc_l = betr_bounds%begc; endc_l=betr_bounds%endc;
 
@@ -466,7 +474,7 @@ contains
 
     ! testing only, where the run collapsed        -zlyu   01/27/2019
     !write(stdout, *) '***************************'
-    !write(stdout, *) 'inside StandalonePlantSoilBGCRec after retrieve_biostate'
+    !write(stdout, *) 'inside StandalonePlantSoilBGCRec after retrieve_biostate'         !-zlyu
     !write(stdout, *) '***************************'
     ! end of the testing
 
@@ -475,9 +483,12 @@ contains
       call this%bsimstatus%set_msg(this%bstatus(c)%print_msg(),this%bstatus(c)%print_err())
 
       exit
-    endif
+   endif
+   
+    !write(stdout, *) 'inside StandalonePlantSoilBGCRec before retrieve_biofluxes'          !-zlyu
     call this%betr(c)%retrieve_biofluxes(this%num_soilc, this%filter_soilc, &
-      this%num_soilp, this%filter_soilp, this%biogeo_flux(c))
+         this%num_soilp, this%filter_soilp, this%biogeo_flux(c))
+    !write(stdout, *) 'inside StandalonePlantSoilBGCRec after retrieve_biofluxes'          !-zlyu
 
     call this%biogeo_state(c)%summary(betr_bounds, 1, betr_nlevtrc_soil,&
          this%betr_col(c)%dz(begc_l:endc_l,1:betr_nlevtrc_soil), &

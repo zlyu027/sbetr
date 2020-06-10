@@ -1699,6 +1699,7 @@ contains
   use betr_ctrl                , only : betr_spinup_state
   use MathfuncMod              , only : fpmax
   use betr_varcon              , only : grav => bgrav
+  use betr_constants           , only : stdout                        !-zlyu
   implicit none
   class(ecacnp_bgc_reaction_type) , intent(inout)    :: this
   type(bounds_type)                    , intent(in) :: bounds                         ! bounds
@@ -1841,6 +1842,9 @@ contains
       this%ecacnp_forc(c,j)%nflx_input_litr_lwd = biophysforc%n14flx%nflx_input_litr_lwd_vr_col(c,j)
       this%ecacnp_forc(c,j)%nflx_input_litr_fwd = biophysforc%n14flx%nflx_input_litr_fwd_vr_col(c,j)
 
+      write(stdout, *) 'in ecacnp_set_forc --> litr_met=', biophysforc%c12flx%cflx_input_litr_met_vr_col(c,j)
+      write(stdout, *) 'ecacnp%litr_met=', this%ecacnp_forc(c,j)%cflx_input_litr_met                             !debug info, zlyu
+      
       this%ecacnp_forc(c,j)%pflx_input_litr_met = biophysforc%p31flx%pflx_input_litr_met_vr_col(c,j)
       this%ecacnp_forc(c,j)%pflx_input_litr_cel = biophysforc%p31flx%pflx_input_litr_cel_vr_col(c,j)
       this%ecacnp_forc(c,j)%pflx_input_litr_lig = biophysforc%p31flx%pflx_input_litr_lig_vr_col(c,j)
@@ -1951,8 +1955,10 @@ contains
   type is(ecacnp_plant_soilbgc_type)
   do j = lbj, ubj
     do fc = 1, num_soilc
-      c = filter_soilc(fc)
+       c = filter_soilc(fc)
+       write(stdout, *) 'set_forc rt_vr_col=',biophysforc%c12flx%rt_vr_col(c,j)   
       this%ecacnp_forc(c,j)%rt_ar  = biophysforc%c12flx%rt_vr_col(c,j)            !root autotrophic respiration, mol CO2/m3/s
+      write(stdout, *) 'ecacnp_forc%rt_ar=', this%ecacnp_forc(c,j)%rt_ar 
     enddo
   enddo
   end select

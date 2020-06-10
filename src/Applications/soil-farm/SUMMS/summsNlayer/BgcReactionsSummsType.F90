@@ -209,8 +209,8 @@ contains
    move_scalar             => tracers%move_scalar                    &
   )
 
-  write(stdout, *) '================================================================'
-  write(stdout, *) 'In set_bgc_spinup '
+  !write(stdout, *) '================================================================'     !-zlyu
+  !write(stdout, *) 'In set_bgc_spinup '
 
   if(.not. exit_spinup .and. betr_spinup_state/=0 .and. spinup_stage/=2) then
     do c = bounds%begc, bounds%endc
@@ -514,8 +514,8 @@ if(exit_spinup)then
     !volatile tracers
     itemp = 0; itemp_trc=0
 
-    write(stdout, *) '================================================================'
-    write(stdout, *) 'In init_betrbgc starting adding groups '
+    !write(stdout, *) '================================================================'
+    !write(stdout, *) 'In init_betrbgc starting adding groups '            !-zlyu
     
     call betrtracer_vars%add_tracer_group(trc_grp_cnt=addone(itemp), mem = 1, &
       trc_cnt=itemp_trc, trc_grp=betrtracer_vars%id_trc_n2, &
@@ -1359,7 +1359,7 @@ if(exit_spinup)then
     !record = betr_time_type%tstep              !-zlyu
     !if (record > 788399) then             !-zlyu
        !write(stdout, *) '#######################################################'         !-zlyu
-       !write(stdout, *) 'In calc_bgc_reaction after reset'
+       !write(stdout, *) 'In BgcReactionSummsType calc_bgc_reaction'
     !endif
     
     if(betrtracer_vars%debug)call this%debug_info(bounds, num_soilc, filter_soilc, col%dz(bounds%begc:bounds%endc,bounds%lbj:bounds%ubj),&
@@ -1370,7 +1370,7 @@ if(exit_spinup)then
     allocate(ystatesf(nstates))
 
     !if (record > 788399)
-    write(stdout, *) 'In calc_bgc_reaction after allocate of ystate'                   !-zlyu
+    !write(stdout, *) 'In calc_bgc_reaction after allocate of ystate'                   !-zlyu
     
     !pass in fluxes and state varaibles into the 1D soil bgc model
     call this%set_summs_forc(bounds, col, lbj, ubj, jtops, num_soilc, filter_soilc, &
@@ -1378,8 +1378,8 @@ if(exit_spinup)then
     ! testing only, where the run crushed        -zlyu   02/2019
     !write(stdout, *) '***************************'
     !if (record > 788399)
-    write(stdout, *) 'In calc_bgc_reaction after set_summs_forc'                     !-zlyu
-    write(stdout, *) '***************************'
+    !write(stdout, *) 'In calc_bgc_reaction after set_summs_forc'                     !-zlyu
+    !write(stdout, *) '***************************'
     ! end of the testing
     
     select type(plant_soilbgc)
@@ -1401,7 +1401,7 @@ if(exit_spinup)then
         this%summsforc(c,j)%debug=betrtracer_vars%debug
         this%summseca(c,j)%bgc_on=.not. betrtracer_vars%debug
         !if (record > 788399)
-        write(stdout, *) 'inside calc_bgc_reaction do loop before call runbgc'                   !-zlyu
+        !write(stdout, *) 'inside calc_bgc_reaction do loop before call runbgc'                   !-zlyu
         
         if(this%summsforc(c,j)%debug)print*,'runbgc',j
         call this%summseca(c,j)%runbgc(is_surflit, dtime, this%summsforc(c,j), nstates, &             !this, passing on this current bgc_reaction_summs_type       -zlyu
@@ -1425,7 +1425,7 @@ if(exit_spinup)then
         call this%precision_filter(nstates, ystatesf)
         this%summsbgc_index%debug=betrtracer_vars%debug
         !if (record > 788399)
-        write(stdout, *) 'inside calc_bgc_reaction before retrieve output'                   !-zlyu
+        !write(stdout, *) 'inside calc_bgc_reaction before retrieve output'                   !-zlyu
 
         call this%retrieve_output(c, j, nstates, ystates0, ystatesf, dtime, betrtracer_vars, tracerflux_vars,&
              tracerstate_vars, plant_soilbgc, biogeo_flux)
@@ -1465,7 +1465,7 @@ if(exit_spinup)then
     !     betrtracer_vars, tracerstate_vars,  'after bgcreact',betr_status)
    endif
    !if (record > 788399)
-   write(stdout, *) 'inside calc_bgc_reaction at end'              !-zlyu
+  ! write(stdout, *) 'inside calc_bgc_reaction at end'              !-zlyu
 
   end subroutine calc_bgc_reaction
 
@@ -1725,8 +1725,8 @@ if(exit_spinup)then
       enddo
 
    enddo
-   write(stdout, *) 'check co2x after initcold  tracerstate_vars%tracer_conc_atm_col(1,volatileid(betrtracer_vars%id_trc_co2x ))= ',tracerstate_vars%tracer_conc_atm_col(1,volatileid(betrtracer_vars%id_trc_co2x ))
-   write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+   !write(stdout, *) 'check co2x after initcold  tracerstate_vars%tracer_conc_atm_col(1,volatileid(betrtracer_vars%id_trc_co2x ))= ',tracerstate_vars%tracer_conc_atm_col(1,volatileid(betrtracer_vars%id_trc_co2x ))
+   !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     end associate
   end subroutine InitCold
 
@@ -1738,6 +1738,7 @@ if(exit_spinup)then
   use BeTRTracerType           , only : BeTRTracer_Type
   use BeTR_biogeoFluxType      , only : betr_biogeo_flux_type
   use tracer_varcon            , only : natomw, patomw, catomw
+  use betr_constants           , only : stdout                        !-zlyu
   implicit none
   class(bgc_reaction_summs_type)   , intent(inout)    :: this !!
   integer                          , intent(in)    :: num_soilc                   ! number of columns in column filter
@@ -1752,6 +1753,10 @@ if(exit_spinup)then
       tracer_flx_leaching_col => tracerflux_vars%tracer_flx_leaching_col, &
       tracer_flx_surfrun_col  => tracerflux_vars%tracer_flx_surfrun_col, &
       tracer_flx_drain_col    => tracerflux_vars%tracer_flx_drain_col, &
+      tracer_flx_surfemi_col  => tracerflux_vars%tracer_flx_surfemi_col, &       ! add to retrieve surface soil flx    -zlyu
+      volatileid              => betrtracer_vars%volatileid   , &                ! add to retrieve                     -zlyu
+      id_trc_nh3x             => betrtracer_vars%id_trc_nh3x  , &                ! add to retrieve                     -zlyu
+      id_trc_co2x             => betrtracer_vars%id_trc_co2x,  &                 ! add to retrieve                     -zlyu
       id_trc_no3x             => betrtracer_vars%id_trc_no3x,  &
       id_trc_p_sol            => betrtracer_vars%id_trc_p_sol  &
    )
@@ -1760,6 +1765,8 @@ if(exit_spinup)then
     n_loc=this%summsbgc_index%n_loc
     p_loc=this%summsbgc_index%p_loc
 
+   ! write(stdout, *) 'In BgcReactionSummsType --> retrieve_biogeoflux'        !-zlyu
+    
    !retrieve tracer losses through surface and subsurface runoffs
    !no3 leach, no3 runoff
    do fc = 1, num_soilc
@@ -1768,16 +1775,29 @@ if(exit_spinup)then
      biogeo_flux%n14flux_vars%smin_no3_runoff_col(c) = tracer_flx_surfrun_col(c,id_trc_no3x) * natomw
      biogeo_flux%n14flux_vars%smin_no3_qdrain_col(c) = tracer_flx_drain_col(c,id_trc_no3x) * natomw
 
+     ! add to retrieve        -zlyu
+     biogeo_flux%n14flux_vars%smin_nh4_leached_col(c) = tracer_flx_leaching_col(c,id_trc_nh3x) * natomw  ![gN/m2/s]
+     biogeo_flux%n14flux_vars%smin_nh4_runoff_col(c) = tracer_flx_surfrun_col(c,id_trc_nh3x) * natomw
+     biogeo_flux%n14flux_vars%smin_nh4_qdrain_col(c) = tracer_flx_drain_col(c,id_trc_nh3x) * natomw
+     ! end 
+
      !return dom loss in terms c, n, and p.
      trcid =  betrtracer_vars%id_trc_beg_dom+c_loc-1
      biogeo_flux%c12flux_vars%som_c_leached_col(c)= tracer_flx_leaching_col(c,trcid) * catomw
      biogeo_flux%c12flux_vars%som_c_runoff_col(c) = tracer_flx_surfrun_col(c,trcid) * catomw
      biogeo_flux%c12flux_vars%som_c_qdrain_col(c) = tracer_flx_drain_col(c,trcid) * catomw
 
+     ! add to retrieve         -zlyu
+     !write(stdout, *) 'retrieve_biogeoflux   --> flx_surfemi_col=', tracer_flx_surfemi_col(c,volatileid(id_trc_co2x))*catomw       !-zlyu
+     !write(stdout, *) 'co2_soi_flx_col=', biogeo_flux%c12flux_vars%co2_soi_flx_col(c)                                              !-zlyu
+     biogeo_flux%c12flux_vars%co2_soi_flx_col(c) = tracer_flx_surfemi_col(c,volatileid(id_trc_co2x))*catomw
+
+
      trcid =  betrtracer_vars%id_trc_beg_dom+n_loc-1
      biogeo_flux%n14flux_vars%som_n_leached_col(c)= tracer_flx_leaching_col(c,trcid) * natomw
      biogeo_flux%n14flux_vars%som_n_runoff_col(c) = tracer_flx_surfrun_col(c,trcid) * natomw
      biogeo_flux%n14flux_vars%som_n_qdrain_col(c) = tracer_flx_drain_col(c,trcid) * natomw
+     biogeo_flux%n14flux_vars%nh3_soi_flx_col(c) = tracer_flx_surfemi_col(c,volatileid(id_trc_nh3x))*natomw        ! add to retrieve     -zlyu
 
      trcid =  betrtracer_vars%id_trc_beg_dom+p_loc-1
      biogeo_flux%p31flux_vars%som_p_leached_col(c)= tracer_flx_leaching_col(c,trcid) * patomw
@@ -1788,6 +1808,10 @@ if(exit_spinup)then
      biogeo_flux%p31flux_vars%sminp_leached_col(c) = tracer_flx_leaching_col(c,id_trc_p_sol) * patomw
      biogeo_flux%p31flux_vars%sminp_runoff_col(c) = tracer_flx_surfrun_col(c,id_trc_p_sol) * patomw
      biogeo_flux%p31flux_vars%sminp_qdrain_col(c) = tracer_flx_drain_col(c,id_trc_p_sol) * patomw
+
+     ! add to retrieve            -zlyu
+     biogeo_flux%qflx_rofliq_qsub_dic_col(c) = tracer_flx_surfrun_col(c,id_trc_co2x) * catomw
+     biogeo_flux%qflx_rofliq_qsur_dic_col(c) = tracer_flx_drain_col(c,id_trc_co2x) * catomw
 
    enddo
 
@@ -1860,6 +1884,8 @@ if(exit_spinup)then
   real(r8) :: fact_mic(10)                       !-zlyu
   real(r8) :: fint(10)                           !intermediate
   real(r8) :: ko2_1wdNA(10), gamma_D(10), fT(10), K0_DB(10)
+  real(r8) :: w_scalar_rr                        ! constrain root respiration       -zlyu
+  real(r8) :: psi, minpsi, maxpsi                ! constrain root respiration       -zlyu
   ! end of adding paras on moisture effect calculation for mono uptake         -zlyu
   associate( &
      litr_beg =>  this%summsbgc_index%litr_beg  , &
@@ -1876,7 +1902,7 @@ if(exit_spinup)then
   call betr_status%reset()
   SHR_ASSERT_ALL((ubound(jtops) == (/bounds%endc/)), errMsg(mod_filename,__LINE__),betr_status)
 
-  write(stdout, *) 'In set_summs_forc, assign trc to ystates '
+  !write(stdout, *) 'In set_summs_forc, assign trc to ystates '
   
   do j = lbj, ubj
     do fc = 1, num_soilc
@@ -1955,6 +1981,8 @@ if(exit_spinup)then
       this%summsforc(c,j)%cflx_input_litr_cwd = biophysforc%c12flx%cflx_input_litr_cwd_vr_col(c,j)
       this%summsforc(c,j)%cflx_input_litr_lwd = biophysforc%c12flx%cflx_input_litr_lwd_vr_col(c,j)
       this%summsforc(c,j)%cflx_input_litr_fwd = biophysforc%c12flx%cflx_input_litr_fwd_vr_col(c,j)
+      !write(stdout, *) 'set_summs_forc check c12flx --> litr_met=', biophysforc%c12flx%cflx_input_litr_met_vr_col(c,j)
+      !write(stdout, *) 'summs%litr_met=', this%summsforc(c,j)%cflx_input_litr_met
 
       this%summsforc(c,j)%nflx_input_litr_met = biophysforc%n14flx%nflx_input_litr_met_vr_col(c,j)
       this%summsforc(c,j)%nflx_input_litr_cel = biophysforc%n14flx%nflx_input_litr_cel_vr_col(c,j)
@@ -2014,11 +2042,11 @@ if(exit_spinup)then
       this%summsforc(c,j)%cellorg = biophysforc%cellorg_col(c,j)
       this%summsforc(c,j)%pH = biophysforc%soil_pH(c,j)
 
-      write(stdout, *) 'In set forc BgcReactionSummsType'
-      write(stdout, *) 'pct_clay=',this%summsforc(c,j)%pct_clay,',     pct_sand=', this%summsforc(c,j)%pct_sand
-      write(stdout, *) 'c = ',c, ',      j = ',j
-      write(stdout, *) 'this%summsforc(c,j)%ystates(lid_co2)=', this%summsforc(c,j)%ystates(this%summsbgc_index%lid_co2)
-      write(stdout, *) 'tracerstate_vars%tracer_conc_mobile_col(c,j,id_trc_co2x)=',tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)
+      !write(stdout, *) 'In set forc BgcReactionSummsType'
+      !write(stdout, *) 'pct_clay=',this%summsforc(c,j)%pct_clay,',     pct_sand=', this%summsforc(c,j)%pct_sand
+      !write(stdout, *) 'c = ',c, ',      j = ',j
+      !write(stdout, *) 'this%summsforc(c,j)%ystates(lid_co2)=', this%summsforc(c,j)%ystates(this%summsbgc_index%lid_co2)
+      !write(stdout, *) 'tracerstate_vars%tracer_conc_mobile_col(c,j,id_trc_co2x)=',tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)
       
       !moisture effect on mono uptake by microbes                                                  -zlyu
       micb_rc2rp = summs_para%micb_radc/summs_para%micb_radp
@@ -2061,10 +2089,10 @@ if(exit_spinup)then
      ! if (this%record == 0 .and. j < 3)then
          !write(stdout, *) '*****************************************=============================================='
       !   write(stdout, *) 'decompk_scalar j= ',j
-         write(stdout, *) 'kaff_mono_mic_sm= ',this%kaff_mono_mic_sm(j)
-         write(stdout, *) 'phys_hydr= ',this%phys_hydr(j)
-         write(stdout, *) 'watsat=',watsat(j)
-         write(stdout, *) 'psisat=', psisat(j)
+         !write(stdout, *) 'kaff_mono_mic_sm= ',this%kaff_mono_mic_sm(j)
+         !write(stdout, *) 'phys_hydr= ',this%phys_hydr(j)
+         !write(stdout, *) 'watsat=',watsat(j)
+         !write(stdout, *) 'psisat=', psisat(j)
          !write(stdout, *) 'inside decompk_scalar  gamma_D= ',gamma_D(j),',     K0_DB= ',K0_DB(j) , ',         fact_mic= ',fact_mic(j)
         ! write(stdout, *) 'soim0= ',soim0(j)
          !write(stdout, *) 'filmthkw= ',filmthkw(j)
@@ -2142,25 +2170,67 @@ if(exit_spinup)then
           tracerstate_vars%tracer_conc_atm_col(c,betrtracer_vars%volatileid(betrtracer_vars%id_trc_ch4))
 
       this%summsforc(c,j)%soilorder = biophysforc%isoilorder(c)
+      !write(stdout, *) 'check for passing --> issoilorder=',biophysforc%isoilorder(c)        !-zlyu
+      !write(stdout, *) 'summs%soilorder=', this%summsforc(c,j)%soilorder 
 
     enddo
   enddo
 
-  select type(plant_soilbgc)
-  type is(plant_soilbgc_summs_type)
-  do j = lbj, ubj
-    do fc = 1, num_soilc
-      c = filter_soilc(fc)
-      this%summsforc(c,j)%rt_ar  = plant_soilbgc%rt_vr_col(c,j)            !root autotrophic respiration, mol CO2/m3/s
+  !select type(plant_soilbgc)
+  !type is(plant_soilbgc_summs_type)
+  !do j = lbj, ubj
+   ! do fc = 1, num_soilc
+    !  c = filter_soilc(fc)
+     ! this%summsforc(c,j)%rt_ar  = plant_soilbgc%rt_vr_col(c,j)            !root autotrophic respiration, mol CO2/m3/s
       !if(j<=3)then 
        !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
-      write(stdout, *) 'In set_summs_forc j= ', j
-      write(stdout, *) 'plant_soilbgc%rt_vr_col = ', plant_soilbgc%rt_vr_col(c,j),',     this%summsforc(c,j)%rt_ar= ', this%summsforc(c,j)%rt_ar
+      !write(stdout, *) 'In set_summs_forc j= ', j
+      !write(stdout, *) 'plant_soilbgc%rt_vr_col = ', plant_soilbgc%rt_vr_col(c,j),',     this%summsforc(c,j)%rt_ar= ', this%summsforc(c,j)%rt_ar
+         !write(stdout, *) '##########################################################################'
+       !endif
+    !enddo
+  ! enddo
+ !end select
+
+  do j = lbj, ubj
+     do fc = 1, num_soilc
+        !write(stdout, *) 'In set_summs_forc, new pass rt_vr_col to rt_ar   --> rt_vr_col=',biophysforc%c12flx%rt_vr_col(c,j)         !-zlyu
+       c = filter_soilc(fc)
+       this%summsforc(c,j)%rt_ar  = biophysforc%c12flx%rt_vr_col(c,j)             ! pass on to rt_ar       -zlyu
+
+      ! add soil moisture limitation to root respiration        -zlyu
+      w_scalar_rr = 1._r8              ! initial as 1      -zlyu
+      maxpsi = this%summsforc(c,j)%sucsat * (-9.8e-6_r8)   !kg -> MPa
+      minpsi = -10                     !MPa
+      psi = min(this%summsforc(c,j)%soilpsi,maxpsi)
+      if (psi > minpsi) then
+         w_scalar_rr = (log(minpsi/psi)/log(minpsi/maxpsi))
+         ! testing only, checking variables              -zlyu   
+         !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+         !write(stdout, *) 'inside case psi > minpsi'
+         !write(stdout, *) 'rt_ar pass   --> w_scalar_rr = ',w_scalar_rr, '    psi = ', psi       !-zlyu
+         !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+         ! end of the testing
+      else
+         w_scalar_rr = 0.000000001_r8    
+         ! testing only, checking variables              -zlyu   
+         !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+         !write(stdout, *) 'inside else case where psi < minpsi'
+         !write(stdout, *) 'rt_ar pass    --> w_scalar_rr = ',w_scalar_rr, '       psi = ',psi               !-zlyu
+         !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+         ! end of the testing
+      end if
+      this%summsforc(c,j)%rt_ar = this%summsforc(c,j)%rt_ar * w_scalar_rr             !(1._r8 - w_scalar_rr)     ! apply water limitation to root respiration   -zlyu
+      ! end of water limitation   
+      !if(j<=3)then 
+      !write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
+      !write(stdout, *) 'In set_summs_forc after water limitation   --> j=', j
+      !write(stdout, *) 'rt_ar= ', this%summsforc(c,j)%rt_ar
          !write(stdout, *) '##########################################################################'
        !endif
     enddo
   enddo
-  end select
+
   end associate
   end subroutine set_summs_forc
   !------------------------------------------------------------------------------
@@ -2266,8 +2336,8 @@ if(exit_spinup)then
     tracer_flx_parchm_vr  => tracerflux_vars%tracer_flx_parchm_vr_col     , & !
     ngwmobile_tracers     => betrtracer_vars%ngwmobile_tracers              & !
     )
-    write(stdout, *) '***************************'                 !-zlyu
-    write(stdout, *) 'in retrieve output'
+    !write(stdout, *) '***************************'                 !-zlyu
+    !write(stdout, *) 'in BgcReactionSummsType retrieve output'
 
       !tracer states
       tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_beg_litr:betrtracer_vars%id_trc_end_litr) = &
@@ -2284,24 +2354,24 @@ if(exit_spinup)then
 
       tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_beg_dom:betrtracer_vars%id_trc_end_dom) = &
            ystatesf(dom_beg:dom_end)
-      write(stdout, *) 'litr_end=', litr_end, ',    som_end=', som_end
-      write(stdout, *) 'dom_end=', dom_end, ',     Bm_end=', Bm_end
+      !write(stdout, *) 'litr_end=', litr_end, ',    som_end=', som_end
+      !write(stdout, *) 'dom_end=', dom_end, ',     Bm_end=', Bm_end
 
-write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg)=', this%summsforc(c,j)%ystates(litr_beg)
-write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg+1)=', this%summsforc(c,j)%ystates(litr_beg+1)
-write(stdout, *) 'this%summsforc(c,j)%ystates(litr_end)=', this%summsforc(c,j)%ystates(litr_end)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg)=', this%summsforc(c,j)%ystates(litr_beg)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(litr_beg+1)=', this%summsforc(c,j)%ystates(litr_beg+1)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(litr_end)=', this%summsforc(c,j)%ystates(litr_end)
 
-write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg)=', this%summsforc(c,j)%ystates(som_beg)
-write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg+1)=', this%summsforc(c,j)%ystates(som_beg+1)
-write(stdout, *) 'this%summsforc(c,j)%ystates(som_end)=', this%summsforc(c,j)%ystates(som_end)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg)=', this%summsforc(c,j)%ystates(som_beg)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(som_beg+1)=', this%summsforc(c,j)%ystates(som_beg+1)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(som_end)=', this%summsforc(c,j)%ystates(som_end)
 
-write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg)=',  this%summsforc(c,j)%ystates(dom_beg)
-write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg+1)=',  this%summsforc(c,j)%ystates(dom_beg+1)
-write(stdout, *) 'this%summsforc(c,j)%ystates(dom_end)=',  this%summsforc(c,j)%ystates(dom_end)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg)=',  this%summsforc(c,j)%ystates(dom_beg)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(dom_beg+1)=',  this%summsforc(c,j)%ystates(dom_beg+1)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(dom_end)=',  this%summsforc(c,j)%ystates(dom_end)
 
-write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg)=', this%summsforc(c,j)%ystates(Bm_beg)
-write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg+1)=', this%summsforc(c,j)%ystates(Bm_beg+1)
-write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_end)=', this%summsforc(c,j)%ystates(Bm_end)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg)=', this%summsforc(c,j)%ystates(Bm_beg)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_beg+1)=', this%summsforc(c,j)%ystates(Bm_beg+1)
+!write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_end)=', this%summsforc(c,j)%ystates(Bm_end)
 
       tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_n2) = &
         ystatesf(this%summsbgc_index%lid_n2)
@@ -2527,15 +2597,15 @@ write(stdout, *) 'this%summsforc(c,j)%ystates(Bm_end)=', this%summsforc(c,j)%yst
         (ystatesf(this%summsbgc_index%lid_co2_hr) - &
         ystates0(this%summsbgc_index%lid_co2_hr))*catomw/dtime
 
-      if(j<=3)then 
+     ! if(j<=3)then 
        !  write(stdout, *) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'        !-zlyu
-         write(stdout, *) 'In retrieve_output where j= ', j
-         write(stdout, *) 'ystatesf(this%summsbgc_index%lid_co2_hr) = ', ystatesf(this%summsbgc_index%lid_co2_hr),',    lid_co2_hr= ',this%summsbgc_index%lid_co2_hr
-         write(stdout, *) 'tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)=', tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)
-         write(stdout, *) 'ystates0(this%summsbgc_index%lid_co2_hr) = ', ystates0(this%summsbgc_index%lid_co2_hr), '    catomw= ', catomw, '     dtime= ', dtime
-         write(stdout, *) 'hr_vr_col(c,j) = ',  biogeo_flux%c12flux_vars%hr_vr_col(c,j)
+      !!   write(stdout, *) 'In retrieve_output where j= ', j
+        ! write(stdout, *) 'ystatesf(this%summsbgc_index%lid_co2_hr) = ', ystatesf(this%summsbgc_index%lid_co2_hr),',    lid_co2_hr= ',this%summsbgc_index%lid_co2_hr
+        ! write(stdout, *) 'tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)=', tracerstate_vars%tracer_conc_mobile_col(c, j, betrtracer_vars%id_trc_co2x)
+        ! write(stdout, *) 'ystates0(this%summsbgc_index%lid_co2_hr) = ', ystates0(this%summsbgc_index%lid_co2_hr), '    catomw= ', catomw, '     dtime= ', dtime
+        ! write(stdout, *) 'hr_vr_col(c,j) = ',  biogeo_flux%c12flux_vars%hr_vr_col(c,j)
          !write(stdout, *) '##########################################################################'
-       endif                                                                                                  !-zlyu
+       !endif                                                                                                  !-zlyu
       
       biogeo_flux%p31flux_vars%secondp_to_occlp_vr_col(c,j) = &
          (ystatesf(this%summsbgc_index%lid_minp_occlude) - &

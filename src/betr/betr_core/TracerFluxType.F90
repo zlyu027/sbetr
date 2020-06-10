@@ -616,9 +616,14 @@ contains
             this%tracer_flx_tparchm_col(c,kk) = dot_sum(x=this%tracer_flx_parchm_vr_col(c,1:nlevtrc_soil,kk), &
                  y=col%dz(c,1:nlevtrc_soil), bstatus=bstatus)
             if(bstatus%check_status())return
+            !write(iulog, *) 'In TracerFluxType  kk=',kk
+            !write(iulog, *) 'flx_tparchm=', this%tracer_flx_tparchm_col(c,kk)               !-zlyu
+            !write(iulog, *) 'flx_dif=', this%tracer_flx_dif_col(c,kk)
+            !write(iulog, *) 'flx_ebu=', this%tracer_flx_ebu_col(c,kk)
             this%tracer_flx_surfemi_col(c,kk) = this%tracer_flx_tparchm_col(c,kk) + this%tracer_flx_dif_col(c,kk) + &
                  this%tracer_flx_ebu_col(c,kk)
-
+            !write(iulog, *) 'flx_surfemi=', this%tracer_flx_surfemi_col(c,kk)               !-zlyu
+            
             this%tracer_flx_netphyloss_col(c,jj) = this%tracer_flx_netphyloss_col(c,jj)  +  this%tracer_flx_surfemi_col(c,kk)
 
          endif

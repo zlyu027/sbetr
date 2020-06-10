@@ -384,32 +384,33 @@ contains
     call ncd_getvar(ncf_in_forc, 'CFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%cflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%cflx_met_vr(j1, j2) = this%cflx_met_vr(j1, j2) * 0.5_r8             ! cut input lit C by half for test        -zlyu
+          this%cflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+          !this%cflx_met_vr(j1, j2) = this%cflx_met_vr(j1, j2)              ! * 0.75_r8             ! cut input lit C by half for test        -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'CFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%cflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%cflx_cel_vr(j1, j2) = this%cflx_cel_vr(j1, j2) * 0.5_r8
+          this%cflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+
+          !this%cflx_cel_vr(j1, j2) = this%cflx_cel_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'CFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%cflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%cflx_lig_vr(j1, j2) = this%cflx_lig_vr(j1, j2) * 0.5_r8
+          this%cflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+        !  this%cflx_lig_vr(j1, j2) = this%cflx_lig_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'CFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%cflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%cflx_cwd_vr(j1, j2) = this%cflx_cwd_vr(j1, j2) * 0.5_r8             ! cut input lit C by half for test        -zlyu
+          this%cflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+        !  this%cflx_cwd_vr(j1, j2) = this%cflx_cwd_vr(j1, j2) * 0.75_r8             ! cut input lit C by half for test        -zlyu
        enddo
     enddo
 
@@ -418,7 +419,7 @@ contains
       call ncd_getvar(ncf_in_forc, 'RR_vr', data_2d)
       do j2 = 1, this%num_levels
          do j1 = 1, this%num_time
-           this%rr_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
+           this%rr_vr(j1, j2) = data_2d(this%num_columns, j2, j1)* 0.25_r8              ! cut lit input by half     -zlyu
          enddo
       enddo
     endif
@@ -426,88 +427,88 @@ contains
     call ncd_getvar(ncf_in_forc, 'NFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_met_vr(j1, j2) = this%nflx_met_vr(j1, j2) * 0.5_r8
+          this%nflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8
+         ! this%nflx_met_vr(j1, j2) = this%nflx_met_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'NFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_cel_vr(j1, j2) = this%nflx_cel_vr(j1, j2) * 0.5_r8              ! cut input lit N by half for test        -zlyu
+          this%nflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+       !   this%nflx_cel_vr(j1, j2) = this%nflx_cel_vr(j1, j2) * 0.75_r8              ! cut input lit N by half for test        -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'NFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_lig_vr(j1, j2) = this%nflx_lig_vr(j1, j2) * 0.5_r8
+          this%nflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+        !  this%nflx_lig_vr(j1, j2) = this%nflx_lig_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'NFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_cwd_vr(j1, j2) = this%nflx_cwd_vr(j1, j2) * 0.5_r8
+          this%nflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8
+         ! this%nflx_cwd_vr(j1, j2) = this%nflx_cwd_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'PFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%pflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%pflx_met_vr(j1, j2) = this%pflx_met_vr(j1, j2) * 0.5_r8
+          this%pflx_met_vr(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8
+         ! this%pflx_met_vr(j1, j2) = this%pflx_met_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'PFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%pflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-           this%pflx_cel_vr(j1, j2) =  this%pflx_cel_vr(j1, j2) * 0.5_r8
+          this%pflx_cel_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+          ! this%pflx_cel_vr(j1, j2) =  this%pflx_cel_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'PFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%pflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%pflx_lig_vr(j1, j2) = this%pflx_lig_vr(j1, j2) * 0.5_r8                   ! cut input lit P by half for test        -zlyu
+          this%pflx_lig_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+         ! this%pflx_lig_vr(j1, j2) = this%pflx_lig_vr(j1, j2) * 0.75_r8                   ! cut input lit P by half for test        -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'PFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%pflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%pflx_cwd_vr(j1, j2) = this%pflx_cwd_vr(j1, j2) * 0.5_r8
+          this%pflx_cwd_vr(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8
+         ! this%pflx_cwd_vr(j1, j2) = this%pflx_cwd_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'NFLX_MINN_INPUT_NH4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_nh4_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_nh4_vr(j1, j2) = this%nflx_nh4_vr(j1, j2) * 0.5_r8
+          this%nflx_nh4_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+         ! this%nflx_nh4_vr(j1, j2) = this%nflx_nh4_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'NFLX_MINN_INPUT_NO3_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%nflx_no3_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%nflx_no3_vr(j1, j2)  = this%nflx_no3_vr(j1, j2) * 0.5_r8
+          this%nflx_no3_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+         ! this%nflx_no3_vr(j1, j2)  = this%nflx_no3_vr(j1, j2) * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_forc, 'PFLX_MINP_INPUT_PO4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_time
-          this%pflx_po4_vr(j1, j2) = data_2d(this%num_columns, j2, j1)
-          this%pflx_po4_vr(j1, j2) = this%pflx_po4_vr(j1, j2) * 0.5_r8                  ! cut input lit P by half for test        -zlyu
+          this%pflx_po4_vr(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8
+         !this%pflx_po4_vr(j1, j2) = this%pflx_po4_vr(j1, j2) * 0.75_r8                  ! cut input lit P by half for test        -zlyu
        enddo
     enddo
 
@@ -551,28 +552,28 @@ contains
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
+          this%cflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8       ! * 0.75_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%cflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8         !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%cflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8          !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'CFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%cflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
+          this%cflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8           !* 0.75_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
@@ -581,7 +582,7 @@ contains
       call ncd_getvar(ncf_in_disturb_forc, 'RR_vr', data_2d)
       do j2 = 1, this%num_levels
          do j1 = 1, this%num_disturb_time
-           this%rr_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)
+           this%rr_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)* 0.25_r8              ! cut lit input by half     -zlyu
          enddo
       enddo
     endif
@@ -594,77 +595,77 @@ contains
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8              ! cut lit input by half     -zlyu
+          this%nflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8              ! * 0.75_r8              ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%nflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8             ! * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%nflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8              !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%nflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8               !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_MET_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8             ! cut lit input by half     -zlyu
+          this%pflx_met_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8                !* 0.75_r8             ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_CEL_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%pflx_cel_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8                  !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_LIG_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%pflx_lig_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8               !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_INPUT_LITR_CWD_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8                 ! cut lit input by half     -zlyu
+          this%pflx_cwd_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8                  !* 0.75_r8                 ! cut lit input by half     -zlyu
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_MINN_INPUT_NH4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_nh4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%nflx_nh4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8                   !* 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'NFLX_MINN_INPUT_NO3_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%nflx_no3_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8
+          this%nflx_no3_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1)*0.5_r8                  ! * 0.75_r8
        enddo
     enddo
 
     call ncd_getvar(ncf_in_disturb_forc, 'PFLX_MINP_INPUT_PO4_vr', data_2d)
     do j2 = 1, this%num_levels
        do j1 = 1, this%num_disturb_time
-          this%pflx_po4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) * 0.5_r8               ! cut lit input by half     -zlyu
+          this%pflx_po4_vr_disturb(j1, j2) = data_2d(this%num_columns, j2, j1) *0.5_r8                  !* 0.75_r8               ! cut lit input by half     -zlyu
        enddo
     enddo
 
@@ -1130,8 +1131,8 @@ contains
     real(r8)           :: delta_tsoi(15)                        !-zlyu
     real(r8)           :: delta_h2osoi_vol(15)                  !-zlyu , temporary corrector
 
-    turbyr = 45*365*48        !445            !*48     it is hourly not half hourly?                    ! testing       -zlyu
-    lastyr = 49*365*48+(180*48)        !449    !just output last half a year, to save time     -zlyu
+    turbyr = 445*365*48        !445            !*48     it is hourly not half hourly?                    ! testing       -zlyu
+    lastyr = 449*365*48+(180*48)        !449    !just output last half a year, to save time     -zlyu
     !delta_tsoi = (/2.090206_r8, 2.29745_r8, 2.597984_r8, 3.124624_r8, 3.8605_r8, 4._r8, 4._r8, 4._r8, &
      !    0._r8,0._r8,0._r8,0._r8,0._r8,0._r8,0._r8/)
     ! warming soil temperature, depth resolved                  !-zlyu
@@ -1149,7 +1150,7 @@ contains
        !write(stdout, *) 'delta_tsoi(7)= ', delta_tsoi(7), ',    delta_tsoi(15)= ', delta_tsoi(15)
        !write(stdout, *) 'delta_h2osoi(1)= ', delta_h2osoi_vol(1), ',    delta_h2osoi(2)= ', delta_h2osoi_vol(2), ',     delta_h2osoi(4)= ', delta_h2osoi_vol(4)
        !write(stdout, *) 'delta_h2osoi(7)= ', delta_h2osoi_vol(7), ',    delta_h2osoi(15)= ', delta_h2osoi_vol(15)
-       write(stdout, *) '---------------------------------------------'
+       !write(stdout, *) '---------------------------------------------'
     !endif
     ! end of printing and checking       -zlyu
     
@@ -1354,8 +1355,8 @@ contains
     ! bring up root respiration dur to soil warming, depth resolved               -zlyu
     !q_rr = (/2._r8**(2.090206_r8/10_r8),2._r8**(2.29745_r8/10_r8),2._r8**(2.597984_r8/10_r8),2._r8**(3.124624_r8/10._r8),2._r8**(3.8605_r8/10._r8), &
      !    2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),2._r8**(4._r8/10._r8),1._r8,1._r8,1._r8,1._r8,1._r8,1._r8,1._r8/)
-    turbyr = 45*365*48           !445         !48      it is hourly not half fourly??                 ! testing       -zlyu
-    lastyr = 49*365*48+(180*48)      !449    !just output last half a year, to save time     -zlyu
+    turbyr = 445*365*48           !445         !48      it is hourly not half fourly??                 ! testing       -zlyu
+    lastyr = 449*365*48+(180*48)      !449    !just output last half a year, to save time     -zlyu
 
     tstep = ttime%tstep
     tstep_disturb = ttime%tstep_continue-turbyr                 ! -zlyu

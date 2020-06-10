@@ -634,6 +634,8 @@ contains
     type(column_type)           , intent(in)    :: col ! column type
     type(patch_type)            , intent(in)    :: pft
 
+ !   write(stdout, *) 'BeTRSimulation stepwithoutdrainage'         !-zlyu
+    
     ! remove compiler warnings about unused dummy args
     if (this%num_soilc > 0)                           continue
     if (this%betr_time%tstep > 0)                          continue
@@ -671,12 +673,15 @@ contains
    !
    !USES
     use MathfuncMod   , only : safe_div
+    use betr_constants          , only : stdout                            !-zlyu
     implicit none
     !ARGUMENTS
     class(betr_simulation_type) , intent(inout) :: this
     type(bounds_type)           , intent(in)    :: bounds
     type(column_type)           , intent(in)    :: col ! column type
 
+    !write(stdout, *) 'BeTRSimulation stepwithdrainage'          !-zlyu
+    
     ! remove compiler warnings about unused dummy args
     if (this%num_soilc > 0) continue
     if (bounds%begc > 0)    continue
@@ -831,10 +836,10 @@ contains
     call  hist_def_fld2d(ncid, varname="QFLX_ADV", nf90_type=nf90_float,dim1name="ncol",     &
            dim2name="levtrc",long_name="advective flux / velocity", units="m/s")
 
-    write(iulog,*)'hist_create_states'
+    !write(iulog,*)'hist_create_states'
     call this%hist_create_states(bounds, betr_nlevtrc_soil, num_hist_state1d, num_hist_state2d, ncid=ncid)
 
-    write(iulog,*)'hist_create_fluxes'
+    !write(iulog,*)'hist_create_fluxes'
     call this%hist_create_fluxes(bounds, betr_nlevtrc_soil, num_hist_flux1d, num_hist_flux2d, ncid=ncid)
 
     call ncd_enddef(ncid)
@@ -1057,6 +1062,9 @@ contains
   integer :: p, pi, cc, c, l, pp
   integer :: npft_loc
   cc = 1
+
+  write(stdout, *) 'In BeTRSimulation start '     !-zlyu
+  
   do c = bounds%begc, bounds%endc
     if(.not. this%active_col(c))cycle
     this%biophys_forc(c)%stwl(cc)=0  !by default this is set zero layers of standing water
@@ -1263,6 +1271,8 @@ contains
   ! USES
     use WaterfluxType    , only : waterflux_type
     use CNCarbonFluxType , only : carbonflux_type
+    use betr_constants   , only : stdout                            !-zlyu
+
   implicit none
   !ARGUMENTS
   class(betr_simulation_type) , intent(inout)           :: this
@@ -1274,6 +1284,9 @@ contains
   integer :: begp, begc, endp, endc
   integer :: p, c, cc
   cc = 1
+
+  !write(stdout, *) 'In BeTRSimulationRetrieveBiogeoFlux, short as RetrieveBiogeoFlux'               !-zlyu
+  
   if(present(carbonflux_vars))then
     !do nothing
   endif

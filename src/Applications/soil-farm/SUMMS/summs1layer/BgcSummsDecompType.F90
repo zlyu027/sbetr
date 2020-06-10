@@ -326,19 +326,20 @@ implicit none
 
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-    write(stdout, *) 'w_scalar = ',this%w_scalar,'      sucsat = ',sucsat,'      maxpsi = ',maxpsi
-    write(stdout, *) 'soilpsi = ',soilpsi,'      psi = ',psi, '     minpsi = ', minpsi
+    !write(stdout, *) 'w_scalar = ',this%w_scalar,'      sucsat = ',sucsat,'      maxpsi = ',maxpsi
+    !write(stdout, *) 'soilpsi = ',soilpsi,'      psi = ',psi, '     minpsi = ', minpsi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
 
   ! decomp only if soilpsi is higher than minpsi, some modification is needed for the following
   ! double check the paper by Wilson and Griffin, 1975
   if (psi > minpsi) then
-    this%w_scalar = (log(minpsi/psi)/log(minpsi/(maxpsi*0.7_r8)))               ! testing, multiply 0.7 to maxpsi         -zlyu
+    this%w_scalar = (log(minpsi/psi)/log(minpsi/(maxpsi*2._r8)))                         !(maxpsi*0.7_r8)))               ! testing, multiply 0.7 to maxpsi         -zlyu
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside case psi > minpsi'
-    write(stdout, *) 'w_scalar = ',this%w_scalar, '    psi = ', psi
+    !write(stdout, *) 'w_scalar = ',this%w_scalar, '    psi = ', psi
+    !write(stdout, *) 'maxpsi = ',maxpsi
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     ! end of the testing
   else

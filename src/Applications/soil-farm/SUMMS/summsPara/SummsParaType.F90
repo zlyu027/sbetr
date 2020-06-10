@@ -270,7 +270,7 @@ contains
   ! Microbes
     this%decay_mic0 = 4.12e-3_r8*365._r8*0.7_r8/year_sec          !     -zlyu        ! Reference microbial death rate (1/second)
     this%gmax_mic  = 0.8760_r8*365._r8/year_sec      !0.6_r8*     ! 0.088031564_r8*365._r8/year_sec    !-zlyu     ! Maximum microbial growth rate (1/second)              ! back to oginial para      -zlyu
-    this%pmax_enz = 0.003599271_r8*365._r8*6._r8/year_sec      !   !*10._r8     !-zlyu       ! Maximum enzyme production rate (1/second)
+    this%pmax_enz = 0.003599271_r8*365._r8*5._r8/year_sec      !   !*10._r8     !-zlyu       ! Maximum enzyme production rate (1/second)
     this%yld_mic = 0.252307388_r8*4._r8          !0.8_r8       !-zlyu         ! Growth efficiency of microbes (g mic/g res)
     this%yld_enz = 0.999705849_r8           !*0.5_r8                 !-zlyu        ! Growth efficiency of enzymes (g enz/g res)
     this%ref_mr_mic             = 0.00230282_r8*365._r8/year_sec       ! Microbial maintenance rate (1/second)

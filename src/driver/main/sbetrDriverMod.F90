@@ -261,6 +261,8 @@ contains
     !x print*,'prepare for diagnosing water flux'
     call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi, waterstate_vars=waterstate_vars)
 
+   ! write(stdout, *) 'In sbetrDriverMod after BeTRSetBiophysForcing, first'                  !-zlyu
+    
     call simulation%PreDiagSoilColWaterFlux(simulation%num_soilc,  simulation%filter_soilc)
     !x print*,'update forcing for betr'
     !set envrionmental forcing by reading foring data: temperature, moisture, atmospheric resistance
@@ -286,6 +288,7 @@ contains
     ! testing only, check variables                       !-zlyu
     !write(stdout, *) '================================================================'
     !write(stdout, *) 'In the do loop after setbiophysforcing --> smp(1,1)= ',simulation%biophys_forc%smp_l_col(1,1)
+    !write(stdout, *) 'In sbetrDriverMod after BeTRSetBiophysForcing, second'                  !-zlyu
     !write(stdout, *) '================================================================'
     ! end of the testing
 
@@ -295,6 +298,8 @@ contains
 
     !now assign back waterflux_vars
     call simulation%RetrieveBiogeoFlux(bounds, 1, nlevsoi, waterflux_vars=waterflux_vars)
+
+    !write(stdout, *) 'In sbetrDriverMod after retrievebiogeoflux'                  !-zlyu
 
     !no calculation in the first step
     if(record==0)cycle
@@ -329,12 +334,21 @@ contains
           plantMicKinetics_vars)
 
     class is (betr_simulation_standalone_type)
-      call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,               &
-        carbonflux_vars=carbonflux_vars,                                                &
+      !call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,               &
+       ! carbonflux_vars=carbonflux_vars,                                                &
+       ! waterstate_vars=waterstate_vars,         waterflux_vars=waterflux_vars,         &
+       ! temperature_vars=temperature_vars,       soilhydrology_vars=soilhydrology_vars, &
+       ! atm2lnd_vars=atm2lnd_vars,               canopystate_vars=canopystate_vars,     &
+       ! chemstate_vars=chemstate_vars,           soilstate_vars=soilstate_vars)
+
+       !write(stdout, *) 'call standalone setbiophysforcing  --> for rr_vr_col'              !-zlyu
+       call simulation%SetBiophysForcing(bounds, col, pft,                &         ! call from stanalone to Betrsimulation, to pass on rr_vr_col       -zlyu
+        carbonflux_vars=carbonflux_vars,                                                & 
         waterstate_vars=waterstate_vars,         waterflux_vars=waterflux_vars,         &
         temperature_vars=temperature_vars,       soilhydrology_vars=soilhydrology_vars, &
         atm2lnd_vars=atm2lnd_vars,               canopystate_vars=canopystate_vars,     &
-        chemstate_vars=chemstate_vars,           soilstate_vars=soilstate_vars)
+        chemstate_vars=chemstate_vars,           soilstate_vars=soilstate_vars,         &
+        cnstate_vars = cnstate_vars)
 
       if(simulation%do_soibgc())then
         call forcing_data%UpdateCNPForcing(1, nlevsoi, &
@@ -355,10 +369,10 @@ contains
         chemstate_vars=chemstate_vars,           soilstate_vars=soilstate_vars)
     end select
 
-    !write(stdout, *) 'In the do loop after class selection'                  !-zlyu
+    !write(stdout, *) 'sbetrDriverMod before stepwithoutdrainage'                  !-zlyu
     
     call simulation%StepWithoutDrainage(bounds, col, pft)
-    !write(stdout, *) 'In the do loop after stepwithoudrainage'                  !-zlyu
+    !write(stdout, *) 'sbetrDriverMod after stepwithoudrainage'                  !-zlyu
     
     select type(simulation)
     class is (betr_simulation_alm_type)
@@ -370,21 +384,22 @@ contains
 
     !x print*,'with drainge'
     !set forcing variable for drainage
+    !write(stdout, *) 'sbetrDriverMod before setbiophysforcing for drainage'               !-zlyu
     call simulation%BeTRSetBiophysForcing(bounds, col, pft, 1, nlevsoi,&
        waterflux_vars=waterflux_vars )
     call simulation%StepWithDrainage(bounds, col)
-    !write(stdout, *) 'In the do loop after stepwithdrianage'                  !-zlyu
+    !write(stdout, *) 'sbetrDriverMod after stepwithdrianage'                  !-zlyu
     
     !x print*,'do mass balance check'
     call simulation%MassBalanceCheck(bounds)
 
     select type(simulation)
     class is (betr_simulation_standalone_type)
-       !write(stdout, *) 'In the do loop, second class select standalone'                  !-zlyu
+       !write(stdout, *) 'sbetrDriverMod select standalone  --> PlantSoilBGCRecv'                  !-zlyu
       call simulation%PlantSoilBGCRecv(bounds, col, pft,  simulation%num_soilc, simulation%filter_soilc,&
           carbonstate_vars, carbonflux_vars, c13state_vars, c13_cflx_vars, c14state_vars, c14_cflx_vars, &
           nitrogenstate_vars, nitrogenflux_vars, phosphorusstate_vars, phosphorusflux_vars)
-       !write(stdout, *) 'second select standalone, after plantbgcrecv'                  !-zlyu
+       !write(stdout, *) 'sbetrDriveMod, standalone select after plantbgcrecv'                  !-zlyu
     end select
 
     !specific for water tracer transport
