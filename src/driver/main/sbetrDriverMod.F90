@@ -5,6 +5,7 @@ module sbetrDriverMod
 ! created by Jinyun Tang
   use shr_kind_mod , only : r8 => shr_kind_r8
   use BeTR_TimeMod , only : betr_time_type
+  use histMod      , only : hist_freq_str_len           ! hist_freq change    -zlyu
 
   implicit none
 
@@ -53,7 +54,7 @@ contains
   use betr_constants        , only : betr_namelist_buffer_size, betr_string_length_long, betr_filename_length, stdout ! add stdout for printing out testing remarks  -zlyu, 01/27/2019
   use ForcingDataType       , only : ForcingData_type
   use BeTR_GridMod          , only : betr_grid_type
-  use TracerParamsMod       , only : tracer_param_init
+  !use TracerParamsMod       , only : tracer_param_init           !-zlyu
   use spmdMod               , only : spmd_init
   use LandunitType          , only : lun
   use PatchType             , only : pft
@@ -508,10 +509,11 @@ end subroutine sbetrBGC_driver
     type(file_desc_t) :: ncid
     type(betr_status_type)   :: bstatus
     character(len=64) :: case_id
+    character(len=hist_freq_str_len) :: freqall            ! add freqall        -zlyu
     !-----------------------------------------------------------------------
 
     namelist / sbetr_driver / simulator_name, continue_run, run_type, &
-        is_nitrogen_active, is_phosphorus_active, case_id, finit
+        is_nitrogen_active, is_phosphorus_active, case_id, freqall, finit     ! add freqall       -zlyu
 
     namelist / betr_parameters /                  &
          reaction_method,                         &
@@ -523,6 +525,7 @@ end subroutine sbetrBGC_driver
     continue_run=.false.
     run_type ='tracer'
     is_nitrogen_active=.false.; is_phosphorus_active =.false.
+    freqall = 'year'                                               ! set freqall to year   -zlyu
     case_id=''
     input_only=.false.
     finit =''
@@ -588,13 +591,13 @@ end subroutine sbetrBGC_driver
     simulator_name_arg = simulator_name
     lread_param=trim(run_type)=='sbgc'
     if(lread_param)then
-    call init_hist_bgc(histbgc, base_filename, reaction_method, case_id, hist)
+    call init_hist_bgc(histbgc, base_filename, reaction_method, case_id,freqall, hist)         !add freqall        -zlyu
   endif
 
   end subroutine read_name_list
 
   !-------------------------------------------------------------------------------
-  subroutine init_hist_bgc(histbgc, base_filename, reaction_method, case_id, hist)
+  subroutine init_hist_bgc(histbgc, base_filename, reaction_method, case_id, freqall,  hist)          !add freqall        -zlyu
   use histMod          , only : hist_freq_str_len
   use histMod          , only : histf_type
   use HistBGCMod       , only : hist_bgc_type
@@ -605,6 +608,7 @@ end subroutine sbetrBGC_driver
   character(len=*), intent(in) :: reaction_method
   character(len=*), intent(in) :: case_id
   class(histf_type), intent(inout) :: hist
+  character(len=hist_freq_str_len), intent(in) :: freqall           ! add freqall       -zlyu
   character(len=hist_freq_str_len), allocatable :: freql(:)
 
   integer :: nhistvars
@@ -615,7 +619,8 @@ end subroutine sbetrBGC_driver
 
   allocate(freql(nhistvars))
 
-  freql(:) = 'day'
+  !freql(:) = 'day'
+  freql(:) = freqall              !pass freqall to freql        -zlyu
   if(len(trim(case_id))==0)then
     write(gname,'(A)')trim(base_filename)//'.'//trim(reaction_method)
   else
