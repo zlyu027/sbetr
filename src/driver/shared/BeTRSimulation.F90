@@ -1063,8 +1063,6 @@ contains
   integer :: npft_loc
   cc = 1
 
-  write(stdout, *) 'In BeTRSimulation start '     !-zlyu
-  
   do c = bounds%begc, bounds%endc
     if(.not. this%active_col(c))cycle
     this%biophys_forc(c)%stwl(cc)=0  !by default this is set zero layers of standing water

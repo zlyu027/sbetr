@@ -95,16 +95,17 @@ contains
     ! select read routine based on data format.
     call this%ReadNetCDFData()
 
-    write(*, *) 'dump grid: '
-    write(*, *) 'dzsoi   =  ', this%dzsoi
-    write(*, *) 'zsoi    =  ', this%zsoi
-    write(*, *) 'zisoi   =  ', this%zisoi
-    write(*, *) 'bsw     =  ', this%bsw
-    write(*, *) 'watsat  =  ', this%watsat
-    write(*, *) 'sucsat  =  ', this%sucsat
-    write(*, *) 'pctsand =  ', this%pctsand
-    write(*, *) 'pctclay =  ', this%pctclay
-    write(*, *) 'cellorg =  ', this%cellorg
+    ! comment out grid data debug output temporarily        -zlyu
+    !write(*, *) 'dump grid: '
+    !write(*, *) 'dzsoi   =  ', this%dzsoi
+    !write(*, *) 'zsoi    =  ', this%zsoi
+    !write(*, *) 'zisoi   =  ', this%zisoi
+    !write(*, *) 'bsw     =  ', this%bsw
+    !write(*, *) 'watsat  =  ', this%watsat
+    !write(*, *) 'sucsat  =  ', this%sucsat
+    !write(*, *) 'pctsand =  ', this%pctsand
+    !write(*, *) 'pctclay =  ', this%pctclay
+    !write(*, *) 'cellorg =  ', this%cellorg
   end subroutine Init
 
   ! ---------------------------------------------------------------------------

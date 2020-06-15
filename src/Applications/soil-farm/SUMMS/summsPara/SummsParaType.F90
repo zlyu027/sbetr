@@ -488,9 +488,6 @@ contains
   !return                                   ! comment out  -zlyu
   call this%readPars_bgc(ncid, bstatus)
   if(bstatus%check_status())return
-  ! testing only                                           -zlyu
-  write(stdout, *) 'In summspara_readPars after readPars_bgc!'  
-  ! end of the testing
 
   ! start reading in parameter scalars from nc file                 -zlyu
   tString='decay_mic_sc'
@@ -560,10 +557,10 @@ contains
   this%k_decay_lit2(1:2)  = this%k_decay_lit2(1:2) * this%rf_lit_bgc_sc
   this%k_decay_lit3(1:2)  = this%k_decay_lit3(1:2) * this%rf_lit_bgc_sc
 
-  write(stdout, *) 'decay_mic_sc=', this%decay_mic_sc,',    gmax_mic_sc= ', this%gmax_mic_sc, ',      pmax_enz_sc=', this%pmax_enz_sc
-  write(stdout, *) 'ref_vmax_mic_sc=', this%ref_vmax_mic_sc,',       reg_vmax_enz_sc=', this%ref_vmax_enz_sc, ',       minsite=', this%minsite_sc
-  write(stdout, *) 'ref_kaff_enz_poly_sc=', this%ref_kaff_enz_poly_sc,',     ref_kaff_enz_msurf_sc=', this%ref_kaff_enz_msurf_sc,',     rf_lit_bgc_sc=', this%rf_lit_bgc_sc
-  write(stdout, *) '=============================================='  
+  !write(stdout, *) 'decay_mic_sc=', this%decay_mic_sc,',    gmax_mic_sc= ', this%gmax_mic_sc, ',      pmax_enz_sc=', this%pmax_enz_sc
+  !write(stdout, *) 'ref_vmax_mic_sc=', this%ref_vmax_mic_sc,',       reg_vmax_enz_sc=', this%ref_vmax_enz_sc, ',       minsite=', this%minsite_sc
+  !write(stdout, *) 'ref_kaff_enz_poly_sc=', this%ref_kaff_enz_poly_sc,',     ref_kaff_enz_msurf_sc=', this%ref_kaff_enz_msurf_sc,',     rf_lit_bgc_sc=', this%rf_lit_bgc_sc
+  !write(stdout, *) '=============================================='  
   ! end of adding                      -zlyu
   
   tString='surface_tension_water'
