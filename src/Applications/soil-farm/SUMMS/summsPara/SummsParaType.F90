@@ -283,7 +283,7 @@ contains
     
     ! Enzymes
     this%decay_enz = 0.005289921_r8*365._r8/year_sec             ! Enzyme turnover tate (1/second)
-    this%ref_vmax_enz           = 3.833835166_r8*365._r8*4.5_r8/year_sec     ! *3._r8    !*4_r8     !-zlyu    ! Maximum rate of polymer degradation (1/second)
+    this%ref_vmax_enz           = 3.833835166_r8*365._r8*4._r8/year_sec     !*4.5_r8         ! *3._r8    !*4_r8     !-zlyu    ! Maximum rate of polymer degradation (1/second)
     this%ref_kaff_enz_poly      = 202.6648678_r8*0.45_r8            !*2._r8       !-zlyu   ! Affinity parameter for enzymatic polymer degradation (g enzymes/m3)
     this%ref_kaff_enz_msurf     = 45.5122168_r8*1.5_r8          !*0.5_r8           !-zlyu     ! Affinity parameter for surface adsorption of enzymes (g enzymes/m3)
     this%fenz2poly = 0.000513795_r8                ! Proportion of degraded exoenzyme into polymers (g poly/g enz)

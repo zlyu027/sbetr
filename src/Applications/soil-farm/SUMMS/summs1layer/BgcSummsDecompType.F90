@@ -294,10 +294,11 @@ implicit none
       call interp1(temp0, t_fact0, tempbgc, t_fact) ! Interpolate to find fraction of active enzymes at current temperature
       ! This subroutine should return t_fact
       
-      !fref=t_fact*(tempbgc/tref) ! Modifies non-equilibrium enzymatic reactions
-      fref=t_fact/t_fact1*(tempbgc/tref)                        !change from zacplsbetr_cmupdated,   -zlyu        
+      fref=t_fact*(tempbgc/tref)                                 ! Modifies non-equilibrium enzymatic reactions
+      !fref=t_fact/t_fact1*(tempbgc/tref)                        !change from zacplsbetr_cmupdated,   -zlyu        
       !write(stdout, *) 'inside decompk_scalar after interp1   --> fref=', fref            !-zlyu
       !write(stdout, *) 't_fact=', t_fact,',      tref=', tref
+      !write(stdout, *) 'deltag1=', deltag1, ',      cp=', cp, ',     t_fact1=', t_fact1        !-zlyu
       
   !Update parameters
     this%vmax_mic         = ref_vmax_mic *fref*exp(-ea_vmax_mic*tinv)
@@ -334,7 +335,7 @@ implicit none
   ! decomp only if soilpsi is higher than minpsi, some modification is needed for the following
   ! double check the paper by Wilson and Griffin, 1975
   if (psi > minpsi) then
-    this%w_scalar = (log(minpsi/psi)/log(minpsi/(maxpsi*2._r8)))                         !(maxpsi*0.7_r8)))               ! testing, multiply 0.7 to maxpsi         -zlyu
+    this%w_scalar = (log(minpsi/psi)/log(minpsi/maxpsi))                         !(maxpsi*0.7_r8)))               ! testing, multiply 0.7 to maxpsi         -zlyu
     ! testing only, checking variables              -zlyu   
     !write(stdout, *) '***************************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     !write(stdout, *) 'inside case psi > minpsi'

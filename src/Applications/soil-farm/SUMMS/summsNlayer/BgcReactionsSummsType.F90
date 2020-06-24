@@ -1692,7 +1692,6 @@ if(exit_spinup)then
         id_trc_end_Bm=> betrtracer_vars%id_trc_end_Bm, &
          volatileid => betrtracer_vars%volatileid &
          )
-      write(stdout, *) 'In Initcold '
       
     do c = bounds%begc, bounds%endc
 
@@ -2077,7 +2076,8 @@ if(exit_spinup)then
       !arrhenius function --> k=Ae^(-Ea/RT), temperature dependence of reaction rate
       K0_DB(j) = (micb_k2f1*fact_mic(j)+micb_k2f2)*fT(j)/(4*pi*difDw(j)*summs_para%micb_radc*NA)
       this%kaff_mono_mic_sm(j) = K0_DB(j)*gamma_D(j)*12_r8                                         ! unit conversion, from mol/m3 to g/m3              -zlyu
-      this%phys_hydr(j) = soim0(j)**(1._r8/2.52_r8)                                                !normalized length analogous to the aqueous cluster size inWang and Or (2012)          -zlyu
+      this%phys_hydr(j) = soim0(j)**(1._r8/5.52_r8)                                                !normalized length analogous to the aqueous cluster size inWang and Or (2012)          -zlyu
+      !this%phys_hydr(j) = soim0(j)**(1._r8/2.52_r8)    
       !pass on data                                                        -zlyu
       !this%summseca(c,j)%kaff_mono_mic_sm = 1
       this%summseca(c,j)%sumsom%kaff_mono_mic_sm = this%kaff_mono_mic_sm(j)        !-zlyu

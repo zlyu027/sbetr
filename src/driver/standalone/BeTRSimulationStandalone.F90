@@ -813,6 +813,8 @@ contains
     ! testing only, checking variables                    -zlyu
     !write(stdout, *) '--------------------------------------------------------------------'
     !write(stdout, *) 'In Standalone ubj= ', ubj, ',    numf= ',numf, ',   size of t_soisno',size(t_soisno,2)
+    !write(stdout, *) 'bsw(1)= ', bsw(1,1), ',    bsw(2)= ', bsw(1,2)
+    !write(stdout, *) 'watsat(1)= ', watsat(1,1), ',    watsat(2)= ',watsat(1,2)
 
   do j = lbj, ubj
     do fc = 1, numf
