@@ -282,25 +282,29 @@ contains
 
   call this%proc_counter()
 
-  if(timer%its_a_new_hour())then
-    call this%hist_write(clock_hour, this%nh_vars, this%nh_varid)
-  endif
+  ! decide whether to output at current time step for reaction.1d.sbetr.exp.noadv.summs.hist.XXX.nc       -zlyu
+  if(timer%tstep_continue>=timer%hist_start_yr)then
+     if(timer%its_a_new_hour())then
+        call this%hist_write(clock_hour, this%nh_vars, this%nh_varid)
+     endif
 
-  if(timer%its_a_new_day())then
-    call this%hist_write(clock_day, this%nd_vars, this%nd_varid)
-  endif
+     if(timer%its_a_new_day())then
+        call this%hist_write(clock_day, this%nd_vars, this%nd_varid)
+     endif
 
-  if(timer%its_a_new_week())then
-    call this%hist_write(clock_week, this%nw_vars, this%nw_varid)
-  endif
+     if(timer%its_a_new_week())then
+        call this%hist_write(clock_week, this%nw_vars, this%nw_varid)
+     endif
 
-  if(timer%its_a_new_month())then
-    call this%hist_write(clock_month, this%nm_vars, this%nm_varid)
-  endif
+     if(timer%its_a_new_month())then
+        call this%hist_write(clock_month, this%nm_vars, this%nm_varid)
+     endif
 
-  if(timer%its_a_new_year())then
-    call this%hist_write(clock_year, this%ny_vars, this%ny_varid)
+     if(timer%its_a_new_year())then
+        call this%hist_write(clock_year, this%ny_vars, this%ny_varid)
+     endif
   endif
+  ! end of selecting output years for reaction.1d.sbetr.exp.noadv.summs.hist.XXX.nc file          -zlyu
 
   end subroutine hist_wrap
 

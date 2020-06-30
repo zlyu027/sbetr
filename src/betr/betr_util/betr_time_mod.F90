@@ -27,6 +27,8 @@ module BeTR_TimeMod
      integer  :: moy, cyears, cdays
      real(r8) :: tod
      integer  :: hist_freq   !negative number, steps, positive number, 1: day, 30:mon, 365:year
+     integer  :: hist_start_yr
+     !to specify whether to output hist file from year 1, if yes, corresponds to each hist_freq and output, if not, corresponds to 9999 which is no output when smaller than it.      -zlyu
    contains
      procedure, public :: Init
      procedure, public :: its_time_to_write_restart
@@ -109,6 +111,7 @@ contains
     this%doy    = 0
     this%moy    = 1
     this%hist_freq=-1
+    this%hist_start_yr=1                  !default is to output from year 1         -zlyu
     if(present(namelist_buffer))then
       if(present(masterproc))then
 
@@ -144,12 +147,13 @@ contains
     real(r8) :: stop_time          !when to stop
     integer  :: stop_n
     integer  :: hist_freq
+    integer  :: hist_start_yr               !-zlyu
     character(len=8)  :: stop_option        !1: step, 2:day, 3:year
     real(r8) :: restart_dtime      !when to write restart file
     logical :: masterproc_loc
     !-----------------------------------------------------------------------
 
-    namelist / betr_time / delta_time, stop_n, stop_option, restart_dtime, hist_freq
+    namelist / betr_time / delta_time, stop_n, stop_option, restart_dtime, hist_freq, hist_start_yr        ! add hist_start_yr    -zlyu
 
     ! FIXME(bja, 201603) Only reading time variables in seconds!
     ! Should enable other values with unit coversions.
@@ -162,6 +166,7 @@ contains
     stop_n=2       !by default 2 cycle
     stop_option='nyears'  !by default years
     hist_freq=-1   !write every time step
+    hist_start_yr=1       !default to output from beginning         -zlyu
     restart_dtime = -1._r8
 
     ! ----------------------------------------------------------------------
@@ -189,6 +194,7 @@ contains
        write(stdout, *) '--------------------'
     endif
     this%hist_freq = hist_freq
+    this%hist_start_yr = hist_start_yr            !add     -zlyu
     this%delta_time = delta_time
     this%stop_time = delta_time*stop_n
     select case (trim(stop_option))
@@ -275,7 +281,7 @@ contains
     
     ! reset the clock every year, and assuming the time step
     ! size is always
-    if(mod(this%toy, (secpyear*30._r8)) == 0) then           !prevent from resetting forcing after each year, because your forcing data has only 30 years, so iterate every 30 years       -zlyu
+    if(mod(this%toy, (30._r8*secpyear)) == 0) then           ! *30._r8 prevent from resetting forcing after each year, because your forcing data has only 30 years, so iterate every 30 years       -zlyu
        this%tstep = 1
     end if
 
@@ -500,24 +506,50 @@ contains
   class(betr_time_type), intent(in) :: this
   logical :: yesno
 
-  if(this%hist_freq<0)then
-    !by time steps
-    yesno = (mod(this%nelapstep,this%hist_freq)==0)
-  elseif(this%hist_freq==0)then
-    !no history file output until the last time step
-    yesno=this%its_time_to_exit()
-  elseif(this%hist_freq==1)then
-    !by day
-    yesno=this%its_a_new_day()
-  elseif(this%hist_freq==30)then
-    !by month
-    yesno=this%its_a_new_month()
-  elseif(this%hist_freq==365)then
-    !by year
-    yesno=this%its_a_new_year()
-  elseif(this%hist_freq==9999)then
-    yesno=.false.
+  ! decide whether to output at this time step                          -zlyu
+  if (this%hist_start_yr>this%tstep_continue)then
+    yesno=.false.                                           ! no output  -zlyu
+  elseif(this%hist_start_yr<=this%tstep_continue)then       ! output     -zlyu
+    if(this%hist_freq<0)then
+      !by time steps
+      yesno = (mod(this%nelapstep,this%hist_freq)==0)
+    elseif(this%hist_freq==0)then
+      !no history file output until the last time step
+      yesno=this%its_time_to_exit()
+    elseif(this%hist_freq==1)then
+      !by day
+      yesno=this%its_a_new_day()
+    elseif(this%hist_freq==30)then
+      !by month
+      yesno=this%its_a_new_month()
+    elseif(this%hist_freq==365)then
+      !by year
+      yesno=this%its_a_new_year()
+    elseif(this%hist_freq==9999)then
+      yesno=.false.
+    endif
   endif
+  ! end of checking whether to output                                   -zlyu
+
+  
+  !if(this%hist_freq<0)then
+    !by time steps
+    !yesno = (mod(this%nelapstep,this%hist_freq)==0)
+  !elseif(this%hist_freq==0)then
+    !no history file output until the last time step
+   ! yesno=this%its_time_to_exit()
+  !elseif(this%hist_freq==1)then
+    !by day
+   ! yesno=this%its_a_new_day()
+  !elseif(this%hist_freq==30)then
+    !by month
+   ! yesno=this%its_a_new_month()
+  !elseif(this%hist_freq==365)then
+    !by year
+   ! yesno=this%its_a_new_year()
+  !elseif(this%hist_freq==9999)then
+   ! yesno=.false.
+  !endif
   end function its_time_to_histflush
   !-------------------------------------------------------------------------------
   function get_cur_year(this)result(ans)
