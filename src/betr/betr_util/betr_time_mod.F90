@@ -281,7 +281,7 @@ contains
     
     ! reset the clock every year, and assuming the time step
     ! size is always
-    if(mod(this%toy, (30._r8*secpyear)) == 0) then           ! *30._r8 prevent from resetting forcing after each year, because your forcing data has only 30 years, so iterate every 30 years       -zlyu
+    if(mod(this%toy, secpyear) == 0) then           ! *30._r8 prevent from resetting forcing after each year, because your forcing data has only 30 years, so iterate every 30 years       -zlyu
        this%tstep = 1
     end if
 

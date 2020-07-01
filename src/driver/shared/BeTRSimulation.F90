@@ -1728,8 +1728,9 @@ contains
 
   do jj = 1, num_flux2d
     do jl = 1, betr_nlevtrc_soil
-      do fc = 1, numf
-        this%hist_fluxes_2d_accum(c,jl,jj)=this%hist_fluxes_2d_accum(c,jl,jj)/this%hist_naccum
+       do fc = 1, numf
+          c =filter(fc)                            ! fix      -zlyu
+          this%hist_fluxes_2d_accum(c,jl,jj)=this%hist_fluxes_2d_accum(c,jl,jj)/this%hist_naccum
       enddo
     enddo
     if(trim(this%flux_hist2d_var(jj)%use_default)/='inactive') then
